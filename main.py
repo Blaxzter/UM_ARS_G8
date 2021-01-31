@@ -10,7 +10,9 @@ def function(position: Position):
 
 
 my_pso = PSO(function)
-history = my_pso.optimize()
-print([i[1] for i in history])
-plt.plot([i for i in range(len(history))], [i[1] for i in history])
+my_pso.optimize()
+
+for particle in my_pso.team.particles:
+    plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
+
 plt.show()

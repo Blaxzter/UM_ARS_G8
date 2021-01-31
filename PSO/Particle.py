@@ -1,4 +1,4 @@
-from typing import Callable
+from typing import Callable, List
 from PSO.Position import Position
 from PSO.Velocity import Velocity
 import PSO.Constants as Const
@@ -12,15 +12,17 @@ class Particle:
             np.random.uniform(Const.MIN_POS, Const.MAX_POS),
             np.random.uniform(Const.MIN_POS, Const.MAX_POS)
         )
-        self.velocity: Velocity = Velocity(              # Current Particle velocity
+        self.velocity: Velocity = Velocity(                 # Current Particle velocity
             np.random.uniform(Const.MIN_VEL, Const.MAX_VEL),
             np.random.uniform(Const.MIN_VEL, Const.MAX_VEL)
         )
         self.personal_best_location: Position = None        # All time best location reached
         self.personal_best_altitude: float = -1.            # Altitude of the best location so far
+        self.altitude_history: List[float] = []             # History of all the altitudes reached by the particle
 
     def evaluate(self, function: Callable[[Position], float]) -> float:
         current_altitude: float = function(self.position)
+        self.altitude_history.append(current_altitude)
 
         if current_altitude < self.personal_best_altitude or (self.personal_best_altitude == -1):
             self.personal_best_altitude = current_altitude
