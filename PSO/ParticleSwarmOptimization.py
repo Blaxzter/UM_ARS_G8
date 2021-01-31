@@ -1,16 +1,13 @@
 from typing import Callable, Tuple
 from typing import List
-
+import PSO.Constants as Const
 from PSO.Position import Position
 from PSO.Team import Team
 
 
 class PSO:
-    N_PARTICLES = 5
-    N_ITERATIONS = 500
-
     def __init__(self, function: Callable[[Position], float]):
-        self.team = Team(self.N_PARTICLES)
+        self.team = Team(Const.N_PARTICLES)
         self.environment: Callable[[Position], float] = function
 
     def iteration(self) -> Tuple[Position, float]:
@@ -30,7 +27,7 @@ class PSO:
     def optimize(self) -> List[Tuple[Position, float]]:
         optimization_history: List = []
 
-        for i in range(self.N_ITERATIONS):
+        for i in range(Const.N_ITERATIONS):
             position, altitude = self.iteration()
             optimization_history.append((position, altitude))
 

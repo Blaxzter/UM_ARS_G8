@@ -1,0 +1,12 @@
+# ---PARTICLE consts
+MAX_POS = 1000
+MIN_POS = 0
+MAX_VEL = 1
+MIN_VEL = 0.1
+W = 0.5
+C1 = 1
+C2 = 1
+
+# ---PSO consts
+N_PARTICLES = 5
+N_ITERATIONS = 500

@@ -9,7 +9,7 @@ def function(position: Position) -> float:
     return np.sqrt(
         position.x ** 2 +
         position.y ** 2
-    )
+    ) / 10
 
 
 my_pso = PSO(function)

@@ -1,27 +1,20 @@
 from typing import Callable
 from PSO.Position import Position
 from PSO.Velocity import Velocity
+import PSO.Constants as Const
 import numpy as np
 
 
 
 class Particle:
-    MAX_POS = 1000
-    MIN_POS = 0
-    MAX_VEL = 1
-    MIN_VEL = 0.1
-    W = 0.5
-    C1 = 1
-    C2 = 1
-
     def __init__(self):
         self.position: Position = Position(                 # Current Particle position
-            np.random.uniform(self.MIN_POS, self.MAX_POS),
-            np.random.uniform(self.MIN_POS, self.MAX_POS)
+            np.random.uniform(Const.MIN_POS, Const.MAX_POS),
+            np.random.uniform(Const.MIN_POS, Const.MAX_POS)
         )
         self.velocity: Velocity = Velocity(              # Current Particle velocity
-            np.random.uniform(self.MIN_VEL, self.MAX_VEL),
-            np.random.uniform(self.MIN_VEL, self.MAX_VEL)
+            np.random.uniform(Const.MIN_VEL, Const.MAX_VEL),
+            np.random.uniform(Const.MIN_VEL, Const.MAX_VEL)
         )
         self.personal_best_location: Position = None        # All time best location reached
         self.personal_best_altitude: float = -1.            # Altitude of the best location so far
@@ -37,14 +30,14 @@ class Particle:
 
     def update_velocity(self, team_best: Position) -> None:
 
-        current_velocity_x = self.W * self.velocity.x
-        current_velocity_y = self.W * self.velocity.y
+        current_velocity_x = Const.W * self.velocity.x
+        current_velocity_y = Const.W * self.velocity.y
 
-        cognitive_velocity_x = self.C1 * (self.personal_best_location.x - self.position.x)
-        cognitive_velocity_y = self.C1 * (self.personal_best_location.y - self.position.y)
+        cognitive_velocity_x = Const.C1 * (self.personal_best_location.x - self.position.x)
+        cognitive_velocity_y = Const.C1 * (self.personal_best_location.y - self.position.y)
 
-        social_velocity_x = self.C2 * (team_best.x - self.position.x)
-        social_velocity_y = self.C2 * (team_best.y - self.position.y)
+        social_velocity_x = Const.C2 * (team_best.x - self.position.x)
+        social_velocity_y = Const.C2 * (team_best.y - self.position.y)
 
         self.velocity.x = (
             current_velocity_x +
@@ -61,12 +54,12 @@ class Particle:
         self.position.x += self.velocity.x
         self.position.y += self.velocity.y
 
-        if self.position.x > self.MAX_POS:
-            self.position.x = self.MAX_POS
-        if self.position.y > self.MAX_POS:
-            self.position.y = self.MAX_POS
+        if self.position.x > Const.MAX_POS:
+            self.position.x = Const.MAX_POS
+        if self.position.y > Const.MAX_POS:
+            self.position.y = Const.MAX_POS
 
-        if self.position.x < self.MIN_POS:
-            self.position.x = self.MIN_POS
-        if self.position.y < self.MIN_POS:
-            self.position.y = self.MIN_POS
+        if self.position.x < Const.MIN_POS:
+            self.position.x = Const.MIN_POS
+        if self.position.y < Const.MIN_POS:
+            self.position.y = Const.MIN_POS
