@@ -20,8 +20,8 @@ class Particle:
         self.personal_best_altitude: float = -1.            # Altitude of the best location so far
         self.altitude_history: List[float] = []             # History of all the altitudes reached by the particle
 
-    def evaluate(self, function: Callable[[Position], float]) -> float:
-        current_altitude: float = function(self.position)
+    def evaluate(self, function: Callable[[float, float], float]) -> float:
+        current_altitude: float = function(self.position.x, self.position.y)
         self.altitude_history.append(current_altitude)
 
         if current_altitude < self.personal_best_altitude or (self.personal_best_altitude == -1):

@@ -1,4 +1,7 @@
 from typing import List, Callable
+
+import numpy as np
+
 from PSO.Particle import Particle
 from PSO.Position import Position
 
@@ -10,7 +13,7 @@ class Team:
         self.best_altitude: float = -1.                                     # Altitude of the best location
         self.altitude_history: List[float] = []                             # History of all the altitude changes
 
-    def update(self, environment: Callable[[Position], float]) -> None:
+    def update(self, environment: Callable[[float, float], float], plot) -> None:
         for particle in self.particles:
             particle_altitude = particle.evaluate(environment)
 
@@ -22,6 +25,10 @@ class Team:
         for particle in self.particles:
             particle.update_velocity(self.best_location)
             particle.update_position()
+
+        plot.set_offsets(
+            [[particle.position.x, particle.position.y] for particle in self.particles]
+        )
 
     @staticmethod
     def init_particles(n_particles: int) -> List[Particle]:
