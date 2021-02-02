@@ -2,19 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib import cm
 from matplotlib.animation import FuncAnimation
+import math
 
 from PSO import Constants as Const
 from PSO.ParticleSwarmOptimization import PSO
 
-a = 1
-b = 1
+a = 0
+b = 100
+
 
 
 def function(x: float, y: float) -> float:
-    # return -((12 * np.cos((x ** 2 + y ** 2) / 4)) / (3 + x ** 2 + y ** 2))    # func1
-    # return -np.sin(np.sqrt(x ** 2 + y ** 2))                                  # func2
-    # return (a - x) ** 2 + b * (y - x ** 2) ** 2
-    return (np.exp(-x**2 - y**2) - np.exp(-(x - 1)**2 - (y - 1)**2)) * 2
+    # return (a - x) ** 2 + b * (y - x ** 2) ** 2                                                       # Rosenbrock
+    return 10 * 2 + (x**2 - 10 * np.cos(2 * math.pi * x)) + (y**2 - 10 * np.cos(2 * math.pi * y))       # Rastrigin
 
 
 # ---Create fig and subplot
@@ -41,7 +41,7 @@ scatter.set_offsets(
 )
 
 # ---Setup animation and show the first graph
-animation = FuncAnimation(fig, pso.optimize, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=75)
+animation = FuncAnimation(fig, pso.optimize, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=100)
 plt.show()
 
 # ---Plot particles history and show it
