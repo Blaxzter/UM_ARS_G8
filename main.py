@@ -48,3 +48,5 @@ plt.show()
 for particle in pso.team.particles:
     plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
 plt.show()
+
+print(pso.team.particles[-1].position.x, pso.team.particles[-1].position.x) # Final Position of the particles
