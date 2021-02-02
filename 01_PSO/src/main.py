@@ -88,11 +88,17 @@ if __name__ == "__main__":
         plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
     plt.show()
 
-    # ---Plot swarm history and show it
-    plt.plot([i for i in range(len(pso.best_history))], [i for i in pso.best_history], linewidth=2)
-
-    # ---Plot swarm history and show it
-    plt.plot([i for i in range(len(pso.average_history))], [i for i in pso.average_history], linewidth=2)
+    # ---Plot particles history and show it
+    for particle in pso.team.particles:
+        plt.plot([i for i in range(len(particle.velocity_history))], [i for i in particle.velocity_history])
     plt.show()
 
-    print(pso.team.particles[-1].position.vec, pso.team.particles[-1].position.vec)  # Final Position of the particles
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.best_altitude_history))], [i for i in pso.best_altitude_history], linewidth=3)
+
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.average_altitude_history))], [i for i in pso.average_altitude_history], linewidth=3)
+
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.average_velocity_history))], [np.sqrt(np.sum(i**2)) for i in pso.average_velocity_history], linewidth=3)
+    plt.show()
