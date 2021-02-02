@@ -44,15 +44,17 @@ class Particle:
         social_velocity_x = Const.C2 * random_social * (team_best.x - self.position.x)
         social_velocity_y = Const.C2 * random_social * (team_best.y - self.position.y)
 
-        self.velocity.x = (
+        self.velocity.x = min(
             current_velocity_x +
             cognitive_velocity_x +
-            social_velocity_x
+            social_velocity_x,
+            Const.MAX_VEL
         )
-        self.velocity.y = (
-                current_velocity_y +
-                cognitive_velocity_y +
-                social_velocity_y
+        self.velocity.y = min(
+            current_velocity_y +
+            cognitive_velocity_y +
+            social_velocity_y,
+            Const.MAX_VEL
         )
 
     def update_position(self) -> None:
