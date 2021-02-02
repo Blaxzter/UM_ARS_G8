@@ -47,7 +47,7 @@ if __name__ == "__main__":
     ax.set_ylim([Const.MIN_POS, Const.MAX_POS])
 
     # --Setup and plot function contour
-    x_y_range = np.arange(Const.MIN_POS, Const.MAX_POS, 0.01)
+    x_y_range = np.arange(Const.MIN_POS, Const.MAX_POS, 0.1)
     X, Y = np.meshgrid(x_y_range, x_y_range)
     xy = np.vstack((X.flatten(), Y.flatten())).T
 
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         for y in range(0, len(x_y_range)):
             Z[x, y] = function(np.array([X[x, y], Y[x, y]]))
 
-    ax.contour(X, Y, Z, 10)
+    ax.contourf(X, Y, Z, 100)
 
     # ---Scatter empty sets
     scatter = ax.scatter([], [], marker='x')
@@ -75,12 +75,19 @@ if __name__ == "__main__":
         scatter.set_offsets(next_offset)
 
     # ---Setup animation and show the first graph
-    animation = FuncAnimation(fig, my_animation, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=10)
+    animation = FuncAnimation(fig, my_animation, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=50)
     plt.show()
 
     # ---Plot particles history and show it
     for particle in pso.team.particles:
         plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
+    plt.show()
+
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.history))], [i for i in pso.history])
+
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.avg_history))], [i for i in pso.avg_history])
     plt.show()
 
     print(pso.team.particles[-1].position.vec, pso.team.particles[-1].position.vec)  # Final Position of the particles
