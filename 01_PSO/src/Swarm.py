@@ -11,7 +11,7 @@ class Swarm:
         self.particles: List[Particle] = self.init_particles(n_particles)   # List of particles in the environment
         self.best_location: Position = None                                 # Best location achieved overall
         self.best_altitude: float = -1.                                     # Altitude of the best location
-        self.altitude_history: List[float] = []                            # History of all the altitude changes
+        self.altitude_history: List[float] = []                             # History of all the altitude changes
 
     def update(self, environment: Callable[[np.ndarray], float]) -> float:
         tot_altitude = 0
@@ -23,7 +23,6 @@ class Swarm:
                 self.best_altitude = particle_altitude
                 self.best_location = particle.position
                 self.altitude_history.append(self.best_altitude)
-
 
         for particle in self.particles:
             particle.update_velocity(self.best_location)
