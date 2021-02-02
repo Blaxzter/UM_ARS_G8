@@ -8,5 +8,5 @@ C1 = 1                  # Factor for the cognitive velocity (>C2 means exploitat
 C2 = 2                  # Factor for the cognitive velocity (>C1 means exploration, <C1 means exploitation)
 
 # ---PSO consts
-N_PARTICLES = 10       # Number of particles used for the simulation
+N_PARTICLES = 5       # Number of particles used for the simulation
 N_ITERATIONS = 1000     # Number of iterations used for the PSO
