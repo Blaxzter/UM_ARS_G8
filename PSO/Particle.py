@@ -35,11 +35,14 @@ class Particle:
         current_velocity_x = Const.W * self.velocity.x
         current_velocity_y = Const.W * self.velocity.y
 
-        cognitive_velocity_x = Const.C1 * np.random.random() * (self.personal_best_location.x - self.position.x)
-        cognitive_velocity_y = Const.C1 * np.random.random() * (self.personal_best_location.y - self.position.y)
+        random_cognitive = np.random.random()
+        random_social = np.random.random()
 
-        social_velocity_x = Const.C2 * np.random.random() * (team_best.x - self.position.x)
-        social_velocity_y = Const.C2 * np.random.random() * (team_best.y - self.position.y)
+        cognitive_velocity_x = Const.C1 * random_cognitive * (self.personal_best_location.x - self.position.x)
+        cognitive_velocity_y = Const.C1 * random_cognitive * (self.personal_best_location.y - self.position.y)
+
+        social_velocity_x = Const.C2 * random_social * (team_best.x - self.position.x)
+        social_velocity_y = Const.C2 * random_social * (team_best.y - self.position.y)
 
         self.velocity.x = (
             current_velocity_x +
