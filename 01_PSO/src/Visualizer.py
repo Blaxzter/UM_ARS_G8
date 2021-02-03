@@ -5,13 +5,16 @@ from plotly.subplots import make_subplots
 import Constants as Const
 import plotly.graph_objects as go
 import numpy as np
+import plotly.express as px
 
+colors = px.colors.qualitative.Plotly
 
 class Visualizer:
     def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None, line_data: Dict = None):
 
-        # Read data from a csv
 
+
+        # Read data from a csv
         X, Y, Z = self.create_map_variables(opti_func)
 
         layout = self.create_layout()
@@ -33,7 +36,7 @@ class Visualizer:
                 z=[data.get(0)[i].get("alt") for i in range(len(data.get(0)))],
                 mode="markers",
                 marker=dict(
-                    color=[f'rgb({0}, {255}, {0})' if data.get(0)[i].get("best") else f'rgb({255}, {0}, {0})'
+                    color=[f'rgb({0}, {255}, {0})' if data.get(0)[i].get("best") else colors[data.get(0)[i].get("swarm")]
                            for i in range(len(data.get(0)))],
                     size=10)),
             row=1, col=1
@@ -91,8 +94,8 @@ class Visualizer:
         layout["sliders"] = [sliders_dict]
 
         fig.update_layout(layout)
-        # fig.show()
-        fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
+        fig.show()
+        # fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
 
     def get_current_data_frame(self, gen, opti_func, data, line_data, X, Y, Z):
         ret_list = [
@@ -103,10 +106,9 @@ class Visualizer:
                 z=[data.get(gen)[i].get("alt") for i in range(len(data.get(gen)))],
                 mode="markers",
                 marker=dict(
-                    color=[f'rgb({0}, {255}, {0})'
-                           if data.get(gen)[i].get("best") else
-                           f'rgb({255}, {0}, {0})'
-                           for i in range(len(data.get(gen)))],
+                    color=[
+                        f'rgb({0}, {255}, {0})' if data.get(0)[i].get("best") else colors[data.get(0)[i].get("swarm")]
+                        for i in range(len(data.get(0)))],
                     size=10))]
 
         for key in line_data.keys():
