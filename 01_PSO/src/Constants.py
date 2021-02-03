@@ -9,10 +9,13 @@ C1 = 2                  # Factor for the cognitive velocity (>C2 means exploitat
 C2 = 2                  # Factor for the cognitive velocity (>C1 means exploration, <C1 means exploitation)
 
 # ---PSO consts
+N_SWARMS = 1
 N_PARTICLES = 20       # Number of particles used for the simulation
-N_ITERATIONS = 100     # Number of iterations used for the PSO
+N_ITERATIONS = 150     # Number of iterations used for the PSO
 DIMENSION = 2
 
 # -- Viz
 grid_granularity = 100
 precision = 4
+
+

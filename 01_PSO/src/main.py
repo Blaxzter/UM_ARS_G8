@@ -72,24 +72,27 @@ if __name__ == "__main__":
     def my_animation(frame_data):
         next_offset = []
 
-        for particle in pso.team.particles:
-            next_offset.append(particle.position_history[frame_data])
+        for swarm in pso.swarms:
+            for particle in swarm.particles:
+                next_offset.append(particle.position_history[frame_data])
 
         scatter.set_offsets(next_offset)
 
 
     # ---Setup animation and show the first graph
-    animation = FuncAnimation(fig, my_animation, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=5)
+    animation = FuncAnimation(fig, my_animation, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=1)
     plt.show()
 
     # ---Plot particles history and show it
-    for particle in pso.team.particles:
-        plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
+    for swarm in pso.swarms:
+        for particle in swarm.particles:
+            plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
     plt.show()
 
     # ---Plot particles history and show it
-    for particle in pso.team.particles:
-        plt.plot([i for i in range(len(particle.velocity_history))], [i for i in particle.velocity_history])
+    for swarm in pso.swarms:
+        for particle in swarm.particles:
+            plt.plot([i for i in range(len(particle.velocity_history))], [i for i in particle.velocity_history])
     plt.show()
 
     # ---Plot swarm history and show it
