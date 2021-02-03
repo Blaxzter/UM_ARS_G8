@@ -28,7 +28,7 @@ class Visualizer:
                                        method="animate",
                                        args=[None, dict(frame=dict(duration=5, redraw=True),
                                                         fromcurrent=True,
-                                                        mode='next',
+                                                        mode='immediate',
                                                         )]),
                                   dict(label="Pause",
                                        method="animate",

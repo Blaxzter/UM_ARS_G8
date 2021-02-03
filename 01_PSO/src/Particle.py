@@ -19,8 +19,8 @@ class Particle:
         self.personal_best_altitude: float = math.nan   # Altitude of the best location so far
         self.altitude_history: List[float] = []         # History of all the altitudes reached by the particle
 
-        self.position_history: List[Position] = []
-        self.velocity_history: List[Velocity] = []
+        self.position_history: List[np.ndarray] = []
+        self.velocity_history: List[np.ndarray] = []
 
     def evaluate(self, function: Callable[[np.ndarray], float]) -> float:
         current_altitude: float = function(self.position.vec)
@@ -44,9 +44,13 @@ class Particle:
 
         velocity = current_velocity + cognitive_velocity + social_velocity
         self.velocity.vec = np.clip(velocity, Const.MIN_VEL, Const.MAX_VEL) * Const.SPEED
+
+        # Store velocity for graphs
         self.velocity_history.append(self.velocity.vec)
 
     def update_position(self) -> None:
-        # Should this be square?
+        # Should this be square? GUI: ??
         self.position.vec = np.clip(self.velocity.vec + self.position.vec, Const.MIN_POS, Const.MAX_POS)
+
+        # Store position for graph
         self.position_history.append(self.position.vec)

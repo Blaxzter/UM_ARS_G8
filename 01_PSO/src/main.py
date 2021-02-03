@@ -20,7 +20,7 @@ class OptiFunks(Enum):
 c_opti_func = OptiFunks.Rastrigin
 
 
-def rosenberg(x: float, y: float):
+def rosenbrock(x: float, y: float):
     return (a - x) ** 2 + b * (y - x ** 2) ** 2
 
 
@@ -31,7 +31,7 @@ def rastrigin(pos: np.ndarray):
 def optimization_function(pos: np.ndarray) -> float:
     if c_opti_func == OptiFunks.Rosenbrock:
         if len(pos) >= 2:
-            return rosenberg(pos[0], pos[1])
+            return rosenbrock(pos[0], pos[1])
         else:
             raise Exception("Not enough dimensions")
 
@@ -40,7 +40,7 @@ def optimization_function(pos: np.ndarray) -> float:
 
 
 if __name__ == "__main__":
-        # ---Create fig and subplot
+    # ---Create fig and subplot
     fig, ax = plt.subplots()
     fig.set_tight_layout(True)
     ax.set_xlim([Const.MIN_POS, Const.MAX_POS])
@@ -51,30 +51,35 @@ if __name__ == "__main__":
     X, Y = np.meshgrid(x_y_range, x_y_range)
 
     Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
-    for x in range(0, len(x_y_range)):
-        for y in range(0, len(x_y_range)):
-            Z[x, y] = optimization_function(np.array([X[x, y], Y[x, y]]))
+    for _x in range(0, len(x_y_range)):
+        for _y in range(0, len(x_y_range)):
+            Z[_x, _y] = optimization_function(np.array([X[_x, _y], Y[_x, _y]]))
 
-    ax.contourf(X, Y, Z, 100)
-
-    # ---Scatter empty sets
-    scatter = ax.scatter([], [], marker='x')
+    contour = ax.contourf(X, Y, Z, 100)
+    plt.colorbar(contour, ax=ax)
 
     # ---Create PSO object to be used in the animation frames
     pso = PSO(optimization_function)
     pso.optimize()
 
-    def my_animation(framedata):
-        print(framedata)
+    ax.scatter([0], [0], color='w')  # Global Min - Rosenbrock & Rastrigin
+
+
+    # ---Scatter empty sets
+    scatter = ax.scatter([], [], marker='x', color='r')
+
+
+    def my_animation(frame_data):
         next_offset = []
 
         for particle in pso.team.particles:
-            next_offset.append(particle.position_history[framedata])
+            next_offset.append(particle.position_history[frame_data])
 
         scatter.set_offsets(next_offset)
 
+
     # ---Setup animation and show the first graph
-    animation = FuncAnimation(fig, my_animation, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=50)
+    animation = FuncAnimation(fig, my_animation, repeat=False, frames=np.arange(0, Const.N_ITERATIONS), interval=5)
     plt.show()
 
     # ---Plot particles history and show it
@@ -82,11 +87,17 @@ if __name__ == "__main__":
         plt.plot([i for i in range(len(particle.altitude_history))], [i for i in particle.altitude_history])
     plt.show()
 
-    # ---Plot swarm history and show it
-    plt.plot([i for i in range(len(pso.altitude_history))], [i for i in pso.altitude_history])
-
-    # ---Plot swarm history and show it
-    plt.plot([i for i in range(len(pso.avg_history))], [i for i in pso.avg_history])
+    # ---Plot particles history and show it
+    for particle in pso.team.particles:
+        plt.plot([i for i in range(len(particle.velocity_history))], [i for i in particle.velocity_history])
     plt.show()
 
-    print(pso.team.particles[-1].position.vec, pso.team.particles[-1].position.vec)  # Final Position of the particles
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.best_altitude_history))], [i for i in pso.best_altitude_history], linewidth=3)
+
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.average_altitude_history))], [i for i in pso.average_altitude_history], linewidth=3)
+
+    # ---Plot swarm history and show it
+    plt.plot([i for i in range(len(pso.average_velocity_history))], [np.sqrt(np.sum(i**2)) for i in pso.average_velocity_history], linewidth=3)
+    plt.show()
