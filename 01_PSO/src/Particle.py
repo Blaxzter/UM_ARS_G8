@@ -8,7 +8,11 @@ import numpy as np
 
 
 class Particle:
+    index = 0
+
     def __init__(self):
+        self.id = Particle.index
+        Particle.index = Particle.index + 1
         self.position: Position = Position(  # Current Particle position
             np.random.uniform(low=Const.MIN_POS, high=Const.MAX_POS, size=(Const.DIMENSION,))
         )

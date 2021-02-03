@@ -18,8 +18,14 @@ class PSO:
         for i in range(Const.N_ITERATIONS):
             avg_history, avg_velocity = self.team.update(self.environment)
             self.average_altitude_history.append(avg_history)
-            self.average_velocity_history.append(avg_velocity * 100) # times 100 to have the percentage
+            self.average_velocity_history.append(avg_velocity * 100)  # times 100 to have the percentage
             self.best_altitude_history.append(self.team.altitude_history[-1])
             for particle in self.team.particles:
-                self.history.get(i).append(particle.position.vec)
-
+                self.history.get(i).append(
+                    dict(
+                        id=particle.id,
+                        alt=particle.altitude_history[-1],
+                        best=particle.altitude_history[-1] == self.team.altitude_history[-1],
+                        pos=particle.position.vec
+                    )
+                )

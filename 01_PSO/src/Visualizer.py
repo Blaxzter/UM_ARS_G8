@@ -26,6 +26,18 @@ class Visualizer:
 
         fig.update_traces(contours_z=dict(show=True, usecolormap=True, highlightcolor="limegreen", project_z=True),
                           row=1, col=1)
+        fig = fig.add_trace(
+            go.Scatter3d(
+                x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
+                y=[data.get(0)[i].get("pos")[1] for i in range(len(data.get(0)))],
+                z=[data.get(0)[i].get("alt") for i in range(len(data.get(0)))],
+                mode="markers",
+                marker=dict(
+                    color=[f'rgb({0}, {255}, {0})' if data.get(0)[i].get("best") else f'rgb({255}, {0}, {0})'
+                           for i in range(len(data.get(0)))],
+                    size=10)),
+            row=1, col=1
+        )
 
         # Add each line chart to the figure
         for key in line_data.keys():
@@ -39,29 +51,63 @@ class Visualizer:
                 row=1, col=2
             )
 
+        sliders_dict = {
+            "active": 0,
+            "yanchor": "top",
+            "xanchor": "left",
+            "currentvalue": {
+                "font": {"size": 20},
+                "prefix": "Generation:",
+                "visible": True,
+                "xanchor": "right"
+            },
+            "transition": {"duration": 300, "easing": "cubic-in-out"},
+            "pad": {"b": 10, "t": 50},
+            "len": 0.9,
+            "x": 0.1,
+            "y": 0,
+            "steps": [
+                {"args": [
+                    [k],
+                    {"frame": {"duration": 300, "redraw": True},
+                     "mode": "immediate",
+                     "transition": {"duration": 300}}
+                ],
+                    "label": k,
+                    "method": "animate"} for k in range(len(data))
+
+            ]
+        }
+
         frames = [
             go.Frame(
                 data=self.get_current_data_frame(k, opti_func, data, line_data, X, Y, Z),
-                name=f'genration: {k}'
+                name=str(k)
             )
             for k in range(len(data))
         ]
 
         fig.frames = frames
+        layout["sliders"] = [sliders_dict]
 
         fig.update_layout(layout)
-
-        fig.write_html("pso.html")
+        fig.show()
+        # fig.write_html("pso.html")
 
     def get_current_data_frame(self, gen, opti_func, data, line_data, X, Y, Z):
         ret_list = [
             go.Surface(x=X, y=Y, z=Z, colorscale='Blues'),
             go.Scatter3d(
-                x=[data.get(gen)[i][0] for i in range(len(data.get(gen)))],
-                y=[data.get(gen)[i][1] for i in range(len(data.get(gen)))],
-                z=[opti_func(data.get(gen)[i]) for i in range(len(data.get(gen)))],
+                x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
+                z=[data.get(gen)[i].get("alt") for i in range(len(data.get(gen)))],
                 mode="markers",
-                marker=dict(size=10, color='red'))]
+                marker=dict(
+                    color=[f'rgb({0}, {255}, {0})'
+                           if data.get(gen)[i].get("best") else
+                           f'rgb({255}, {0}, {0})'
+                           for i in range(len(data.get(gen)))],
+                    size=10))]
 
         for key in line_data.keys():
             ret_list.append(
@@ -81,20 +127,28 @@ class Visualizer:
                               buttons=[
                                   dict(label="Play",
                                        method="animate",
-                                       args=[None, dict(frame=dict(duration=5, redraw=True),
+                                       args=[None, dict(frame=dict(duration=50, redraw=True),
                                                         fromcurrent=True,
                                                         mode='immediate',
-                                                        )]),
+                                                        transition={"duration": 300, "easing": "quadratic-in-out"}
+                                                        )]
+                                       ),
                                   dict(label="Pause",
                                        method="animate",
-                                       args=[None,
+                                       args=[[None],
                                              {"frame": {"duration": 0, "redraw": False},
                                               "mode": "immediate",
                                               "transition": {"duration": 0}}],
                                        )
-                              ]
-                              )
-                         ]
+                              ],
+                              direction="left",
+                              pad={"r": 10, "t": 87},
+                              showactive=False,
+                              x=0.1,
+                              xanchor="right",
+                              y=0,
+                              yanchor="top"
+                              )]
         )
         return layout
 
