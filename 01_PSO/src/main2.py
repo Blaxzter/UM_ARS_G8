@@ -45,5 +45,10 @@ if __name__ == "__main__":
     # ---Create PSO object to be used in the animation frames
     pso = PSO(optimization_function)
     pso.optimize()
-    Visualizer(optimization_function, pso.history)
+    Visualizer(optimization_function, pso.history,
+               dict(
+                   avg_vel=pso.average_velocity_history,
+                   avg_alt=pso.average_altitude_history,
+                   best_alt=pso.best_altitude_history,
+               ))
 

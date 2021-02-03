@@ -28,7 +28,7 @@ class Swarm:
         for particle in self.particles:
             particle.update_velocity(self.best_location)
             particle.update_position()
-            tot_velocity += particle.velocity_history[-1]
+            tot_velocity += np.linalg.norm(particle.velocity_history[-1])
 
         return tot_altitude / float(len(self.particles)), tot_velocity / float(len(self.particles))
 

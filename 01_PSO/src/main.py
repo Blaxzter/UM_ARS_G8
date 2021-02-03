@@ -99,5 +99,5 @@ if __name__ == "__main__":
     plt.plot([i for i in range(len(pso.average_altitude_history))], [i for i in pso.average_altitude_history], linewidth=3)
 
     # ---Plot swarm history and show it
-    plt.plot([i for i in range(len(pso.average_velocity_history))], [np.sqrt(np.sum(i**2)) for i in pso.average_velocity_history], linewidth=3)
+    plt.plot([i for i in range(len(pso.average_velocity_history))], [i for i in pso.average_velocity_history], linewidth=3)
     plt.show()

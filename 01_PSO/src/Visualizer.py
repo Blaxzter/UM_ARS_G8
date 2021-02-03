@@ -1,4 +1,6 @@
-from typing import Dict, Callable
+from typing import Dict, Callable, List
+
+from plotly.subplots import make_subplots
 
 import Constants as Const
 import plotly.graph_objects as go
@@ -6,21 +8,74 @@ import numpy as np
 
 
 class Visualizer:
-    def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None):
+    def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None, line_data: Dict = None):
 
         # Read data from a csv
 
-        x_y_range = np.linspace(Const.MIN_POS, Const.MAX_POS, Const.grid_granularity)
-        X, Y = np.meshgrid(x_y_range, x_y_range)
+        X, Y, Z = self.create_map_variables(opti_func)
 
-        Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
-        for x in range(0, len(x_y_range)):
-            for y in range(0, len(x_y_range)):
-                Z[x, y] = opti_func(np.array([X[x, y], Y[x, y]]))
+        layout = self.create_layout()
 
+        fig = make_subplots(rows=1, cols=2,
+                            specs=[[{"type": "surface"}, {"type": "scatter"}]])
+
+        fig = fig.add_trace(
+            go.Surface(x=X, y=Y, z=Z, colorscale='Blues'),
+            row=1, col=1
+        )
+
+        fig.update_traces(contours_z=dict(show=True, usecolormap=True, highlightcolor="limegreen", project_z=True),
+                          row=1, col=1)
+
+        # Add each line chart to the figure
+        for key in line_data.keys():
+            fig.add_trace(
+                go.Scatter(
+                    x=[0],
+                    y=[line_data.get(key)[0]],
+                    mode='lines',
+                    name=str(key)
+                ),
+                row=1, col=2
+            )
+
+        frames = [
+            go.Frame(
+                data=self.get_current_data_frame(k, opti_func, data, line_data, X, Y, Z),
+                name=f'genration: {k}'
+            )
+            for k in range(len(data))
+        ]
+
+        fig.frames = frames
+
+        fig.update_layout(layout)
+
+        fig.write_html("pso.html")
+
+    def get_current_data_frame(self, gen, opti_func, data, line_data, X, Y, Z):
+        ret_list = [
+            go.Surface(x=X, y=Y, z=Z, colorscale='Blues'),
+            go.Scatter3d(
+                x=[data.get(gen)[i][0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i][1] for i in range(len(data.get(gen)))],
+                z=[opti_func(data.get(gen)[i]) for i in range(len(data.get(gen)))],
+                mode="markers",
+                marker=dict(size=10, color='red'))]
+
+        for key in line_data.keys():
+            ret_list.append(
+                go.Scatter(
+                    x=list(range(gen)),
+                    y=line_data.get(key)[:gen],
+                    mode='lines',
+                    name=str(key)
+                )
+            )
+        return ret_list
+
+    def create_layout(self):
         layout = go.Layout(
-            xaxis=dict(range=[Const.MIN_POS, Const.MAX_POS], autorange=False, zeroline=False),
-            yaxis=dict(range=[Const.MIN_POS, Const.MAX_POS], autorange=False, zeroline=False),
             title_text='Chasing global Minima',
             updatemenus=[dict(type="buttons",
                               buttons=[
@@ -40,37 +95,14 @@ class Visualizer:
                               ]
                               )
                          ]
-
         )
+        return layout
 
-        frames = None
-        if data is not None:
-            frames = [
-                go.Frame(
-                    data=[
-                        go.Scatter3d(
-                            x=[data.get(k)[i][0] for i in range(len(data.get(k)))],
-                            y=[data.get(k)[i][1] for i in range(len(data.get(k)))],
-                            z=[opti_func(data.get(k)[i]) for i in range(len(data.get(k)))],
-                            mode="markers",
-                            marker=dict(size=10, color='red'))
-                    ],
-                    name=f'genration: {k}'
-                )
-                for k in range(len(data))
-            ]
-
-        fig = go.Figure(data=[go.Surface(x=X, y=Y, z=Z, colorscale='Blues'),
-                              go.Surface(x=X, y=Y, z=Z, colorscale='Blues')], layout=layout, frames=frames)
-
-        fig.update_traces(contours_z=dict(show=True, usecolormap=True, highlightcolor="limegreen", project_z=True))
-
-        camera = dict(
-            up=dict(x=0, y=0, z=1),
-            center=dict(x=0, y=0, z=0),
-            eye=dict(x=1.25, y=1.25, z=1.25)
-        )
-
-        fig.update_layout(scene_camera=camera)
-
-        fig.show()
+    def create_map_variables(self, opti_func):
+        x_y_range = np.linspace(Const.MIN_POS, Const.MAX_POS, Const.grid_granularity)
+        X, Y = np.meshgrid(x_y_range, x_y_range)
+        Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
+        for x in range(0, len(x_y_range)):
+            for y in range(0, len(x_y_range)):
+                Z[x, y] = opti_func(np.array([X[x, y], Y[x, y]]))
+        return X, Y, Z
