@@ -28,7 +28,7 @@ def rastrigin(pos: np.ndarray):
     return 10 * 2 + np.sum(pos ** 2 - 10 * np.cos(2 * math.pi * pos))
 
 
-def function(pos: np.ndarray) -> float:
+def optimization_function(pos: np.ndarray) -> float:
     if c_opti_func == OptiFunks.Rosenbrock:
         if len(pos) >= 2:
             return rosenberg(pos[0], pos[1])
@@ -47,14 +47,13 @@ if __name__ == "__main__":
     ax.set_ylim([Const.MIN_POS, Const.MAX_POS])
 
     # --Setup and plot function contour
-    x_y_range = np.arange(Const.MIN_POS, Const.MAX_POS, 0.1)
+    x_y_range = np.linspace(Const.MIN_POS, Const.MAX_POS, Const.grid_granularity)
     X, Y = np.meshgrid(x_y_range, x_y_range)
-    xy = np.vstack((X.flatten(), Y.flatten())).T
 
     Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
     for x in range(0, len(x_y_range)):
         for y in range(0, len(x_y_range)):
-            Z[x, y] = function(np.array([X[x, y], Y[x, y]]))
+            Z[x, y] = optimization_function(np.array([X[x, y], Y[x, y]]))
 
     ax.contourf(X, Y, Z, 100)
 
@@ -62,7 +61,7 @@ if __name__ == "__main__":
     scatter = ax.scatter([], [], marker='x')
 
     # ---Create PSO object to be used in the animation frames
-    pso = PSO(function)
+    pso = PSO(optimization_function)
     pso.optimize()
 
     def my_animation(framedata):
@@ -84,7 +83,7 @@ if __name__ == "__main__":
     plt.show()
 
     # ---Plot swarm history and show it
-    plt.plot([i for i in range(len(pso.history))], [i for i in pso.history])
+    plt.plot([i for i in range(len(pso.altitude_history))], [i for i in pso.altitude_history])
 
     # ---Plot swarm history and show it
     plt.plot([i for i in range(len(pso.avg_history))], [i for i in pso.avg_history])
