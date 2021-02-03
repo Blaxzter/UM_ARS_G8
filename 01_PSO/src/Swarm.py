@@ -1,6 +1,7 @@
 from typing import List, Callable, Tuple
 
 import numpy as np
+import Constants as Const
 
 from Particle import Particle
 from Position import Position
@@ -30,7 +31,7 @@ class Swarm:
             particle.update_position()
             tot_velocity += np.linalg.norm(particle.velocity_history[-1])
 
-        return tot_altitude / float(len(self.particles)), tot_velocity / float(len(self.particles))
+        return np.round(tot_altitude / float(len(self.particles)), decimals=Const.precision), np.round(tot_velocity / float(len(self.particles)), decimals=Const.precision)
 
     @staticmethod
     def init_particles(n_particles: int) -> List[Particle]:

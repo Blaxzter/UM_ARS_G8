@@ -154,6 +154,7 @@ class Visualizer:
 
     def create_map_variables(self, opti_func):
         x_y_range = np.linspace(Const.MIN_POS, Const.MAX_POS, Const.grid_granularity)
+        x_y_range = np.round(x_y_range, decimals=4)
         X, Y = np.meshgrid(x_y_range, x_y_range)
         Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
         for x in range(0, len(x_y_range)):

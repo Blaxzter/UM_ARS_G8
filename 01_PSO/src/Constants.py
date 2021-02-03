@@ -15,3 +15,4 @@ DIMENSION = 2
 
 # -- Viz
 grid_granularity = 100
+precision = 4

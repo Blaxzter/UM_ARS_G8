@@ -22,11 +22,11 @@ c_opti_func = OptiFunks.Rastrigin
 
 
 def rosenberg(x: float, y: float):
-    return (a - x) ** 2 + b * (y - x ** 2) ** 2
+    return np.round((a - x) ** 2 + b * (y - x ** 2) ** 2, decimals=Const.precision)
 
 
 def rastrigin(pos: np.ndarray):
-    return 10 * 2 + np.sum(pos ** 2 - 10 * np.cos(2 * math.pi * pos))
+    return np.round(10 * 2 + np.sum(pos ** 2 - 10 * np.cos(2 * math.pi * pos)), decimals=Const.precision)
 
 
 def optimization_function(pos: np.ndarray) -> float:
