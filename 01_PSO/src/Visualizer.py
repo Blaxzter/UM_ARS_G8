@@ -63,16 +63,20 @@ class Visualizer:
         )
 
         # Add each line chart to the figure
+        style = ['solid', 'dash', 'dot']
+        counter = 0
         for key in line_data.keys():
             fig.add_trace(
                 go.Scatter(
                     x=[0],
                     y=[line_data.get(key)[0]],
                     mode='lines',
-                    name=str(key)
+                    name=str(key),
+                    line=dict(color='royalblue', width=4, dash=style[counter])
                 ),
                 row=1, col=2
             )
+            counter += 1
 
         sliders_dict = self.create_slider(data)
 
@@ -197,7 +201,8 @@ class Visualizer:
         )
         return layout
 
-    def create_map_variables(self, opti_func):
+    @staticmethod
+    def create_map_variables(opti_func):
         x_y_range = np.linspace(Const.MIN_POS, Const.MAX_POS, Const.grid_granularity)
         x_y_range = np.round(x_y_range, decimals=Const.precision)
         X, Y = np.meshgrid(x_y_range, x_y_range)

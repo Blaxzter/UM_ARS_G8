@@ -1,4 +1,3 @@
-
 from ParticleSwarmOptimization import PSO
 from OptimizationFunction import OptimizationFunction
 from src.Visualizer import Visualizer
@@ -7,7 +6,7 @@ import Constants as Const
 
 if __name__ == "__main__":
 
-    opti = OptimizationFunction(a=1, b=100)
+    opti = OptimizationFunction(a=0, b=100)
     selected_function = opti.rastrigin
 
     # ---Create PSO object to be used in the animation frames
