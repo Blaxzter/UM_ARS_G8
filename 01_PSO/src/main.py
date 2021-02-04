@@ -1,8 +1,6 @@
-
 from ParticleSwarmOptimization import PSO
 from OptimizationFunction import OptimizationFunction, OptiFunks
 from src.Visualizer import Visualizer
-
 
 if __name__ == "__main__":
 
