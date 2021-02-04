@@ -124,7 +124,7 @@ class Visualizer:
 
     def create_layout(self):
         layout = go.Layout(
-            title_text='Chasing global Minima',
+            title_text='Particel Swarm Optimization Visualization',
             updatemenus=[dict(type="buttons",
                               buttons=[
                                   dict(label="Play",
