@@ -21,7 +21,7 @@ class OptimizationFunction:
 
     def rosenbrock(self, pos: np.ndarray):
         return np.sum(
-            [self.b * (pos[i + 1] - pos[i] ** 2) ** 2 + (self.a - pos[i]) ** 2] for i in range(1, len(pos) - 1)
+            [self.b * (pos[i + 1] - pos[i] ** 2) ** 2 + (self.a - pos[i]) ** 2 for i in range(0, len(pos) - 1)]
         )
 
     def rastrigin(self, pos: np.ndarray):

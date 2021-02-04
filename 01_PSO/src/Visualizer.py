@@ -96,8 +96,8 @@ class Visualizer:
         layout["sliders"] = [sliders_dict]
 
         fig.update_layout(layout)
-        # fig.show()
-        fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
+        fig.show()
+        # fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
 
     def get_current_data_frame(self, gen, opti_func, data, line_data, X, Y, Z):
         ret_list = [
