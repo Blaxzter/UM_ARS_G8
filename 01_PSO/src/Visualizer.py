@@ -1,5 +1,6 @@
 from typing import Dict, Callable, List
 
+from colour import Color
 from plotly.subplots import make_subplots
 
 import Constants as Const
@@ -28,6 +29,7 @@ class Visualizer:
 
         fig.update_traces(contours_z=dict(show=True, usecolormap=True, highlightcolor="limegreen", project_z=True),
                           row=1, col=1)
+
         fig = fig.add_trace(
             go.Scatter3d(
                 x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
@@ -37,10 +39,26 @@ class Visualizer:
                 hoverinfo="text",
                 mode="markers",
                 marker=dict(
-                    color=[
-                        f'rgb({0}, {255}, {0})' if data.get(0)[i].get("best") else colors[data.get(0)[i].get("swarm")]
-                        for i in range(len(data.get(0)))],
+                    color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
+                        "best") else colors[particle_info.get("swarm")] for particle_info in data.get(0)],
                     size=10)),
+            row=1, col=1
+        )
+
+        fig = fig.add_trace(
+            go.Scatter3d(
+                x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
+                y=[data.get(0)[i].get("pos")[1] for i in range(len(data.get(0)))],
+                z=[-2.5 for _ in range(len(data.get(0)))],
+                hovertext=[f'team {data.get(0)[i].get("swarm")}' for i in range(len(data.get(0)))],
+                hoverinfo="text",
+                mode="markers",
+                marker=dict(
+                    color=[
+                        Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex()
+                        if particle_info.get("best") else colors[particle_info.get("swarm")]
+                        for particle_info in data.get(0)],
+                    size=5)),
             row=1, col=1
         )
 
@@ -56,6 +74,26 @@ class Visualizer:
                 row=1, col=2
             )
 
+        sliders_dict = self.create_slider(data)
+
+        frames = [
+            go.Frame(
+                data=self.get_current_data_frame(k, data, line_data),
+                name=str(k),
+                traces=list(range(1, len(fig.data)))
+            )
+            for k in range(len(data))
+        ]
+
+        fig.frames = frames
+        layout["sliders"] = [sliders_dict]
+
+        fig.update_layout(layout)
+        self.fig = fig
+        # fig.show()
+        # fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
+
+    def create_slider(self, data):
         sliders_dict = {
             "active": 0,
             "yanchor": "top",
@@ -66,7 +104,7 @@ class Visualizer:
                 "visible": True,
                 "xanchor": "right"
             },
-            "transition": {"duration": 300, "easing": "cubic-in-out"},
+            "transition": dict(duration=5, easing='linear'),
             "pad": {"b": 10, "t": 50},
             "len": 0.9,
             "x": 0.1,
@@ -74,34 +112,24 @@ class Visualizer:
             "steps": [
                 {"args": [
                     [k],
-                    {"frame": {"duration": 300, "redraw": True},
+                    {"frame": dict(duration=5, redraw=True),
                      "mode": "immediate",
-                     "transition": {"duration": 300}}
+                     "transition": dict(duration=0, easing='linear')}
                 ],
                     "label": k,
                     "method": "animate"} for k in range(len(data))
-
             ]
         }
+        return sliders_dict
 
-        frames = [
-            go.Frame(
-                data=self.get_current_data_frame(k, opti_func, data, line_data, X, Y, Z),
-                name=str(k)
-            )
-            for k in range(len(data))
-        ]
+    def show_fig(self):
+        self.fig.show()
 
-        fig.frames = frames
-        layout["sliders"] = [sliders_dict]
+    def write_fig(self):
+        self.fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
 
-        fig.update_layout(layout)
-        fig.show()
-        # fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
-
-    def get_current_data_frame(self, gen, opti_func, data, line_data, X, Y, Z):
+    def get_current_data_frame(self, gen, data, line_data):
         ret_list = [
-            go.Surface(x=X, y=Y, z=Z, colorscale='Blues'),
             go.Scatter3d(
                 x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
                 y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
@@ -109,10 +137,23 @@ class Visualizer:
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
                 mode="markers",
+
                 marker=dict(
-                    color=[f'rgb({0}, {255}, {0})' if data.get(gen)[i].get("best") else colors[
-                        data.get(gen)[i].get("swarm")] for i in range(len(data.get(0)))],
-                    size=10))]
+                    color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
+                        "best") else colors[particle_info.get("swarm")] for particle_info in data.get(gen)],
+                    size=10)),
+            go.Scatter3d(
+                x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
+                z=[-2.5 for _ in range(len(data.get(gen)))],
+                hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
+                hoverinfo="text",
+                mode="markers",
+                marker=dict(
+                    color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
+                        "best") else colors[particle_info.get("swarm")] for particle_info in data.get(gen)],
+                    size=5))
+        ]
 
         for key in line_data.keys():
             ret_list.append(
@@ -132,10 +173,9 @@ class Visualizer:
                               buttons=[
                                   dict(label="Play",
                                        method="animate",
-                                       args=[None, dict(frame=dict(duration=50, redraw=True),
+                                       args=[None, dict(frame=dict(duration=5, redraw=True),
                                                         fromcurrent=True,
-                                                        mode='immediate',
-                                                        transition={"duration": 300, "easing": "quadratic-in-out"}
+                                                        transition=dict(duration=0, easing='linear')
                                                         )]
                                        ),
                                   dict(label="Pause",
@@ -159,7 +199,7 @@ class Visualizer:
 
     def create_map_variables(self, opti_func):
         x_y_range = np.linspace(Const.MIN_POS, Const.MAX_POS, Const.grid_granularity)
-        x_y_range = np.round(x_y_range, decimals=4)
+        x_y_range = np.round(x_y_range, decimals=Const.precision)
         X, Y = np.meshgrid(x_y_range, x_y_range)
         Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
         for x in range(0, len(x_y_range)):

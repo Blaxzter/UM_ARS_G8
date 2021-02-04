@@ -3,19 +3,8 @@ from enum import Enum
 import numpy as np
 import math
 
-
-class OptiFunks(Enum):
-    Rosenbrock = 1
-    Rastrigin = 2
-
-
 class OptimizationFunction:
-    def __init__(self, a: float = 0, b: float = 100, selected_function: OptiFunks = None):
-        if selected_function is None:
-            self.c_opti_func = OptiFunks.Rastrigin
-        else:
-            self.c_opti_func = selected_function
-
+    def __init__(self, a: float = 0, b: float = 100):
         self.a = a
         self.b = b
 
@@ -27,9 +16,8 @@ class OptimizationFunction:
     def rastrigin(self, pos: np.ndarray):
         return 10 * len(pos) + np.sum(pos ** 2 - 10 * np.cos(2 * math.pi * pos))
 
-    def optimization_function(self, pos: np.ndarray) -> float:
-        if self.c_opti_func == OptiFunks.Rosenbrock:
-            return self.rosenbrock(pos)
+    def square(self, pos: np.ndarray):
+        return np.sum(pos ** 2)
 
-        if self.c_opti_func == OptiFunks.Rastrigin:
-            return self.rastrigin(pos)
+    def ackley(self, pos: np.ndarray):
+        return -20 * np.exp(-0.2 * np.sqrt(0.5 * (pos[0]**2 + pos[1]**2)))
