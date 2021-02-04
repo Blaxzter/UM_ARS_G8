@@ -1,51 +1,17 @@
-import math
 
-import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
-from enum import Enum
-
-import Constants as Const
 from ParticleSwarmOptimization import PSO
+from OptimizationFunction import OptimizationFunction, OptiFunks
 from src.Visualizer import Visualizer
-
-a = 0
-b = 100
-
-
-class OptiFunks(Enum):
-    Rosenbrock = 1
-    Rastrigin = 2
-
-
-c_opti_func = OptiFunks.Rastrigin
-
-
-def rosenberg(x: float, y: float):
-    return np.round((a - x) ** 2 + b * (y - x ** 2) ** 2, decimals=Const.precision)
-
-
-def rastrigin(pos: np.ndarray):
-    return np.round(10 * 2 + np.sum(pos ** 2 - 10 * np.cos(2 * math.pi * pos)), decimals=Const.precision)
-
-
-def optimization_function(pos: np.ndarray) -> float:
-    if c_opti_func == OptiFunks.Rosenbrock:
-        if len(pos) >= 2:
-            return rosenberg(pos[0], pos[1])
-        else:
-            raise Exception("Not enough dimensions")
-
-    if c_opti_func == OptiFunks.Rastrigin:
-        return rastrigin(pos)
 
 
 if __name__ == "__main__":
 
+    opti = OptimizationFunction(a=1, b=100, selected_function=OptiFunks.Rastrigin)
+
     # ---Create PSO object to be used in the animation frames
-    pso = PSO(optimization_function)
+    pso = PSO(opti.optimization_function)
     pso.optimize()
-    Visualizer(optimization_function, pso.history,
+    Visualizer(opti.optimization_function, pso.history,
                dict(
                    avg_vel=pso.average_velocity_history,
                    avg_alt=pso.average_altitude_history,
