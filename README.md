@@ -7,5 +7,7 @@ contour of the function to minimize
 - The Second graph shows the behaviour of the particles throughout the optimization process by plotting the altitude 
   reached in every iteration. Such behaviour drops to the local (or global) minima found by the PSO algorithm
 
+Test GPG signing
+
 ## Project Website:
 https://ghis9917.github.io/UM_ARS_G8/
