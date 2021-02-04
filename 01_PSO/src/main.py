@@ -4,7 +4,7 @@ from src.Visualizer import Visualizer
 
 if __name__ == "__main__":
 
-    opti = OptimizationFunction(a=1, b=100, selected_function=OptiFunks.Rosenbrock)
+    opti = OptimizationFunction(a=0, b=100, selected_function=OptiFunks.Rosenbrock)
 
     # ---Create PSO object to be used in the animation frames
     pso = PSO(opti.optimization_function)
