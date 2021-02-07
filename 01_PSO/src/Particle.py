@@ -13,8 +13,8 @@ class Particle:
         self.id = Particle.index
         Particle.index = Particle.index + 1
         self.W = Const.W_S
-        self.position: np.ndarray = np.random.uniform(low=Const.MIN_POS, high=Const.MAX_POS, size=(Const.DIMENSION,))
-        self.velocity: np.ndarray = np.random.uniform(low=Const.MIN_VEL, high=Const.MAX_VEL, size=(Const.DIMENSION,))
+        self.position: np.ndarray = np.random.uniform(low=Const.MIN_POS, high=Const.MAX_POS, size=(Const.DIMENSION, 1))
+        self.velocity: np.ndarray = np.random.uniform(low=Const.MIN_VEL, high=Const.MAX_VEL, size=(Const.DIMENSION, 1))
 
         self.function = function
         self.personal_best_location: np.ndarray = None          # All time best location reached
@@ -55,6 +55,13 @@ class Particle:
 
     def update_position(self) -> None:
         new_pos = self.position + self.velocity * Const.SPEED
+
+        if Const.BOUNCE_BACK:
+            for coordinate in new_pos:
+                if coordinate > Const.MAX_POS or coordinate < Const.MIN_POS:
+                    self.velocity = np.rot90(self.velocity, k=2)
+                    new_pos = self.position + self.velocity * Const.SPEED
+
         self.position = np.clip(new_pos, Const.MIN_POS, Const.MAX_POS)
 
         # Store position for graph

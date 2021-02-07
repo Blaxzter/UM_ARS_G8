@@ -12,18 +12,18 @@ colors = px.colors.qualitative.Plotly
 
 
 class Visualizer:
-    def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None, line_data: Dict = None):
+    def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None, title: str = None, line_data: Dict = None):
 
         # Read data from a csv
         X, Y, Z = self.create_map_variables(opti_func)
 
-        layout = self.create_layout()
+        layout = self.create_layout(title if title is not None else "PSO Visualization")
 
         fig = make_subplots(rows=1, cols=2,
                             specs=[[{"type": "surface"}, {"type": "scatter"}]])
 
         fig = fig.add_trace(
-            go.Surface(x=X, y=Y, z=Z, colorscale='Blues'),
+            go.Surface(x=X, y=Y, z=Z, colorscale='Blues', showscale=False),
             row=1, col=1
         )
 
@@ -32,33 +32,37 @@ class Visualizer:
 
         fig = fig.add_trace(
             go.Scatter3d(
-                x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
-                y=[data.get(0)[i].get("pos")[1] for i in range(len(data.get(0)))],
+                x=[data.get(0)[i].get("pos")[0][0] for i in range(len(data.get(0)))],
+                y=[data.get(0)[i].get("pos")[1][0] for i in range(len(data.get(0)))],
                 z=[data.get(0)[i].get("alt") for i in range(len(data.get(0)))],
                 hovertext=[f'team {data.get(0)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
                 mode="markers",
+                name=f'Particle',
                 marker=dict(
                     color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
                         "best") else colors[particle_info.get("swarm")] for particle_info in data.get(0)],
-                    size=10)),
+                    size=10)
+            ),
             row=1, col=1
         )
 
         fig = fig.add_trace(
             go.Scatter3d(
-                x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
-                y=[data.get(0)[i].get("pos")[1] for i in range(len(data.get(0)))],
+                x=[data.get(0)[i].get("pos")[0][0] for i in range(len(data.get(0)))],
+                y=[data.get(0)[i].get("pos")[1][0] for i in range(len(data.get(0)))],
                 z=[-2.5 for _ in range(len(data.get(0)))],
                 hovertext=[f'team {data.get(0)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
                 mode="markers",
+                showlegend=False,
                 marker=dict(
                     color=[
                         Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex()
                         if particle_info.get("best") else colors[particle_info.get("swarm")]
                         for particle_info in data.get(0)],
-                    size=5)),
+                    size=5)
+            ),
             row=1, col=1
         )
 
@@ -71,8 +75,7 @@ class Visualizer:
                     x=[0],
                     y=[line_data.get(key)[0]],
                     mode='lines',
-                    name=str(key),
-                    line=dict(color='royalblue', width=4, dash=style[counter])
+                    name=str(key)
                 ),
                 row=1, col=2
             )
@@ -93,6 +96,7 @@ class Visualizer:
         layout["sliders"] = [sliders_dict]
 
         fig.update_layout(layout)
+        fig.update_layout(coloraxis_showscale=False)
         self.fig = fig
         # fig.show()
         # fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
@@ -129,14 +133,14 @@ class Visualizer:
     def show_fig(self):
         self.fig.show()
 
-    def write_fig(self):
-        self.fig.write_html("index.html", include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
+    def write_fig(self, write_title: str):
+        self.fig.write_html(f'{write_title}.html', include_plotlyjs='cdn', include_mathjax=False, auto_play=False)
 
     def get_current_data_frame(self, gen, data, line_data):
         ret_list = [
             go.Scatter3d(
-                x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
-                y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
+                x=[data.get(gen)[i].get("pos")[0][0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i].get("pos")[1][0] for i in range(len(data.get(gen)))],
                 z=[data.get(gen)[i].get("alt") for i in range(len(data.get(gen)))],
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
@@ -147,11 +151,12 @@ class Visualizer:
                         "best") else colors[particle_info.get("swarm")] for particle_info in data.get(gen)],
                     size=10)),
             go.Scatter3d(
-                x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
-                y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
+                x=[data.get(gen)[i].get("pos")[0][0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i].get("pos")[1][0] for i in range(len(data.get(gen)))],
                 z=[-2.5 for _ in range(len(data.get(gen)))],
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
+                showlegend=False,
                 mode="markers",
                 marker=dict(
                     color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
@@ -170,9 +175,9 @@ class Visualizer:
             )
         return ret_list
 
-    def create_layout(self):
+    def create_layout(self, title):
         layout = go.Layout(
-            title_text='Particel Swarm Optimization Visualization',
+            title_text=title,
             updatemenus=[dict(type="buttons",
                               buttons=[
                                   dict(label="Play",
@@ -209,5 +214,5 @@ class Visualizer:
         Z = np.zeros(shape=(len(x_y_range), len(x_y_range)))
         for x in range(0, len(x_y_range)):
             for y in range(0, len(x_y_range)):
-                Z[x, y] = opti_func(np.array([X[x, y], Y[x, y]]))
+                Z[x, y] = opti_func(np.array([X[x, y], Y[x, y]])[np.newaxis, :].T)
         return X, Y, Z

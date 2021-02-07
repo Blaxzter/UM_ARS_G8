@@ -8,13 +8,17 @@
 
   <link rel="stylesheet" href="css/styles.css?v=1.0">
   <style>
+
+    body {
+      width: 67%;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+
     #visualization {
       font-family: Arial, Helvetica, sans-serif;
       border-collapse: collapse;
-      width: 67%;
       position: absolute;
-      left: 50%;
-      transform: translateX(-50%);
     }
     
     #visualization td, #visualization th {
@@ -37,38 +41,72 @@
 </head>
 
 <body>
+    <h1>Visualization</h1>
     <table id="visualization">
-        <thead>
-            <tr>
-                <th>Type</th><th>Parameter</th><th>Optimization function</th><th># Swarms</th><th># Particle per swarm</th><th>Link</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>Simulation</td><td>None</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="PSO_Sim_Rastagrid_5_5.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Cognitive_Velocity</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="Cognitive_Velocity_Rastrigin_50_5_5.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Area</td><td>Rastagrid</td><td>1</td><td>25</td><td><a href="Area_Rastrigin_50_1_25.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Area</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="Area_Rastrigin_50_5_5.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Area</td><td>Rosenbrock</td><td>1</td><td>25</td><td><a href="Area_Rosenbrock_50_1_25.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Area</td><td>Rosenbrock</td><td>5</td><td>5</td><td><a href="Area_Rosenbrock_50_5_5.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Social_Velocity</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="Social_Velocity_Rastrigin_50_5_5.html">here</a></td>
-            </tr>
-            <tr>
-                <td>Meta</td><td>Social_Velocity</td><td>Rosenbrock</td><td>5</td><td>5</td><td><a href="Social_Velocity_Rosenbrock_50_5_5.html">here</a></td>
-            </tr>
-        </tbody>
-    </table>
+      <thead>
+          <tr>
+              <th>Parameter</th><th>Optimization function</th><th># Swarms</th><th># Particle per swarm</th><th>Link</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+            <td>Default</td><td>Ackley</td><td>5</td><td>5</td><td><a href="sim_ackley_default_2_10_2_2.html">here</a></td>
+          </tr>
+          <tr>
+            <td>Default</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="sim_rastagrid_default_5_5.html">here</a></td>
+          </tr>
+          <tr>
+            <td>Default</td><td>rosenbrock</td><td>2</td><td>10</td><td><a href="sim_rosenbrock_default_1_20_2_2.html">here</a></td>
+          </tr> 
+          <tr>
+            <td>Default</td><td>rosenbrock</td><td>2</td><td>10</td><td><a href="sim_rosenbrock_default_2_10_2_2.html">here</a></td>
+          </tr>
+          <tr>
+            <td>Bounce Back</td><td>Reverse Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_bounce_back=True_1_20.html">here</a></td>
+          </tr>
+          <tr>
+            <td>Bounce Back</td><td>Reverse Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_bounce-back=False_1_20.html">here</a></td>
+          </tr> 
+          <tr>
+            <td>Social (2) vs Cognitive (1)</td><td>reverse_ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_social_(2)_vs_cognitive_(1)_velocity_1_20_1_2.html">here</a></td>
+          </tr>
+          <tr>
+            <td>Social (2) vs Cognitive (2)</td><td>Reverse Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_social_(2)_vs_cognitive_(2)_velocity_1_20_2_2.html">here</a></td>
+          </tr>
+      </tbody>
+  </table>
+
+
+    <h1>Analysis</h1>
+    <table id="visualization">
+      <thead>
+          <tr>
+              <th>Type</th><th>Parameter</th><th>Optimization function</th><th># Swarms</th><th># Particle per swarm</th><th>Link</th>
+          </tr>
+      </thead>
+      <tbody>
+          <tr>
+              <td>Cognitive_Velocity</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="Cognitive_Velocity_Rastrigin_50_5_5.html">here</a></td>
+          </tr>
+          <tr>
+              <td>Area</td><td>Rastagrid</td><td>1</td><td>25</td><td><a href="Area_Rastrigin_50_1_25.html">here</a></td>
+          </tr>
+          <tr>
+              <td>Area</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="Area_Rastrigin_50_5_5.html">here</a></td>
+          </tr>
+          <tr>
+              <td>Area</td><td>Rosenbrock</td><td>1</td><td>25</td><td><a href="Area_Rosenbrock_50_1_25.html">here</a></td>
+          </tr>
+          <tr>
+              <td>Area</td><td>Rosenbrock</td><td>5</td><td>5</td><td><a href="Area_Rosenbrock_50_5_5.html">here</a></td>
+          </tr>
+          <tr>
+              <td>Social_Velocity</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="Social_Velocity_Rastrigin_50_5_5.html">here</a></td>
+          </tr>
+          <tr>
+              <td>Social_Velocity</td><td>Rosenbrock</td><td>5</td><td>5</td><td><a href="Social_Velocity_Rosenbrock_50_5_5.html">here</a></td>
+          </tr>
+      </tbody>
+  </table>
 </body>
 </html>

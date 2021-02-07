@@ -3,6 +3,8 @@ from enum import Enum
 import numpy as np
 import math
 
+ackley_height = 20
+
 class OptimizationFunction:
     def __init__(self, a: float = 0, b: float = 100):
         self.a = a
@@ -20,4 +22,19 @@ class OptimizationFunction:
         return np.sum(pos ** 2)
 
     def ackley(self, pos: np.ndarray):
-        return -20 * np.exp(-0.2 * np.sqrt(0.5 * (pos[0]**2 + pos[1]**2)))
+        return -20 * np.exp(-0.2 * np.sqrt(0.5 * (pos[0] ** 2 + pos[1] ** 2)))[0]
+
+    def reverse_ackley(self, pos: np.ndarray):
+        return self.ackley(pos) * -1
+
+    def ackley2(self, pos: np.ndarray):
+        """
+        Src: https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.differential_evolution.html
+        """
+        arg1 = -0.2 * np.sqrt(0.5 * (pos[0] ** 2 + pos[1] ** 2))
+        arg2 = 0.5 * (np.cos(2. * np.pi * pos[0]) + np.cos(2. * np.pi * pos[1]))
+        ackley_value = -20. * np.exp(arg1) - np.exp(arg2) + 20. + np.e
+        return ackley_value[0]
+
+    def reverse_ackley2(self, pos: np.ndarray):
+        return self.ackley2(pos) * -1
