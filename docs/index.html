@@ -2,23 +2,25 @@
 <head>
   <meta charset="utf-8">
 
-  <title>The HTML5 Herald</title>
-  <meta name="description" content="The HTML5 Herald">
+  <title>Particle Swarm Optimization</title>
+  <meta name="description" content="Particle Swarm Optimization">
   <meta name="author" content="SitePoint">
 
   <link rel="stylesheet" href="css/styles.css?v=1.0">
   <style>
 
     body {
+      position: absolute;
       width: 67%;
       left: 50%;
       transform: translateX(-50%);
+     
     }
 
     #visualization {
       font-family: Arial, Helvetica, sans-serif;
       border-collapse: collapse;
-      position: absolute;
+      width: 100%;
     }
     
     #visualization td, #visualization th {
@@ -50,28 +52,32 @@
       </thead>
       <tbody>
           <tr>
-            <td>Default</td><td>Ackley</td><td>5</td><td>5</td><td><a href="sim_ackley_default_2_10_2_2.html">here</a></td>
+            <td>Default</td><td>Ackley</td><td>2</td><td>10</td><td><a href="sim_ackley_default_2_10_2_2.html">here</a></td>
+          </tr>
+          <tr>
+            <td>Default</td><td>Reverse Ackley</td><td>2</td><td>10</td><td><a href="sim_reverse ackley_default_2_10_2_2.html">here</a></td>
           </tr>
           <tr>
             <td>Default</td><td>Rastagrid</td><td>5</td><td>5</td><td><a href="sim_rastagrid_default_5_5.html">here</a></td>
           </tr>
           <tr>
-            <td>Default</td><td>rosenbrock</td><td>2</td><td>10</td><td><a href="sim_rosenbrock_default_1_20_2_2.html">here</a></td>
+            <td>Default</td><td>rosenbrock</td><td>1</td><td>20</td><td><a href="sim_rosenbrock_default_1_20_2_2.html">here</a></td>
           </tr> 
           <tr>
             <td>Default</td><td>rosenbrock</td><td>2</td><td>10</td><td><a href="sim_rosenbrock_default_2_10_2_2.html">here</a></td>
           </tr>
+
           <tr>
-            <td>Bounce Back</td><td>Reverse Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_bounce_back=True_1_20.html">here</a></td>
+            <td>Bounce Back</td><td>Reverse reduced Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_bounce_back=True_1_20.html">here</a></td>
           </tr>
           <tr>
-            <td>Bounce Back</td><td>Reverse Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_bounce-back=False_1_20.html">here</a></td>
+            <td>Bounce Back</td><td>Reverse reduced Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_bounce-back=False_1_20.html">here</a></td>
           </tr> 
           <tr>
-            <td>Social (2) vs Cognitive (1)</td><td>reverse_ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_social_(2)_vs_cognitive_(1)_velocity_1_20_1_2.html">here</a></td>
+            <td>Social (2) vs Cognitive (1)</td><td>Reverse reduced Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_social_(2)_vs_cognitive_(1)_velocity_1_20_1_2.html">here</a></td>
           </tr>
           <tr>
-            <td>Social (2) vs Cognitive (2)</td><td>Reverse Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_social_(2)_vs_cognitive_(2)_velocity_1_20_2_2.html">here</a></td>
+            <td>Social (2) vs Cognitive (2)</td><td>Reverse reduced Ackley</td><td>1</td><td>20</td><td><a href="sim_reverse_ackley_social_(2)_vs_cognitive_(2)_velocity_1_20_2_2.html">here</a></td>
           </tr>
       </tbody>
   </table>
@@ -81,7 +87,7 @@
     <table id="visualization">
       <thead>
           <tr>
-              <th>Type</th><th>Parameter</th><th>Optimization function</th><th># Swarms</th><th># Particle per swarm</th><th>Link</th>
+              <th>Parameter</th><th>Optimization function</th><th># Swarms</th><th># Particle per swarm</th><th>Link</th>
           </tr>
       </thead>
       <tbody>
