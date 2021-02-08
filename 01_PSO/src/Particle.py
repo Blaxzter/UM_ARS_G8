@@ -1,10 +1,13 @@
+"""
+Author Guillaume Franzoni Darnois
+"""
+
 import math
 from typing import Callable, List
 
 import Constants as Const
 
 import numpy as np
-
 
 class Particle:
     index = 0

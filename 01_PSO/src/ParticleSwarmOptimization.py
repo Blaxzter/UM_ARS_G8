@@ -1,9 +1,12 @@
+"""
+Author Guillaume Franzoni Darnois
+"""
+
 from typing import Callable, List
 import Constants as Const
 from Swarm import Swarm
 
 import numpy as np
-
 
 class PSO:
     def __init__(self, function: Callable[[np.ndarray], float]):

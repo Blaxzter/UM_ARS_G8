@@ -1,3 +1,7 @@
+"""
+Author Guillaume Franzoni Darnois
+"""
+
 import math
 from typing import List, Callable, Tuple
 

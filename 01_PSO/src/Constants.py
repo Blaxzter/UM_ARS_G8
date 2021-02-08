@@ -1,3 +1,7 @@
+"""
+Author Guillaume Franzoni Darnois
+"""
+
 # ---PARTICLE consts
 MAX_POS = 5             # Maximum value of the position for both X and Y throughout the whole simulation
 MIN_POS = -5            # Minimum value of the position for both X and Y throughout the whole simulation

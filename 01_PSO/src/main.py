@@ -1,8 +1,11 @@
+"""
+Author Guillaume Franzoni Darnois
+"""
+
 from ParticleSwarmOptimization import PSO
 from OptimizationFunction import OptimizationFunction
 from src.Visualizer import Visualizer
 import Constants as Const
-
 
 if __name__ == "__main__":
 
