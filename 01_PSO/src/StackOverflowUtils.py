@@ -3,6 +3,8 @@ import plotly.colors
 
 def get_continuous_color(colorscale, intermed):
     """
+    Author Frederic Abraham took it from stack overflow for the visualization
+
     Src = https://stackoverflow.com/questions/62710057/access-color-from-plotly-color-scale
     Plotly continuous colorscales assign colors to the range [0, 1]. This function computes the intermediate
     color for any value in that range.

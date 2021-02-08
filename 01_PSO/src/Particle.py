@@ -13,7 +13,7 @@ class Particle:
         self.id = Particle.index
         Particle.index = Particle.index + 1
         self.W = Const.W_S
-        self.position: np.ndarray = np.random.uniform(low=Const.MIN_POS, high=Const.MAX_POS, size=(Const.DIMENSION, 1))
+        self.position: np.ndarray = np.random.uniform(low=Const.MIN_POS / -4, high=Const.MAX_POS, size=(Const.DIMENSION, 1))
         self.velocity: np.ndarray = np.random.uniform(low=Const.MIN_VEL, high=Const.MAX_VEL, size=(Const.DIMENSION, 1))
 
         self.function = function

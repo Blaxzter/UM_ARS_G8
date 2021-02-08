@@ -7,7 +7,7 @@ import Constants as Const
 if __name__ == "__main__":
 
     opti = OptimizationFunction(a=0, b=100)
-    selected_function = opti.reverse_ackley2
+    selected_function = opti.ackley
 
     # ---Create PSO object to be used in the animation frames
     pso = PSO(selected_function)
@@ -19,8 +19,8 @@ if __name__ == "__main__":
 
     print("Optimization Done")
     test_name = "sim"
-    func_name = "Reverse Ackley"
-    parameter = "default"
+    func_name = "Reduced Ackley"
+    parameter = "One sided initialization "
     title = f"PSO Simulation - {parameter} - {func_name}"
     write_title = f"{test_name.replace(' ', '_')}_{func_name}_{parameter.replace(' ', '_')}_{Const.N_SWARMS}_{Const.N_PARTICLES}_{Const.C1}_{Const.C2}"
 

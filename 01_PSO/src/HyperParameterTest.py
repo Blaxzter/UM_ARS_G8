@@ -1,3 +1,7 @@
+"""
+Auther Teo Giannilias
+"""
+
 import numpy as np
 import plotly.express as px
 from plotly.subplots import make_subplots

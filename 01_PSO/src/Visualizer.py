@@ -12,7 +12,12 @@ colors = px.colors.qualitative.Plotly
 
 
 class Visualizer:
-    def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None, title: str = None, line_data: Dict = None):
+    """
+    Author = Frederic Abraham
+    """
+
+    def __init__(self, opti_func: Callable[[np.ndarray], float], data: Dict = None, title: str = None,
+                 line_data: Dict = None):
 
         # Read data from a csv
         X, Y, Z = self.create_map_variables(opti_func)
@@ -145,7 +150,6 @@ class Visualizer:
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
                 mode="markers",
-
                 marker=dict(
                     color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
                         "best") else colors[particle_info.get("swarm")] for particle_info in data.get(gen)],
@@ -156,7 +160,6 @@ class Visualizer:
                 z=[-2.5 for _ in range(len(data.get(gen)))],
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
-                showlegend=False,
                 mode="markers",
                 marker=dict(
                     color=[Color(colors[particle_info.get("swarm")], luminance=0.3).get_hex() if particle_info.get(
@@ -190,9 +193,10 @@ class Visualizer:
                                   dict(label="Pause",
                                        method="animate",
                                        args=[[None],
-                                             {"frame": {"duration": 0, "redraw": False},
-                                              "mode": "immediate",
-                                              "transition": {"duration": 0}}],
+                                             dict(frame=dict(duration=0, redraw=False),
+                                                  mode='immediate',
+                                                  transition=dict(duration=0)
+                                                  )],
                                        )
                               ],
                               direction="left",

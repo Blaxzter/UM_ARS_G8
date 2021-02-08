@@ -6,6 +6,10 @@ import math
 ackley_height = 20
 
 class OptimizationFunction:
+    """
+    Author Frederic Abraham
+    """
+
     def __init__(self, a: float = 0, b: float = 100):
         self.a = a
         self.b = b
