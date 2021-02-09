@@ -29,6 +29,7 @@ class Simulator:
         ]
         self.done = False
         pygame.init()
+        self.font = pygame.font.SysFont(None, 24)
 
     def start(self):
         while not self.done:
@@ -36,6 +37,7 @@ class Simulator:
 
             self.update()
             self.draw()
+
 
             self.clock.tick(60)
 
@@ -47,6 +49,7 @@ class Simulator:
         self.screen.fill((0, 0, 0))
         self.environment.draw(self.screen)
         self.robot.draw(self.screen)
+        self.draw_information(self.screen)
         pygame.display.flip()
 
     def get_key_update(self):
@@ -67,3 +70,8 @@ class Simulator:
     def do_robot_update(self):
         self.robot.update(self.environment)
         pass
+
+    def draw_information(self, screen):
+        screen.blit(self.font.render(f'theta: {self.robot.theta}', True, Const.colors["white"]), (20, 20))
+        screen.blit(self.font.render(f'v_l: {self.robot.v_l}', True, Const.colors["white"]), (20, 40))
+        screen.blit(self.font.render(f'v_r: {self.robot.v_r}', True, Const.colors["white"]), (20, 60))

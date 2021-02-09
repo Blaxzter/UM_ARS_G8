@@ -3,17 +3,16 @@ from typing import List
 import numpy as np
 
 from Line import Line
-from src.Constants import padding, width, height, robot_radius
+from src.Constants import padding, width, height, robot_radius, padding_top
 
 
 class Environment:
     def __init__(self):
         self.environment = [
-            Line(start=np.array([padding, padding]), end=np.array([width - padding, padding])),
-            Line(start=np.array([width - padding, padding]), end=np.array([width - padding, height - padding])),
+            Line(start=np.array([padding, padding_top]), end=np.array([width - padding, padding_top])),
+            Line(start=np.array([width - padding, padding_top]), end=np.array([width - padding, height - padding])),
             Line(start=np.array([width - padding, height - padding]), end=np.array([padding, height - padding])),
-            Line(start=np.array([padding, height - padding]), end=np.array([padding, padding])),
-            #Line(start=np.array([69, 69]), end=np.array([169, 196])),
+            Line(start=np.array([padding, height - padding]), end=np.array([padding, padding_top])),
         ]
 
     def draw(self, screen):
