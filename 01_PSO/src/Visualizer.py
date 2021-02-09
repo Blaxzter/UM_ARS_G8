@@ -185,7 +185,7 @@ class Visualizer:
                               buttons=[
                                   dict(label="Play",
                                        method="animate",
-                                       args=[None, dict(frame=dict(duration=5, redraw=True),
+                                       args=[None, dict(frame=dict(duration=5, redraw=False),
                                                         fromcurrent=True,
                                                         transition=dict(duration=0, easing='linear')
                                                         )]

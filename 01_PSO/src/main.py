@@ -6,11 +6,12 @@ from ParticleSwarmOptimization import PSO
 from OptimizationFunction import OptimizationFunction
 from src.Visualizer import Visualizer
 import Constants as Const
+from src.VizTest import VizTest
 
 if __name__ == "__main__":
 
     opti = OptimizationFunction(a=0, b=100)
-    selected_function = opti.ackley
+    selected_function = opti.rastrigin
 
     # ---Create PSO object to be used in the animation frames
     pso = PSO(selected_function)
@@ -27,7 +28,7 @@ if __name__ == "__main__":
     title = f"PSO Simulation - {parameter} - {func_name}"
     write_title = f"{test_name.replace(' ', '_')}_{func_name}_{parameter.replace(' ', '_')}_{Const.N_SWARMS}_{Const.N_PARTICLES}_{Const.C1}_{Const.C2}"
 
-    viz = Visualizer(selected_function, pso.history, title,
+    viz = VizTest(selected_function, pso.history, title,
                dict(
                    avg_vel=pso.average_velocity_history,
                    avg_alt=pso.average_altitude_history,
