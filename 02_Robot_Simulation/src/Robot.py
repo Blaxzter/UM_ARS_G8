@@ -7,7 +7,6 @@ from pygame import gfxdraw
 
 class Robot:
     def __init__(self, init_pos: np.ndarray):
-        self.stop = None
         self.left_vel = 0
         self.right_vel = 0
         self.location: np.ndarray = init_pos
