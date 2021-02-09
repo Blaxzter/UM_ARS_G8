@@ -1,7 +1,9 @@
+from typing import List
+
 import numpy as np
 
 from Line import Line
-from src.Constatns import padding, width, height
+from src.Constatns import padding, width, height, robot_radius
 
 
 class Environment:
@@ -18,5 +20,25 @@ class Environment:
         for line in self.environment:
             line.draw(screen)
 
-    def collides(self, start: np.ndarray, end: np.ndarray):
-        pass
+    def collides(self, robot_center: np.ndarray) -> List[Line]:
+        collisions = []
+        for line in self.environment:
+            distance_to_line = self.distance_point_to_line(robot_center, line)
+            if distance_to_line <= robot_radius:
+                collisions.append(line)
+        return collisions
+
+    @staticmethod
+    def distance_point_to_line(point: np.ndarray, line: Line) -> float:
+        return np.abs(
+            (line.end[0] - line.start[0]) * (line.start[1] - point[1]) -
+            (line.start[0] - point[0]) * (line.end[1] - line.start[1])
+        ) / np.sqrt(
+            (line.end[0] - line.start[0]) ** 2 +
+            (line.end[1] - line.start[1]) ** 2
+        )
+
+# Collision Test 
+if __name__ == '__main__':
+    e = Environment()
+    collisions = e.collides(np.array([10, 10]))

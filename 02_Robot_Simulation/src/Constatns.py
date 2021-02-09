@@ -8,7 +8,7 @@ height = 300
 start_x = 50
 start_y = 50
 
-robot_width = 30
+robot_radius = 30
 robot_velocity_steps = 1
 
 colors = dict(

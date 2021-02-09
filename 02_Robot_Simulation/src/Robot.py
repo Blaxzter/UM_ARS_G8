@@ -25,7 +25,7 @@ class Robot:
         gfxdraw.aacircle(s,
                          int(s_x),
                          int(s_y),
-                         Const.robot_width,
+                         Const.robot_radius,
                          Const.colors['robot'],
                          )
         e_x, e_y = self.get_orientation_vector()
@@ -41,7 +41,7 @@ class Robot:
         return self.location[0][0], self.location[1][0]
 
     def get_orientation_vector(self):
-        default_vec = np.array([Const.robot_width, 0]).reshape((2, 1))
+        default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
         rotated = rotate(default_vec, self.theta)
         vec = self.location + rotated
         return vec[0, 0], vec[1, 0]
