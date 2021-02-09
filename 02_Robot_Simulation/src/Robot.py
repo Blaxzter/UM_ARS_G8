@@ -1,6 +1,6 @@
 import numpy as np
 import pygame
-import Constatns as Const
+import Constants as Const
 from src.MathUtils import rotate
 from pygame import gfxdraw
 
@@ -14,11 +14,13 @@ class Robot:
         self.theta = 45
 
     def update(self, environment):
-        # TODO do collision checks here?
-
-        self.location += np.array([self.left_vel, self.right_vel], dtype=float).reshape(
-            (2, 1)) * Const.environment_speed
-        pass
+        d_position = self.location + \
+                    np.array([self.left_vel, self.right_vel], dtype=float).reshape((2, 1)) * Const.environment_speed
+        if len(environment.collides(d_position)) > 0:
+            # TODO: check if velocity perpendicular to collision line, if not move robot by parallel velocity component
+            return
+        else:
+            self.location = d_position
 
     def draw(self, s):
         s_x, s_y = self.np_pos_to_pygame_pos()

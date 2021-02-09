@@ -3,7 +3,7 @@ from typing import List
 import numpy as np
 
 from Line import Line
-from src.Constatns import padding, width, height, robot_radius
+from src.Constants import padding, width, height, robot_radius
 
 
 class Environment:
@@ -13,7 +13,7 @@ class Environment:
             Line(start=np.array([width - padding, padding]), end=np.array([width - padding, height - padding])),
             Line(start=np.array([width - padding, height - padding]), end=np.array([padding, height - padding])),
             Line(start=np.array([padding, height - padding]), end=np.array([padding, padding])),
-            Line(start=np.array([69, 69]), end=np.array([169, 196])),
+            #Line(start=np.array([69, 69]), end=np.array([169, 196])),
         ]
 
     def draw(self, screen):
@@ -38,7 +38,7 @@ class Environment:
             (line.end[1] - line.start[1]) ** 2
         )
 
-# Collision Test 
+# Collision Test
 if __name__ == '__main__':
     e = Environment()
     collisions = e.collides(np.array([10, 10]))

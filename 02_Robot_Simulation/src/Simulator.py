@@ -1,11 +1,12 @@
 import numpy as np
 import pygame
 
-from src.Constatns import width, height
+from src.Constants import width, height
 from src.Environment import Environment
 from src.Robot import Robot
 
-import Constatns as Const
+import Constants as Const
+
 
 class Simulator:
 
