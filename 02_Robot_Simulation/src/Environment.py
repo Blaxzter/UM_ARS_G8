@@ -29,7 +29,7 @@ class Environment:
             intersection = line_intersection([robot_current_center, robot_next_center], [line.start, line.end])
             if intersection:
                 occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(robot_current_center, intersection)
-            if (intersection is not None and occurs_before_next) or distance_to_line <= robot_radius:
+            if (intersection is not None and occurs_before_next) or distance_to_line < robot_radius:
                 collisions.append(line)
         return collisions
         # collisions = []

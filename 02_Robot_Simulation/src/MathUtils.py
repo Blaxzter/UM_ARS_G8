@@ -32,11 +32,11 @@ def det(a, b):
 
 def angle_between_lines(m1, m2):
     if m1 == np.inf:
-        return np.arctan(np.deg2rad(90) - m2)
+        return np.arctan(abs(1 / m2))
     elif m2 == np.inf:
-        return np.arctan(np.deg2rad(90) - m1)
+        return np.arctan(abs(1 / m1))
     else:
-        return np.arctan(np.abs((m1 - m2) / (1 + m1 * m2)))
+        return np.arctan(abs((m1 - m2) / (1 + m1 * m2)))
 
 
 def line_intersection(line1, line2):

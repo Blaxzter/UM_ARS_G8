@@ -42,22 +42,20 @@ class Robot:
 
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
-            # self.theta = np.round(self.v_r, decimals=3)
 
-        self.pos = self.check_collisions(environment, d_position)
+        self.pos = self.pos + self.check_collisions(environment, d_position - self.pos)
 
-    def check_collisions(self, environment, next_position) -> np.ndarray:
-        d_vec = next_position - self.pos
-        collisions = environment.collides(self.pos, next_position)
-        if len(collisions) == 0:
-            return next_position
+    def check_collisions(self, environment, vec) -> np.ndarray:
+        collisions = environment.collides(self.pos, self.pos + vec)
+        if len(collisions) == 0 or self.get_x_y(vec) == (0, 0):
+            return vec
         else:
-            d_vec = self.recalc_next_pos(d_vec, self.closest_collision(collisions))
-            new_collisions = environment.collides(self.pos, self.pos + d_vec)
+            vec = self.recalc_next_pos(vec, self.closest_collision(collisions))
+            new_collisions = environment.collides(self.pos, self.pos + vec)
             if len(new_collisions) == 0:
-                return self.pos + d_vec
+                return vec
             else:
-                self.check_collisions(environment, self.pos + d_vec)
+                return self.check_collisions(environment, vec)
 
     def recalc_next_pos(self, vec: np.ndarray, line: Line) -> np.ndarray:
         pos_x, pos_y = self.get_x_y(self.pos)
@@ -66,7 +64,7 @@ class Robot:
         alpha = angle_between_lines(vec_angle, line.angle)
         parallel_component = np.cos(alpha) * np.linalg.norm(vec)
         perpendicular_component = distance_point_to_line(self.pos, line) - Const.robot_radius
-        return np.array([parallel_component, perpendicular_component]).reshape((2, 1))
+        return rotate(np.array([parallel_component, perpendicular_component], dtype=float).reshape((2, 1)), alpha)
 
 
     def closest_collision(self, collisions: List[Line]) -> Line:
