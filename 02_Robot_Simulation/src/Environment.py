@@ -5,8 +5,6 @@ import numpy as np
 from Line import Line
 from src.Constants import padding, width, height, robot_radius, padding_top
 from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line
-from shapely.geometry import LineString
-
 
 class Environment:
     def __init__(self):

@@ -8,7 +8,7 @@ padding_top = 100
 width = 400
 height = 400
 
-start_x = width / 2
+start_x = width / 2 + 150
 start_y = height / 2
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))

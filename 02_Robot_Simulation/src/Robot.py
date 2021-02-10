@@ -4,7 +4,7 @@ import numpy as np
 import pygame
 import Constants as Const
 from src.Line import Line
-from src.MathUtils import rotate, distance_point_to_line, angle_between_lines
+from src.MathUtils import rotate, distance_point_to_line, angle_between_lines, angle_between
 from pygame import gfxdraw
 
 dt = 1
@@ -44,10 +44,14 @@ class Robot:
             self.theta = next_pos[2, 0] % (2 * np.pi)
             # self.theta = np.round(self.v_r, decimals=3)
 
-        self.pos = self.check_collisions(environment, d_position)
+        next_pos = self.check_collisions(environment, d_position)
+        if next_pos is None:
+            self.check_collisions(environment, d_position)
+
+        self.pos = next_pos
 
     def check_collisions(self, environment, next_position) -> np.ndarray:
-        d_vec = next_position - self.pos
+        d_vec = self.pos - next_position
         collisions = environment.collides(self.pos, next_position)
         if len(collisions) == 0:
             return next_position
@@ -60,12 +64,12 @@ class Robot:
                 self.check_collisions(environment, self.pos + d_vec)
 
     def recalc_next_pos(self, vec: np.ndarray, line: Line) -> np.ndarray:
-        pos_x, pos_y = self.get_x_y(self.pos)
-        vec_x, vec_y = self.get_x_y(vec)
-        vec_angle = (pos_y - (pos_y + vec_y)) / (pos_x - (pos_x + vec_x)) if (pos_x - (pos_x + vec_x)) != 0 else np.inf
-        alpha = angle_between_lines(vec_angle, line.angle)
+        # pos_x, pos_y = self.get_x_y(self.pos)
+        # vec_x, vec_y = self.get_x_y(vec)
+        # vec_angle = (pos_y - (pos_y + vec_y)) / (pos_x - (pos_x + vec_x)) if (pos_x - (pos_x + vec_x)) != 0 else np.inf
+        alpha = angle_between(vec, line.vec)
         parallel_component = np.cos(alpha) * np.linalg.norm(vec)
-        perpendicular_component = distance_point_to_line(self.pos, line) - Const.robot_radius
+        perpendicular_component = distance_point_to_line(self.pos, line)[0,0] - Const.robot_radius
         return np.array([parallel_component, perpendicular_component]).reshape((2, 1))
 
 
@@ -99,6 +103,8 @@ class Robot:
                      )
 
     def get_x_y(self, vec):
+        if vec is None or vec[0] is None:
+            print("test")
         return vec[0, 0], vec[1, 0]
 
     def get_orientation_vector(self):
@@ -144,3 +150,13 @@ class Robot:
     def decrease_right(self):
         self.v_r -= Const.robot_velocity_steps
         self.v_r = np.round(self.v_r, decimals=3)
+
+
+if __name__ == '__main__':
+    robot = Robot(init_pos=np.array([0, 0]).reshape((2, 1)))
+    next_pos = np.array([2, 2]).reshape((2, 1))
+
+    vec = next_pos - robot.pos
+
+    line = Line(start=np.array([1, 0]).reshape((2, 1)), end=np.array([1, 2]).reshape((2, 1)))
+    robot.recalc_next_pos(next_pos, line)
