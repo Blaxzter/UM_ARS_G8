@@ -27,7 +27,9 @@ class Environment:
         for line in self.environment:
             distance_to_line = distance_point_to_line(robot_next_center, line)
             intersection = line_intersection([robot_current_center, robot_next_center], [line.start, line.end])
-            if distance_to_line <= robot_radius:
+            if intersection:
+                occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(robot_current_center, intersection)
+            if (intersection is not None and occurs_before_next) or distance_to_line <= robot_radius:
                 collisions.append(line)
         return collisions
         # collisions = []
@@ -46,4 +48,5 @@ class Environment:
 # Collision Test
 if __name__ == '__main__':
     e = Environment()
-    collisions = e.collides(np.array([10, 110]), np.array([20, 110]))
+    collisions = e.collides(np.array([50, 150]), np.array([70, 150]))
+    print(len(collisions))

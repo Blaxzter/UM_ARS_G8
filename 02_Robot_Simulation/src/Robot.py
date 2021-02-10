@@ -4,7 +4,7 @@ import numpy as np
 import pygame
 import Constants as Const
 from src.Line import Line
-from src.MathUtils import rotate, perpendicular_angles, parallel_angles, line_angle, distance_point_to_line
+from src.MathUtils import rotate, distance_point_to_line, angle_between_lines
 from pygame import gfxdraw
 
 dt = 1
@@ -20,6 +20,8 @@ class Robot:
         self.theta = 0
 
     def update(self, environment):
+        if self.v_r == 0 and self.v_l == 0:
+            return
         if self.v_r - self.v_l == 0:
             default_vec = np.array([self.v_r, 0]).reshape((2, 1))
             rotated = rotate(default_vec, self.theta)
@@ -44,21 +46,28 @@ class Robot:
 
         self.pos = self.check_collisions(environment, d_position)
 
-    def check_collisions(self, environment, d_position) -> np.ndarray:
-        collisions = environment.collides(self.pos, d_position)
+    def check_collisions(self, environment, next_position) -> np.ndarray:
+        d_vec = next_position - self.pos
+        collisions = environment.collides(self.pos, next_position)
         if len(collisions) == 0:
-            return d_position
+            return next_position
         else:
-            d_position = self.recalc_next_pos(d_position, self.closest_collision(collisions))
-            new_collisions = environment.collides(d_position)
-            if len(collisions) == 0:
-                return d_position
+            d_vec = self.recalc_next_pos(d_vec, self.closest_collision(collisions))
+            new_collisions = environment.collides(self.pos, self.pos + d_vec)
+            if len(new_collisions) == 0:
+                return self.pos + d_vec
             else:
-                self.check_collisions(environment, d_position)
+                self.check_collisions(environment, self.pos + d_vec)
 
-    def recalc_next_pos(self, current_next: np.ndarray, line: Line) -> np.ndarray:
-        perpendicular_slope = -1 / line.angle
-        pass
+    def recalc_next_pos(self, vec: np.ndarray, line: Line) -> np.ndarray:
+        pos_x, pos_y = self.get_x_y(self.pos)
+        vec_x, vec_y = self.get_x_y(vec)
+        vec_angle = (pos_y - (pos_y + vec_y)) / (pos_x - (pos_x + vec_x)) if (pos_x - (pos_x + vec_x)) != 0 else np.inf
+        alpha = angle_between_lines(vec_angle, line.angle)
+        parallel_component = np.cos(alpha) * np.linalg.norm(vec)
+        perpendicular_component = distance_point_to_line(self.pos, line) - Const.robot_radius
+        return np.array([parallel_component, perpendicular_component]).reshape((2, 1))
+
 
     def closest_collision(self, collisions: List[Line]) -> Line:
         min = np.inf
