@@ -4,8 +4,9 @@ import numpy as np
 
 from Line import Line
 from src.Constants import padding, width, height, robot_radius, padding_top
-from src.MathUtils import line_intersection, distance_point_to_point
+from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line
 from shapely.geometry import LineString
+
 
 class Environment:
     def __init__(self):
@@ -23,20 +24,26 @@ class Environment:
 
     def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List:
         collisions = []
-
         for line in self.environment:
+            distance_to_line = distance_point_to_line(robot_next_center, line)
             intersection = line_intersection([robot_current_center, robot_next_center], [line.start, line.end])
-            if intersection:
-                collisions.append({
-                    'line': line,
-                    'intersect': intersection,
-                    'distance': distance_point_to_point(intersection, robot_current_center)
-                })
+            if distance_to_line <= robot_radius:
+                collisions.append(line)
         return collisions
+        # collisions = []
+        #
+        # for line in self.environment:
+        #     intersection = line_intersection([robot_current_center, robot_next_center], [line.start, line.end])
+        #     if intersection:
+        #         collisions.append({
+        #             'line': line,
+        #             'intersect': intersection,
+        #             'distance': distance_point_to_point(intersection, robot_current_center)
+        #         })
+        # return collisions
 
 
 # Collision Test
 if __name__ == '__main__':
     e = Environment()
-    collisions = e.collides(np.array([10, 10]), np.array([20, 10]))
-    print(collisions)
+    collisions = e.collides(np.array([10, 110]), np.array([20, 110]))

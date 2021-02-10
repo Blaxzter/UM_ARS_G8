@@ -1,7 +1,10 @@
+from typing import List
+
 import numpy as np
 import pygame
 import Constants as Const
-from src.MathUtils import rotate, perpendicular_angles, parallel_angles, line_angle
+from src.Line import Line
+from src.MathUtils import rotate, perpendicular_angles, parallel_angles, line_angle, distance_point_to_line
 from pygame import gfxdraw
 
 dt = 1
@@ -29,9 +32,9 @@ class Robot:
 
             x, y = self.get_x_y(self.pos)
             icc_x, icc_y = self.get_x_y(icc)
-            next_pos = np.matrix([[np.cos(w * dt),  np.sin(w * dt), 0],
+            next_pos = np.matrix([[np.cos(w * dt), np.sin(w * dt), 0],
                                   [-np.sin(w * dt), np.cos(w * dt), 0],
-                                  [0,               0,              1]]) \
+                                  [0, 0, 1]]) \
                        * np.array([x - icc_x, y - icc_y, self.theta]).reshape((3, 1)) \
                        + np.array([icc_x, icc_y, w * dt]).reshape((3, 1))
 
@@ -39,16 +42,35 @@ class Robot:
             self.theta = next_pos[2, 0] % (2 * np.pi)
             # self.theta = np.round(self.v_r, decimals=3)
 
-        collisions = environment.collides(self.pos, d_position)
+        self.pos = self.check_collisions(environment, d_position)
 
-        if len(collisions) > 0:
-            for collision in collisions:
-                if parallel_angles(self.theta, line_angle(collision.line)):
-                    self.pos = d_position
-                else:
-                    pass
+    def check_collisions(self, environment, d_position) -> np.ndarray:
+        collisions = environment.collides(self.pos, d_position)
+        if len(collisions) == 0:
+            return d_position
         else:
-            self.pos = d_position
+            d_position = self.recalc_next_pos(d_position, self.closest_collision(collisions))
+            new_collisions = environment.collides(d_position)
+            if len(collisions) == 0:
+                return d_position
+            else:
+                self.check_collisions(environment, d_position)
+
+    def recalc_next_pos(self, current_next: np.ndarray, line: Line) -> np.ndarray:
+        perpendicular_slope = -1 / line.angle
+        pass
+
+    def closest_collision(self, collisions: List[Line]) -> Line:
+        min = np.inf
+        closest = None
+
+        for collision in collisions:
+            dist = distance_point_to_line(self.pos, collision)
+            if dist <= min:
+                min = dist
+                closest = collision
+        return closest
+
 
     def draw(self, s):
         s_x, s_y = self.get_x_y(self.pos)
