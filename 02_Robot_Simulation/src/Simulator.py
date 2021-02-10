@@ -38,7 +38,6 @@ class Simulator:
             self.update()
             self.draw()
 
-
             self.clock.tick(60)
 
     def update(self):
