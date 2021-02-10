@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 import Constants as Const
-from src.MathUtils import rotate
+from src.MathUtils import rotate, perpendicular_angles, parallel_angles, line_angle
 from pygame import gfxdraw
 
 dt = 1
@@ -17,7 +17,6 @@ class Robot:
         self.theta = 0
 
     def update(self, environment):
-        # TODO do collision checks here?
         if self.v_r - self.v_l == 0:
             default_vec = np.array([self.v_r, 0]).reshape((2, 1))
             rotated = rotate(default_vec, self.theta)
@@ -37,11 +36,17 @@ class Robot:
                        + np.array([icc_x, icc_y, w * dt]).reshape((3, 1))
 
             d_position = next_pos[:2]
-            self.theta = next_pos[2, 0]
+            self.theta = next_pos[2, 0] % (2 * np.pi)
+            # self.theta = np.round(self.v_r, decimals=3)
 
-        if len(environment.collides(d_position)) > 0:
-            # TODO: check if velocity perpendicular to collision line, if not move robot by parallel velocity component
-            return
+        collisions = environment.collides(self.pos, d_position)
+
+        if len(collisions) > 0:
+            for collision in collisions:
+                if parallel_angles(self.theta, line_angle(collision.line)):
+                    self.pos = d_position
+                else:
+                    pass
         else:
             self.pos = d_position
 
@@ -78,10 +83,14 @@ class Robot:
     def increase_both(self):
         self.v_l += Const.robot_velocity_steps
         self.v_r += Const.robot_velocity_steps
+        self.v_l = np.round(self.v_l, decimals=3)
+        self.v_r = np.round(self.v_r, decimals=3)
 
     def decrease_both(self):
         self.v_l -= Const.robot_velocity_steps
         self.v_r -= Const.robot_velocity_steps
+        self.v_l = np.round(self.v_l, decimals=3)
+        self.v_r = np.round(self.v_r, decimals=3)
 
     def rotate_left(self):
         self.theta += 0.1

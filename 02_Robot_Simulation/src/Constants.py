@@ -14,7 +14,7 @@ start_y = height / 2
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 
 robot_radius = 30
-robot_velocity_steps = 1
+robot_velocity_steps = 0.1
 
 colors = dict(
     black=(0, 0, 0),
