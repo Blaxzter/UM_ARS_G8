@@ -91,9 +91,9 @@ class Robot:
         # )).reshape((2, 1))
         # pos_on_line = t_pos_on_line + (vec * -1 / np.linalg.norm(vec)) * Const.robot_radius
 
-        remaining_length = np.linalg.norm(vec) - np.linalg.norm(pos_on_line - self.pos)
-        perpendicular_vector = comp_line.nvec if np.dot(comp_line.vec.T, vec) > 0 else comp_line.nvec * -1
-        new_next_pos = pos_on_line + perpendicular_vector * remaining_length
+        remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - self.pos)) * abs(np.cos(angle_between(vec, comp_line.vec)))
+        parallel_vector = comp_line.nvec if np.dot(comp_line.vec.T, vec) > 0 else comp_line.nvec * -1
+        new_next_pos = pos_on_line + parallel_vector * remaining_length
 
         return pos_on_line, new_next_pos
 
