@@ -14,7 +14,7 @@ start_y = height / 2
 start_rot = 180
 
 start_x = width / 2 - 150
-start_y = height / 2
+start_y = (height + padding_top) / 2
 
 start_rot = 0
 

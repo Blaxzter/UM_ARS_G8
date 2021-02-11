@@ -47,9 +47,9 @@ class Robot:
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
 
-        self.pos = self.check_collisions(environment, self.pos, d_position)
+        self.pos = self.check_collisions(environment, self.pos, d_position, [])
 
-    def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray) -> np.ndarray:
+    def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray, prev_collision) -> np.ndarray:
         collisions = environment.collides(current_pos, next_pos)
         if len(collisions) == 0 or self.get_x_y(next_pos) == (0, 0):
             return next_pos
@@ -57,10 +57,15 @@ class Robot:
             closest_line = self.closest_collision(collisions, current_pos)
             t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
             new_collisions = environment.collides(t_current_pos, t_next_pos)
+            prev_collision.append(closest_line['line'])
             if len(new_collisions) == 0:
                 return t_next_pos
             else:
-                return self.check_collisions(environment, t_current_pos, t_next_pos)
+                if new_collisions[0]['line'] not in prev_collision:
+                    return self.check_collisions(environment, t_current_pos, t_next_pos, prev_collision)
+                else:
+                    return current_pos
+
 
     def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Dict) -> (np.ndarray, np.ndarray):
         pos_x, pos_y = self.get_x_y(current_pos)
