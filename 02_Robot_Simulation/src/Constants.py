@@ -8,13 +8,22 @@ padding_top = 100
 width = 400
 height = 400
 
+start_x = width / 2 + 150
+start_y = height / 2
+
+start_rot = 180
+
 start_x = width / 2 - 150
 start_y = height / 2
+
+start_rot = 0
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 
 robot_radius = 30
 robot_velocity_steps = 0.1
+
+epsilon = 0.00001
 
 colors = dict(
     black=(0, 0, 0),

@@ -1,11 +1,11 @@
-from typing import List
+from typing import List, Dict
 
 import numpy as np
 import pygame
 import Constants as Const
 from src.Line import Line
 from src.MathUtils import rotate, distance_point_to_line, angle_between_lines, angle_between, line_intersection, \
-    intersection, math_line, rotate_deg
+    intersection, math_line, rotate_deg, side_of_point
 from pygame import gfxdraw
 
 import traceback
@@ -21,7 +21,7 @@ class Robot:
         self.l = Const.robot_radius * 2
         self.pos: np.ndarray = init_pos
 
-        self.theta = np.deg2rad(180)
+        self.theta = np.deg2rad(Const.start_rot)
 
     def update(self, environment):
         if self.v_r == 0 and self.v_l == 0:
@@ -62,19 +62,20 @@ class Robot:
             else:
                 return self.check_collisions(environment, t_current_pos, t_next_pos)
 
-    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, comp_line: Line) -> np.ndarray:
+    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Dict) -> (np.ndarray, np.ndarray):
         pos_x, pos_y = self.get_x_y(current_pos)
         npos_x, npos_y = self.get_x_y(next_pos)
         vec = next_pos - current_pos
+        comp_line = collisions['line']
 
-        if np.linalg.norm(vec) == 0 or np.dot(comp_line.vec.T, vec) == 0:
-            return current_pos, current_pos
+        vec_norm = np.linalg.norm(vec)
+        if vec_norm == 0 or np.dot(comp_line.vec.T, vec) == 0:
+            return current_pos, collisions['intersect'] + (vec / vec_norm) * Const.robot_radius * - 1
 
         # Get on the line
-
         vec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
-                             if np.dot(comp_line.vec.T, current_pos)[0, 0] > 0
-                             else rotate_deg(comp_line.nvec, 90) * -1) * Const.robot_radius
+                             if side_of_point(comp_line.start, comp_line.end, self.pos)
+                             else rotate_deg(comp_line.nvec, 90)) * Const.robot_radius
 
         new_line_start = comp_line.start + vec_towards_robot
         new_line_end = comp_line.end + vec_towards_robot
@@ -106,12 +107,12 @@ class Robot:
         # perpendicular_component = distance_point_to_line(self.pos, line) - Const.robot_radius
         # return rotate(np.array([parallel_component, perpendicular_component], dtype=float).reshape((2, 1)), alpha)
 
-    def closest_collision(self, collisions: List[Line], position) -> Line:
+    def closest_collision(self, collisions: List[Dict], position) -> Dict:
         min = np.inf
         closest = None
 
         for collision in collisions:
-            dist = distance_point_to_line(position, collision)
+            dist = distance_point_to_line(position, collision['line'])
             if dist <= min:
                 min = dist
                 closest = collision

@@ -76,3 +76,5 @@ class Simulator:
         screen.blit(self.font.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.colors["yellow"]), (20, 20))
         screen.blit(self.font.render(f'v_l: {self.robot.v_l}', True, Const.colors["yellow"]), (20, 40))
         screen.blit(self.font.render(f'v_r: {self.robot.v_r}', True, Const.colors["yellow"]), (20, 60))
+        screen.blit(self.font.render(f'pos_x: {np.round(self.robot.pos[0].item(), decimals=3)}', True, Const.colors["yellow"]), (180, 20))
+        screen.blit(self.font.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, Const.colors["yellow"]), (180, 40))

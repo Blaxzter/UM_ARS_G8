@@ -9,7 +9,7 @@ from Line import Line
 def rotate(vec: np.ndarray, rad: float):
     rotation_matrix = np.matrix([[np.cos(rad), np.sin(rad)],
                                  [-np.sin(rad), np.cos(rad)]])
-    return rotation_matrix * vec
+    return np.asarray(rotation_matrix * vec)
 
 def rotate_deg(vec: np.ndarray, rad: float):
     deg = np.deg2rad(rad)
@@ -25,7 +25,7 @@ def distance_point_to_line(point: np.ndarray, line: Line) -> float:
     distance = np.abs((line.end[0] - line.start[0]) * (line.start[1] - point[1]) - (line.start[0] - point[0]) * (
                 line.end[1] - line.start[1])) / np.sqrt(
         (line.end[0] - line.start[0]) ** 2 + (line.end[1] - line.start[1]) ** 2)
-    return np.round(distance[0], decimals=10)
+    return distance[0]
 
 
 def det(a, b):
@@ -40,6 +40,12 @@ def angle_between_lines(m1, m2):
     else:
         return np.arctan(abs((m1 - m2) / (1 + m1 * m2)))
 
+
+def side_of_point(line_start: np.ndarray, line_end: np.ndarray, point: np.ndarray):
+    ab = line_end - line_start
+    ap = point - line_start
+    cross_product = ab[0] * ap[1] - ap[0] * ab[1]
+    return cross_product > 0
 
 def unit_vector(vector):
     """ Returns the unit vector of the vector.  """
@@ -62,7 +68,7 @@ def line_intersection(line1, line2):
     d = (det(*line1), det(*line2))
     x = det(d, xdiff) / div
     y = det(d, ydiff) / div
-    return x, y
+    return np.array([x[0], y[0]]).reshape((2, 1))
 
 
 def math_line(p1, p2):
