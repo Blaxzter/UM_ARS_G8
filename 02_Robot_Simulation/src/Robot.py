@@ -60,9 +60,7 @@ class Robot:
             if len(new_collisions) == 0:
                 return t_next_pos
             else:
-                print("Test")
-                environment.collides(t_current_pos, t_next_pos)
-                return self.check_collisions(environment, t_next_pos, t_next_pos)
+                return self.check_collisions(environment, t_current_pos, t_next_pos)
 
     def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, comp_line: Line) -> np.ndarray:
         pos_x, pos_y = self.get_x_y(current_pos)
