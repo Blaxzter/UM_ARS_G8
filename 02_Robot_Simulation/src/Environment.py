@@ -9,12 +9,14 @@ from src.MathUtils import line_intersection, distance_point_to_point, distance_p
 class Environment:
     def __init__(self):
         self.environment = [
-            Line(width / 2,         padding_top + 50,   width / 2,          height / 2  + 50),
+            # Line(width / 2,         padding_top + 50,   width / 2,          height / 2  + 50),
             Line(padding,           padding_top,        width - padding,    padding_top),
             Line(width - padding,   padding_top,        width - padding,    height - padding),
             Line(width - padding,   height - padding,   padding,            height - padding),
             Line(padding,           height - padding,   padding,            padding_top),
-            Line(69, 69, 169, 196),
+            # Line(69, 69, 169, 196),
+            Line(width / 2 - ((width / 2) / 2), padding_top + 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
+            Line(width / 2 - ((width / 2) / 2), height - padding - 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
         ]
 
     def draw(self, screen):
