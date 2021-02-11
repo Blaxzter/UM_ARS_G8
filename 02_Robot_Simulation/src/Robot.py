@@ -4,8 +4,12 @@ import numpy as np
 import pygame
 import Constants as Const
 from src.Line import Line
-from src.MathUtils import rotate, distance_point_to_line, angle_between_lines, angle_between
+from src.MathUtils import rotate, distance_point_to_line, angle_between_lines, angle_between, line_intersection, \
+    intersection, math_line, rotate_deg
 from pygame import gfxdraw
+
+import traceback
+
 
 dt = 1
 
@@ -17,7 +21,7 @@ class Robot:
         self.l = Const.robot_radius * 2
         self.pos: np.ndarray = init_pos
 
-        self.theta = 0
+        self.theta = np.deg2rad(180)
 
     def update(self, environment):
         if self.v_r == 0 and self.v_l == 0:
@@ -43,43 +47,77 @@ class Robot:
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
 
-        self.pos = self.pos + self.check_collisions(environment, d_position - self.pos)
+        self.pos = self.check_collisions(environment, self.pos, d_position)
 
-    def check_collisions(self, environment, vec) -> np.ndarray:
-        collisions = environment.collides(self.pos, self.pos + vec)
-        if len(collisions) == 0 or self.get_x_y(vec) == (0, 0):
-            return vec
+    def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray) -> np.ndarray:
+        collisions = environment.collides(current_pos, next_pos)
+        if len(collisions) == 0 or self.get_x_y(next_pos) == (0, 0):
+            return next_pos
         else:
-            vec = self.recalc_next_pos(vec, self.closest_collision(collisions))
-            new_collisions = environment.collides(self.pos, self.pos + vec)
+            closest_line = self.closest_collision(collisions, current_pos)
+            t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
+            new_collisions = environment.collides(t_current_pos, t_next_pos)
             if len(new_collisions) == 0:
-                return vec
+                return t_next_pos
             else:
-                return self.check_collisions(environment, vec)
+                print("Test")
+                environment.collides(t_current_pos, t_next_pos)
+                return self.check_collisions(environment, t_next_pos, t_next_pos)
 
-    def recalc_next_pos(self, vec: np.ndarray, line: Line) -> np.ndarray:
+    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, comp_line: Line) -> np.ndarray:
+        pos_x, pos_y = self.get_x_y(current_pos)
+        npos_x, npos_y = self.get_x_y(next_pos)
+        vec = next_pos - current_pos
+
+        if np.linalg.norm(vec) == 0 or np.dot(comp_line.vec.T, vec) == 0:
+            return current_pos, current_pos
+
+        # Get on the line
+
+        vec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
+                             if np.dot(comp_line.vec.T, current_pos)[0, 0] > 0
+                             else rotate_deg(comp_line.nvec, 90) * -1) * Const.robot_radius
+
+        new_line_start = comp_line.start + vec_towards_robot
+        new_line_end = comp_line.end + vec_towards_robot
+        pos_on_line = np.array(line_intersection(
+            ([pos_x, pos_y], [npos_x, npos_y]),
+            ([new_line_start[0], new_line_start[1]],
+             [new_line_end[0], new_line_end[1]])
+        )).reshape((2, 1))
+
+        # t_pos_on_line = np.array(line_intersection(
+        #     ([pos_x, pos_y], [npos_x, npos_y]),
+        #     ([comp_line.start[0], comp_line.start[1]], [comp_line.end[0], comp_line.end[1]])
+        # )).reshape((2, 1))
+        # pos_on_line = t_pos_on_line + (vec * -1 / np.linalg.norm(vec)) * Const.robot_radius
+
+        remaining_length = np.linalg.norm(vec) - np.linalg.norm(pos_on_line - self.pos)
+        perpendicular_vector = comp_line.nvec if np.dot(comp_line.vec.T, vec) > 0 else comp_line.nvec * -1
+        new_next_pos = pos_on_line + perpendicular_vector * remaining_length
+
+        return pos_on_line, new_next_pos
+
         # pos_x, pos_y = self.get_x_y(self.pos)
         # vec_x, vec_y = self.get_x_y(vec)
         # vec_angle = (pos_y - (pos_y + vec_y)) / (pos_x - (pos_x + vec_x)) if (pos_x - (pos_x + vec_x)) != 0 else np.inf
-        alpha = angle_between(vec, line.vec)
-        parallel_component = np.cos(alpha) * np.linalg.norm(vec)
-        perpendicular_component = distance_point_to_line(self.pos, line)[0,0] - Const.robot_radius
-        return np.array([parallel_component, perpendicular_component]).reshape((2, 1))
+        # alpha = angle_between(vec, line.vec)
+        # parallel_component = np.cos(alpha) * np.linalg.norm(vec)
+        # perpendicular_component = distance_point_to_line(self.pos, line)[0,0] - Const.robot_radius
+        # return np.array([parallel_component, perpendicular_component]).reshape((2, 1))
         # perpendicular_component = distance_point_to_line(self.pos, line) - Const.robot_radius
         # return rotate(np.array([parallel_component, perpendicular_component], dtype=float).reshape((2, 1)), alpha)
 
-
-    def closest_collision(self, collisions: List[Line]) -> Line:
+    def closest_collision(self, collisions: List[Line], position) -> Line:
         min = np.inf
         closest = None
 
         for collision in collisions:
-            dist = distance_point_to_line(self.pos, collision)
+            dist = distance_point_to_line(position, collision)
             if dist <= min:
                 min = dist
                 closest = collision
         return closest
-
 
     def draw(self, s):
         s_x, s_y = self.get_x_y(self.pos)
@@ -126,10 +164,12 @@ class Robot:
         self.v_r = np.round(self.v_r, decimals=3)
 
     def rotate_left(self):
-        self.theta += 0.1
+        self.theta += np.deg2rad(1)
+        self.theta = self.theta % (2 * np.pi)
 
     def rotate_right(self):
-        self.theta -= 0.1
+        self.theta -= np.deg2rad(1)
+        self.theta = self.theta % (2 * np.pi)
 
     def increase_left(self):
         self.v_l += Const.robot_velocity_steps

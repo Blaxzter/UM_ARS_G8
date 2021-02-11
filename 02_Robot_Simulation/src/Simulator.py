@@ -17,15 +17,15 @@ class Simulator:
         start_location = np.array([Const.start_x, Const.start_y], dtype=float).reshape((2, 1))
         self.robot = Robot(start_location)
         self.keys = [
-            dict(key_code=pygame.K_w, callback=self.robot.increase_left, pressed=False),
-            dict(key_code=pygame.K_s, callback=self.robot.decrease_left, pressed=False),
-            dict(key_code=pygame.K_o, callback=self.robot.increase_right, pressed=False),
-            dict(key_code=pygame.K_l, callback=self.robot.decrease_right, pressed=False),
-            dict(key_code=pygame.K_t, callback=self.robot.increase_both, pressed=False),
-            dict(key_code=pygame.K_g, callback=self.robot.decrease_both, pressed=False),
-            dict(key_code=pygame.K_x, callback=self.robot.stop, pressed=False),
-            dict(key_code=pygame.K_a, callback=self.robot.rotate_left, pressed=False),
-            dict(key_code=pygame.K_d, callback=self.robot.rotate_right, pressed=False),
+            dict(key_code=[pygame.K_KP7], callback=self.robot.increase_left, pressed=False),
+            dict(key_code=[pygame.K_KP4], callback=self.robot.decrease_left, pressed=False),
+            dict(key_code=[pygame.K_KP9], callback=self.robot.increase_right, pressed=False),
+            dict(key_code=[pygame.K_KP6], callback=self.robot.decrease_right, pressed=False),
+            dict(key_code=[pygame.K_w, pygame.K_KP8], callback=self.robot.increase_both, pressed=False),
+            dict(key_code=[pygame.K_s, pygame.K_KP5], callback=self.robot.decrease_both, pressed=False),
+            dict(key_code=[pygame.K_x], callback=self.robot.stop, pressed=False),
+            dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, pressed=False),
+            dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, pressed=False),
         ]
         self.done = False
         pygame.init()
@@ -54,12 +54,13 @@ class Simulator:
     def get_key_update(self):
         pressed = pygame.key.get_pressed()
         for key in self.keys:
-            if pressed[key['key_code']]:
-                if not key['pressed']:
-                    key['callback']()
-                    key['pressed'] = True
-            else:
-                key['pressed'] = False
+            for key_code in key['key_code']:
+                if pressed[key_code]:
+                    if not key['pressed']:
+                        key['callback']()
+                        # key['pressed'] = True
+                # else:
+                    # key['pressed'] = False
 
     def pygame_defaults(self):
         for event in pygame.event.get():
@@ -71,6 +72,6 @@ class Simulator:
         pass
 
     def draw_information(self, screen):
-        screen.blit(self.font.render(f'theta: {self.robot.theta}', True, Const.colors["white"]), (20, 20))
+        screen.blit(self.font.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.colors["white"]), (20, 20))
         screen.blit(self.font.render(f'v_l: {self.robot.v_l}', True, Const.colors["white"]), (20, 40))
         screen.blit(self.font.render(f'v_r: {self.robot.v_r}', True, Const.colors["white"]), (20, 60))

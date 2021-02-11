@@ -6,24 +6,26 @@ import numpy as np
 from Line import Line
 
 
-def rotate(vec: np.ndarray, deg: float):
+def rotate(vec: np.ndarray, rad: float):
+    rotation_matrix = np.matrix([[np.cos(rad), np.sin(rad)],
+                                 [-np.sin(rad), np.cos(rad)]])
+    return rotation_matrix * vec
+
+def rotate_deg(vec: np.ndarray, rad: float):
+    deg = np.deg2rad(rad)
     rotation_matrix = np.matrix([[np.cos(deg), np.sin(deg)],
                                  [-np.sin(deg), np.cos(deg)]])
     return rotation_matrix * vec
-
 
 def distance_point_to_point(p1, p2):
     return math.dist(p1, p2)
 
 
 def distance_point_to_line(point: np.ndarray, line: Line) -> float:
-    return np.abs(
-        (line.end[0] - line.start[0]) * (line.start[1] - point[1]) -
-        (line.start[0] - point[0]) * (line.end[1] - line.start[1])
-    ) / np.sqrt(
-        (line.end[0] - line.start[0]) ** 2 +
-        (line.end[1] - line.start[1]) ** 2
-    )
+    distance = np.abs((line.end[0] - line.start[0]) * (line.start[1] - point[1]) - (line.start[0] - point[0]) * (
+                line.end[1] - line.start[1])) / np.sqrt(
+        (line.end[0] - line.start[0]) ** 2 + (line.end[1] - line.start[1]) ** 2)
+    return np.round(distance[0], decimals=10)
 
 
 def det(a, b):
@@ -62,6 +64,24 @@ def line_intersection(line1, line2):
     y = det(d, ydiff) / div
     return x, y
 
+
+def math_line(p1, p2):
+    A = (p1[1] - p2[1])
+    B = (p2[0] - p1[0])
+    C = (p1[0] * p2[1] - p2[0] * p1[1])
+    return A, B, -C
+
+
+def intersection(L1, L2):
+    D = L1[0] * L2[1] - L1[1] * L2[0]
+    Dx = L1[2] * L2[1] - L1[1] * L2[2]
+    Dy = L1[0] * L2[2] - L1[2] * L2[0]
+    if D != 0:
+        x = Dx / D
+        y = Dy / D
+        return x, y
+    else:
+        return False
 
 def line_angle(line: Line) -> int:
     if (line.start[0] - line.end[0]) != 0:
