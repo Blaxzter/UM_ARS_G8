@@ -21,4 +21,5 @@ colors = dict(
     robot=(0, 128, 255),
     green=(0, 255, 128),
     white=(255, 255, 255),
+    yellow=(255,255,0)
 )

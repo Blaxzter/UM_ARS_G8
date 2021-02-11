@@ -29,6 +29,7 @@ class Simulator:
         ]
         self.done = False
         pygame.init()
+        pygame.display.set_caption("ARS_Robot_Simulation")
         self.font = pygame.font.SysFont(None, 24)
 
     def start(self):
@@ -72,6 +73,6 @@ class Simulator:
         pass
 
     def draw_information(self, screen):
-        screen.blit(self.font.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.colors["white"]), (20, 20))
-        screen.blit(self.font.render(f'v_l: {self.robot.v_l}', True, Const.colors["white"]), (20, 40))
-        screen.blit(self.font.render(f'v_r: {self.robot.v_r}', True, Const.colors["white"]), (20, 60))
+        screen.blit(self.font.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.colors["yellow"]), (20, 20))
+        screen.blit(self.font.render(f'v_l: {self.robot.v_l}', True, Const.colors["yellow"]), (20, 40))
+        screen.blit(self.font.render(f'v_r: {self.robot.v_r}', True, Const.colors["yellow"]), (20, 60))
