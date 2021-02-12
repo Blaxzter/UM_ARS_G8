@@ -4,19 +4,21 @@ import numpy as np
 
 from Line import Line
 from src.Constants import padding, width, height, robot_radius, padding_top, epsilon
-from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line
+from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line, distance_point_to_line_seg
+
 
 class Environment:
     def __init__(self):
         self.environment = [
-            # Line(width / 2,         padding_top + 50,   width / 2,          height / 2  + 50),
+            Line(width / 2,         padding_top + 50,   width / 2,          height / 2 + 50),
+            Line(width / 2,         height / 2 + 50,    width,          height / 2 + 50),
             Line(padding,           padding_top,        width - padding,    padding_top),
             Line(width - padding,   padding_top,        width - padding,    height - padding),
             Line(width - padding,   height - padding,   padding,            height - padding),
             Line(padding,           height - padding,   padding,            padding_top),
             # Line(69, 69, 169, 196),
-            Line(width / 2 - ((width / 2) / 2), padding_top + 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
-            Line(width / 2 - ((width / 2) / 2), height - padding - 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
+            # Line(width / 2 - ((width / 2) / 2), padding_top + 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
+            # Line(width / 2 - ((width / 2) / 2), height - padding - 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
         ]
 
     def draw(self, screen):
@@ -26,9 +28,9 @@ class Environment:
     def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List:
         collisions = []
         for line in self.environment:
-            distance_to_line = distance_point_to_line(robot_next_center, line)
+            distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
 
-            relevant_intersection = False
+            jumped_though = False
             intersection_outside_line = False
             intersection = line_intersection([robot_current_center, robot_next_center], [line.start, line.end])
 
@@ -38,9 +40,9 @@ class Environment:
                     intersection_outside_line = True
                     occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(robot_current_center, intersection)
                     if occurs_before_next:
-                        relevant_intersection = True
+                        jumped_though = True
 
-            if relevant_intersection or (robot_radius - distance_to_line > epsilon and intersection_outside_line):
+            if jumped_though or (robot_radius - distance_to_line > epsilon and intersection_outside_line):
                 collisions.append({
                     'line': line,
                     'intersect': intersection,

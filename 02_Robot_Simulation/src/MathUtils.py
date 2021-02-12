@@ -11,11 +11,13 @@ def rotate(vec: np.ndarray, rad: float):
                                  [-np.sin(rad), np.cos(rad)]])
     return np.asarray(rotation_matrix * vec)
 
+
 def rotate_deg(vec: np.ndarray, rad: float):
     deg = np.deg2rad(rad)
     rotation_matrix = np.matrix([[np.cos(deg), np.sin(deg)],
                                  [-np.sin(deg), np.cos(deg)]])
     return rotation_matrix * vec
+
 
 def distance_point_to_point(p1, p2):
     return math.dist(p1, p2)
@@ -23,7 +25,7 @@ def distance_point_to_point(p1, p2):
 
 def distance_point_to_line(point: np.ndarray, line: Line) -> float:
     distance = np.abs((line.end[0] - line.start[0]) * (line.start[1] - point[1]) - (line.start[0] - point[0]) * (
-                line.end[1] - line.start[1])) / np.sqrt(
+            line.end[1] - line.start[1])) / np.sqrt(
         (line.end[0] - line.start[0]) ** 2 + (line.end[1] - line.start[1]) ** 2)
     return distance[0]
 
@@ -47,14 +49,16 @@ def side_of_point(line_start: np.ndarray, line_end: np.ndarray, point: np.ndarra
     cross_product = ab[0] * ap[1] - ap[0] * ab[1]
     return cross_product > 0
 
+
 def unit_vector(vector):
     """ Returns the unit vector of the vector.  """
     return vector / np.linalg.norm(vector)
 
+
 def angle_between(v1, v2):
     v1_u = unit_vector(v1)
     v2_u = unit_vector(v2)
-    return np.arccos(np.clip(np.dot(v1_u.T, v2_u), -1.0, 1.0))[0,0]
+    return np.arccos(np.clip(np.dot(v1_u.T, v2_u), -1.0, 1.0))[0, 0]
 
 
 def line_intersection(line1, line2):
@@ -88,6 +92,17 @@ def intersection(L1, L2):
         return x, y
     else:
         return False
+
+# from: https://gist.github.com/nim65s/5e9902cd67f094ce65b0
+def distance_point_to_line_seg(p: np.ndarray, s: np.ndarray, e: np.ndarray):
+    if all(s == p) or all(e == p):
+        return 0
+    if np.arccos(np.dot(((p - s) / np.linalg.norm(p - s)).T, (e - s) / np.linalg.norm(e - s))).item() > np.pi / 2:
+        return np.linalg.norm(p - s)
+    if np.arccos(np.dot(((p - e) / np.linalg.norm(p - e)).T, (s - e) / np.linalg.norm(s - e))).item() > np.pi / 2:
+        return np.linalg.norm(p - e)
+    return np.linalg.norm(np.cross(s - e, s - p, axis=0)) / np.linalg.norm(e - s)
+
 
 def line_angle(line: Line) -> int:
     if (line.start[0] - line.end[0]) != 0:

@@ -79,8 +79,8 @@ class Robot:
 
         # Get on the line
         vec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
-                             if side_of_point(comp_line.start, comp_line.end, self.pos)
-                             else rotate_deg(comp_line.nvec, 90)) * Const.robot_radius
+                             if side_of_point(comp_line.start, comp_line.end, current_pos)
+                             else rotate_deg(comp_line.nvec, 90)) * distance_point_to_line(current_pos, comp_line)
 
         new_line_start = comp_line.start + vec_towards_robot
         new_line_end = comp_line.end + vec_towards_robot
@@ -96,7 +96,7 @@ class Robot:
         # )).reshape((2, 1))
         # pos_on_line = t_pos_on_line + (vec * -1 / np.linalg.norm(vec)) * Const.robot_radius
 
-        remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - self.pos)) * abs(np.cos(angle_between(vec, comp_line.vec)))
+        remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - current_pos)) * abs(np.cos(angle_between(vec, comp_line.vec)))
         parallel_vector = comp_line.nvec if np.dot(comp_line.vec.T, vec) > 0 else comp_line.nvec * -1
         new_next_pos = pos_on_line + parallel_vector * remaining_length
 

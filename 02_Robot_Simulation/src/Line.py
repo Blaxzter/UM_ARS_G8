@@ -49,6 +49,23 @@ class Line:
 
         return True
 
+    def is_on_1(self, point):
+        crossproduct = (point[1].item() - self.start_y) * (self.end_x - self.start_x) - (point[0].item() - self.start_x) * (self.end_y - self.start_y)
+
+        # compare versus epsilon for floating point values, or != 0 if using integers
+        if abs(crossproduct) > epsilon:
+            return False
+
+        dotproduct = (point[0].item() - self.start_x) * (self.end_x - self.start_x) + (point[1].item() - self.start_y) * (self.end_y - self.start_y)
+        if dotproduct < 0:
+            return False
+
+        squaredlengthba = (self.end_x - self.start_x) * (self.end_x - self.start_x) + (self.end_y - self.start_y) * (self.end_y - self.start_y)
+        if dotproduct > squaredlengthba:
+            return False
+
+        return True
+
     def __str__(self):
         return f'({self.start_x}, {self.start_y}) ({self.end_x}, {self.end_y})'
 
