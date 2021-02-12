@@ -4,14 +4,15 @@ import numpy as np
 
 from Line import Line
 from src.Constants import padding, width, height, robot_radius, padding_top, epsilon
-from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line, distance_point_to_line_seg
+from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line, \
+    distance_point_to_line_seg, line_seg_intersection
 
 
 class Environment:
     def __init__(self):
         self.environment = [
-            Line(width / 2,         padding_top + 50,   width / 2,          height / 2 + 50),
-            Line(width / 2,         height / 2 + 50,    width,          height / 2 + 50),
+            Line(width / 2,         padding_top + 70,   width / 2,                    height / 2 + 50),
+            Line(width / 2,         height / 2 + 50,    width - padding,              height / 2 + 50),
             Line(padding,           padding_top,        width - padding,    padding_top),
             Line(width - padding,   padding_top,        width - padding,    height - padding),
             Line(width - padding,   height - padding,   padding,            height - padding),
@@ -28,25 +29,21 @@ class Environment:
     def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List:
         collisions = []
         for line in self.environment:
+
             distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
-
-            jumped_though = False
-            intersection_outside_line = False
-            intersection = line_intersection([robot_current_center, robot_next_center], [line.start, line.end])
-
+            intersection = line_seg_intersection(robot_current_center, robot_next_center, line.col_start, line.col_end)
+            occurs_before_next = False
             if intersection is not None:
-                point_on_line = line.is_on(intersection)
-                if point_on_line:
-                    intersection_outside_line = True
-                    occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(robot_current_center, intersection)
-                    if occurs_before_next:
-                        jumped_though = True
+                occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(
+                    robot_current_center, intersection)
 
-            if jumped_though or (robot_radius - distance_to_line > epsilon and intersection_outside_line):
+
+            if (robot_radius - distance_to_line > epsilon) or occurs_before_next: # or occurs_before_next:
                 collisions.append({
                     'line': line,
                     'intersect': intersection,
-                    'distance': distance_point_to_point(intersection, robot_current_center)
+                    # 'jumped_through': occurs_before_next,
+                    'distance': distance_to_line
                 })
         return collisions
         # collisions = []

@@ -74,3 +74,12 @@ class Line:
 
     def compute_slope(self):
         return (self.start[1] - self.end[1]) / (self.start[0] - self.end[0]) if (self.start[0] - self.end[0]) != 0 else np.inf
+
+    def get_vec_towards_point(self, pos):
+        ep = np.linalg.norm(pos - self.end)
+        es = np.linalg.norm(pos - self.start)
+
+        if ep > es:
+            return np.array(self.end - self.start).reshape((2, 1))
+        else:
+            return np.array(self.start - self.end).reshape((2, 1))

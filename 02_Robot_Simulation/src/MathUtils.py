@@ -1,9 +1,7 @@
 import math
-from typing import Tuple
-
 import numpy as np
-
-from Line import Line
+from shapely.geometry import LineString
+import Constants as Const
 
 
 def rotate(vec: np.ndarray, rad: float):
@@ -23,11 +21,18 @@ def distance_point_to_point(p1, p2):
     return math.dist(p1, p2)
 
 
-def distance_point_to_line(point: np.ndarray, line: Line) -> float:
-    distance = np.abs((line.end[0] - line.start[0]) * (line.start[1] - point[1]) - (line.start[0] - point[0]) * (
-            line.end[1] - line.start[1])) / np.sqrt(
-        (line.end[0] - line.start[0]) ** 2 + (line.end[1] - line.start[1]) ** 2)
+def distance_point_to_line(point: np.ndarray, line_start: np.ndarray, line_end: np.ndarray) -> float:
+    distance = np.abs((line_end[0] - line_start[0]) * (line_start[1] - point[1]) - (line_start[0] - point[0]) * (
+            line_end[1] - line_start[1])) / np.sqrt(
+        (line_end[0] - line_start[0]) ** 2 + (line_end[1] - line_start[1]) ** 2)
     return distance[0]
+
+
+def get_orientation_vector(orientation, position):
+    default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
+    rotated = rotate(default_vec, orientation)
+    vec = position + rotated
+    return np.array([vec[0, 0], vec[1, 0]]).reshape((2, 1))
 
 
 def det(a, b):
@@ -75,23 +80,21 @@ def line_intersection(line1, line2):
     return np.array([x[0], y[0]]).reshape((2, 1))
 
 
+def line_seg_intersection(a1, a2, b1, b2):
+    line1 = LineString([a1, a2])
+    line2 = LineString([b1, b2])
+    intersection = line1.intersection(line2)
+    if intersection.is_empty:
+        return None
+    return np.array(intersection).reshape((2, 1))
+
+
 def math_line(p1, p2):
     A = (p1[1] - p2[1])
     B = (p2[0] - p1[0])
     C = (p1[0] * p2[1] - p2[0] * p1[1])
     return A, B, -C
 
-
-def intersection(L1, L2):
-    D = L1[0] * L2[1] - L1[1] * L2[0]
-    Dx = L1[2] * L2[1] - L1[1] * L2[2]
-    Dy = L1[0] * L2[2] - L1[2] * L2[0]
-    if D != 0:
-        x = Dx / D
-        y = Dy / D
-        return x, y
-    else:
-        return False
 
 # from: https://gist.github.com/nim65s/5e9902cd67f094ce65b0
 def distance_point_to_line_seg(p: np.ndarray, s: np.ndarray, e: np.ndarray):
@@ -103,19 +106,30 @@ def distance_point_to_line_seg(p: np.ndarray, s: np.ndarray, e: np.ndarray):
         return np.linalg.norm(p - e)
     return np.linalg.norm(np.cross(s - e, s - p, axis=0)) / np.linalg.norm(e - s)
 
+# from: https://gist.github.com/nim65s/5e9902cd67f094ce65b0
+def outside_of_line(p: np.ndarray, s: np.ndarray, e: np.ndarray):
+    if all(s == p) or all(e == p):
+        return True
+    if np.arccos(np.dot(((p - s) / np.linalg.norm(p - s)).T, (e - s) / np.linalg.norm(e - s))).item() > np.pi / 2:
+        return s
+    if np.arccos(np.dot(((p - e) / np.linalg.norm(p - e)).T, (s - e) / np.linalg.norm(s - e))).item() > np.pi / 2:
+        return e
+    return None
 
-def line_angle(line: Line) -> int:
-    if (line.start[0] - line.end[0]) != 0:
-        angle = int(
-            np.rad2deg(
-                np.arctan(
-                    (line.start[1] - line.end[1]) / (line.start[0] - line.end[0])
-                )
-            )
-        )
-    else:
-        angle = 90
-    return angle
+
+
+# def line_angle(line: Line) -> int:
+#     if (line.start[0] - line.end[0]) != 0:
+#         angle = int(
+#             np.rad2deg(
+#                 np.arctan(
+#                     (line.start[1] - line.end[1]) / (line.start[0] - line.end[0])
+#                 )
+#             )
+#         )
+#     else:
+#         angle = 90
+#     return angle
 
 
 def line_param(p1: np.ndarray, p2: np.ndarray):

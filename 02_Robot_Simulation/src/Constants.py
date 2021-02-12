@@ -13,10 +13,10 @@ start_y = height / 2
 
 start_rot = 180
 
-start_x = width / 2 - 150
-start_y = (height + padding_top) / 2
+start_x = 201
+start_y = 280
 
-start_rot = 0
+start_rot = 91
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 
