@@ -6,10 +6,9 @@ from pygame import gfxdraw
 import Constants as Const
 from src.Line import Line
 from src.MathUtils import rotate, distance_point_to_line, angle_between, line_intersection, \
-    rotate_deg, side_of_point, outside_of_line, get_orientation_vector
+    rotate_deg, side_of_point, outside_of_line, get_orientation_vector, distance_point_to_line_seg
 
 dt = 1
-
 
 class Robot:
     def __init__(self, init_pos: np.ndarray):
@@ -52,7 +51,6 @@ class Robot:
         if len(collisions) == 0 or self.get_x_y(next_pos) == (0, 0):
             return next_pos
         else:
-            collisions = environment.collides(current_pos, next_pos)
             closest_line = self.closest_collision(collisions, current_pos)
             t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
             # if self.recalc_next_pos(current_pos, next_pos, closest_line)[1].shape == (2,2):
@@ -75,95 +73,93 @@ class Robot:
         n_vec = vec / vec_norm
         comp_line: Line = collisions['line']
 
-        new_intersection = line_intersection(
-            ([pos_x, pos_y], [npos_x, npos_y]),
-            ([comp_line.start[0], comp_line.start[1]], [comp_line.end[0], comp_line.end[1]])
-        )
-
         # We are going perpendicular to the wall
         if np.abs(vec_norm) < Const.epsilon or np.abs(np.dot(comp_line.vec.T, vec)) < Const.epsilon:
+            new_intersection = line_intersection(
+                ([pos_x, pos_y], [npos_x, npos_y]),
+                ([comp_line.start[0], comp_line.start[1]], [comp_line.end[0], comp_line.end[1]])
+            )
             return current_pos, new_intersection + (vec / vec_norm) * Const.robot_radius * - 1
-
-        # Find the position of the robot if it would collide with the wall by using a shifted line towards the robot
-        dist_to_line = distance_point_to_line(current_pos, comp_line.start, comp_line.end)
-        nvec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
-                             if side_of_point(comp_line.start, comp_line.end, current_pos)
-                             else rotate_deg(comp_line.nvec, 90))
-        vec_towards_robot = nvec_towards_robot * dist_to_line
-
-        new_line_start = comp_line.start + vec_towards_robot
-        new_line_end = comp_line.end + vec_towards_robot
-        intersection = line_intersection(([pos_x, pos_y], [npos_x, npos_y]),
-                                         ([new_line_start[0], new_line_start[1]], [new_line_end[0], new_line_end[1]]))
-        if intersection is None:
-            return current_pos, current_pos
-
-        pos_on_line = np.array(intersection).reshape((2, 1))
-
-        robot_angle = abs(np.cos(angle_between(vec, comp_line.vec)))
-        remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - current_pos)) * robot_angle
-
-        parallel_vector = comp_line.nvec if np.dot(comp_line.vec.T, vec) > 0 else comp_line.nvec * -1
 
         line_vec_towards_robot = comp_line.get_vec_towards_point(current_pos)
         same_direct = np.dot(line_vec_towards_robot.T, vec)
 
-        closest_point = outside_of_line(current_pos, comp_line.start, comp_line.end)
+        closest_point, further_point = outside_of_line(current_pos, comp_line.start, comp_line.end)
         if closest_point is not None and same_direct > 0:
 
             end_point = get_orientation_vector(self.theta, current_pos)
-            perpendicular_vector = (rotate_deg(comp_line.nvec, 90) * -1
-                                         if side_of_point(comp_line.start, comp_line.end, end_point)
-                                         else rotate_deg(comp_line.nvec, 90))
-
-            direct_vector = (rotate_deg(n_vec, 90) if side_of_point(comp_line.start, comp_line.end, end_point)
+            direct_vector = (rotate_deg(n_vec, 90) if side_of_point(further_point, closest_point, end_point)
                                          else rotate_deg(n_vec, 90) * -1)
 
             temp_line_start = closest_point
-            temp_line_end = closest_point + perpendicular_vector
+            temp_line_end = closest_point + direct_vector
             new_distance_to_line = distance_point_to_line(current_pos, temp_line_start, temp_line_end)
-            perp_line_start = temp_line_start + parallel_vector * -1 * new_distance_to_line
-            perp_line_end = temp_line_end + parallel_vector * -1 * new_distance_to_line
+            perp_line_start = temp_line_start + n_vec * -1 * new_distance_to_line
+            perp_line_end = temp_line_end + n_vec * -1 * new_distance_to_line
 
-            new_point_on_the_line = line_intersection(([pos_x, pos_y], [npos_x, npos_y]), ([perp_line_start[0], perp_line_start[1]], [perp_line_end[0], perp_line_end[1]]))
-            # remaining_length = (np.linalg.norm(vec) - np.linalg.norm(new_point_on_the_line - current_pos)) * robot_angle
-            new_next_pos = new_point_on_the_line + direct_vector * remaining_length
+            robot_angle = abs(np.cos(angle_between(vec, comp_line.vec)))
+            pos_on_line = line_intersection(([pos_x, pos_y], [npos_x, npos_y]), ([perp_line_start[0], perp_line_start[1]], [perp_line_end[0], perp_line_end[1]]))
+            remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - current_pos)) * robot_angle
+            new_next_pos = pos_on_line + direct_vector * remaining_length
         else:
-            new_next_pos = pos_on_line + parallel_vector * remaining_length
+            # Find the position of the robot if it would collide with the wall by using a shifted line towards the robot
+            dist_to_line = distance_point_to_line(current_pos, comp_line.start, comp_line.end)
+            nvec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
+                                  if side_of_point(comp_line.start, comp_line.end, current_pos)
+                                  else rotate_deg(comp_line.nvec, 90))
+            vec_towards_robot = nvec_towards_robot * dist_to_line
 
-        # If we would go up into the line
-        # if np.linalg.norm(comp_line.start - new_next_pos) - Const.robot_radius < Const.epsilon or \
-        #         np.linalg.norm(comp_line.end - new_next_pos) - Const.robot_radius < Const.epsilon:
-        #     return current_pos, collisions['intersect'] + (vec / vec_norm) * dist_to_line * - 1
+            new_line_start = comp_line.start + vec_towards_robot
+            new_line_end = comp_line.end + vec_towards_robot
+            intersection = line_intersection(([pos_x, pos_y], [npos_x, npos_y]),
+                                             ([new_line_start[0], new_line_start[1]],
+                                              [new_line_end[0], new_line_end[1]]))
+            if intersection is None:
+                return current_pos, current_pos
+
+            parallel_vector = comp_line.nvec if np.dot(comp_line.vec.T, vec) > 0 else comp_line.nvec * -1
+            pos_on_line = np.array(intersection).reshape((2, 1))
+            robot_angle = abs(np.cos(angle_between(vec, comp_line.vec)))
+            remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - current_pos)) * robot_angle
+            new_next_pos = pos_on_line + parallel_vector * remaining_length
 
         return pos_on_line, new_next_pos
 
     def closest_collision(self, collisions: List[Dict], position) -> Dict:
         min = np.inf
         closest = None
+        dist_to_projection = -np.inf
 
         for collision in collisions:
             line_: Line = collision['line']
-            dist = distance_point_to_line(position, line_.start, line_.end)
+            dist = distance_point_to_line_seg(position, line_.start, line_.end)
+
             if dist <= min:
-                min = dist
-                closest = collision
+                if len(collisions) > 1:
+                    new_dist_to_projection = distance_point_to_line(position, line_.start, line_.end)
+                    if new_dist_to_projection > dist_to_projection:
+                        min = dist
+                        closest = collision
+                        dist_to_projection = new_dist_to_projection
+                else:
+                    min = dist
+                    closest = collision
         return closest
 
     def draw(self, s):
         s_x, s_y = self.get_x_y(self.pos)
         gfxdraw.aacircle(s,
-                         int(s_x),
-                         int(s_y),
+                         int(np.round(s_x)),
+                         int(np.round(s_y)),
                          Const.robot_radius,
                          Const.colors['robot'],
                          )
         e_x, e_y = self.get_orientation_vector()
         gfxdraw.line(s,
-                     int(s_x),
-                     int(s_y),
-                     int(e_x),
-                     int(e_y),
+                     int(np.round(s_x)),
+                     int(np.round(s_y)),
+                     int(np.round(e_x)),
+                     int(np.round(e_y)),
                      Const.colors['green']
                      )
 

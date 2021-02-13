@@ -109,12 +109,12 @@ def distance_point_to_line_seg(p: np.ndarray, s: np.ndarray, e: np.ndarray):
 # from: https://gist.github.com/nim65s/5e9902cd67f094ce65b0
 def outside_of_line(p: np.ndarray, s: np.ndarray, e: np.ndarray):
     if all(s == p) or all(e == p):
-        return True
+        return None, None
     if np.arccos(np.dot(((p - s) / np.linalg.norm(p - s)).T, (e - s) / np.linalg.norm(e - s))).item() > np.pi / 2:
-        return s
+        return s, e
     if np.arccos(np.dot(((p - e) / np.linalg.norm(p - e)).T, (s - e) / np.linalg.norm(s - e))).item() > np.pi / 2:
-        return e
-    return None
+        return e, s
+    return None, None
 
 
 
