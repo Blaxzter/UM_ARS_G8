@@ -22,6 +22,9 @@ class Environment:
             # Line(width / 2 - ((width / 2) / 2), height - padding - 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
         ]
 
+    def get_bounds(self):
+        return self.environment
+
     def draw(self, screen):
         for line in self.environment:
             line.draw(screen)

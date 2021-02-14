@@ -6,9 +6,11 @@ from pygame import gfxdraw
 import Constants as Const
 from src.Line import Line
 from src.MathUtils import rotate, distance_point_to_line, angle_between, line_intersection, \
-    rotate_deg, side_of_point, outside_of_line, get_orientation_vector, distance_point_to_line_seg
+    rotate_deg, side_of_point, outside_of_line, get_orientation_vector, distance_point_to_line_seg, \
+    distance_point_to_point
 
 dt = 1
+
 
 class Robot:
     def __init__(self, init_pos: np.ndarray):
@@ -16,6 +18,7 @@ class Robot:
         self.v_r = 0
         self.l = Const.robot_radius * 2
         self.pos: np.ndarray = init_pos
+        self.sensors: List[List[np.ndarray]] = []
 
         self.theta = np.deg2rad(Const.start_rot)
 
@@ -44,6 +47,7 @@ class Robot:
             self.theta = next_pos[2, 0] % (2 * np.pi)
 
         self.pos = self.check_collisions(environment, self.pos, d_position, [])
+        self.update_sensors(environment)
 
     def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray,
                          prev_collision) -> np.ndarray:
@@ -65,7 +69,8 @@ class Robot:
                 else:
                     return current_pos
 
-    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Dict) -> (np.ndarray, np.ndarray):
+    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Dict) -> (
+            np.ndarray, np.ndarray):
         pos_x, pos_y = self.get_x_y(current_pos)
         npos_x, npos_y = self.get_x_y(next_pos)
         vec = next_pos - current_pos
@@ -89,7 +94,7 @@ class Robot:
 
             end_point = get_orientation_vector(self.theta, current_pos)
             direct_vector = (rotate_deg(n_vec, 90) if side_of_point(further_point, closest_point, end_point)
-                                         else rotate_deg(n_vec, 90) * -1)
+                             else rotate_deg(n_vec, 90) * -1)
 
             temp_line_start = closest_point
             temp_line_end = closest_point + direct_vector
@@ -98,7 +103,8 @@ class Robot:
             perp_line_end = temp_line_end + n_vec * -1 * new_distance_to_line
 
             robot_angle = abs(np.cos(angle_between(vec, comp_line.vec)))
-            pos_on_line = line_intersection(([pos_x, pos_y], [npos_x, npos_y]), ([perp_line_start[0], perp_line_start[1]], [perp_line_end[0], perp_line_end[1]]))
+            pos_on_line = line_intersection(([pos_x, pos_y], [npos_x, npos_y]), (
+                [perp_line_start[0], perp_line_start[1]], [perp_line_end[0], perp_line_end[1]]))
             remaining_length = (np.linalg.norm(vec) - np.linalg.norm(pos_on_line - current_pos)) * robot_angle
             new_next_pos = pos_on_line + direct_vector * remaining_length
         else:
@@ -162,30 +168,30 @@ class Robot:
                      int(np.round(e_y)),
                      Const.colors['green']
                      )
-        # Lines initialization & rotation
-        degree = Const.start_rot
-        x = 0
-        while (x < 11 ):
-            e_x, e_y = self.get_sensor_vector(degree)
-            gfxdraw.line(s, int(np.round(s_x)), int(np.round(s_y)), int(np.round(e_x)), int(np.round(e_y)),Const.colors['red'])
-            degree = degree - 20
-            x += 1
+        for sensor in self.sensors:
+            gfxdraw.line(s,
+                         sensor[0][0],
+                         sensor[0][1],
+                         sensor[1][0],
+                         sensor[1][1],
+                         Const.colors['red']
+                         )
 
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
             print("test")
         return vec[0, 0], vec[1, 0]
 
-#It might be the same code but we don't want for theta to change when we initialize the lines
+    # It might be the same code but we don't want for theta to change when we initialize the lines
     def get_sensor_vector(self, degree):
         default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
         rotated = rotate(default_vec, degree)
         vec = self.pos + rotated
         return vec[0, 0], vec[1, 0]
 
-    def get_orientation_vector(self):
+    def get_orientation_vector(self, degree=None):
         default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
-        rotated = rotate(default_vec, self.theta)
+        rotated = rotate(default_vec, self.theta if degree is None else degree)
         vec = self.pos + rotated
         return vec[0, 0], vec[1, 0]
 
@@ -228,6 +234,46 @@ class Robot:
     def decrease_right(self):
         self.v_r -= Const.robot_velocity_steps
         self.v_r = np.round(self.v_r, decimals=3)
+
+    def update_sensors(self, environment):
+        # Lines initialization & rotation
+        self.sensors.clear()
+        s_x, s_y = self.get_x_y(self.pos)
+        degree = self.theta
+        for x in range(12):
+            e_x, e_y = self.get_orientation_vector(degree)
+            sensor_direction = [
+                np.array([int(np.round(s_x)), int(np.round(s_y))]).reshape(2, 1),
+                np.array([int(np.round(e_x)), int(np.round(e_y))]).reshape(2, 1)
+            ]
+
+            sensor_intersections = []
+            for line in environment.get_bounds():
+                sensor_intersections.append(line_intersection(
+                    sensor_direction,
+                    [line.start, line.end]
+                ))
+
+            closest = None
+            distance = np.inf
+            for intersection in sensor_intersections:
+                x_x, x_y = self.get_x_y(intersection)
+                temp_distance = distance_point_to_point([s_x, s_y], [x_x, x_y])
+                if temp_distance < distance:
+                    distance = temp_distance
+                    closest = intersection
+
+            self.sensors.append([
+                np.array([
+                    int(np.round(e_x)),
+                    int(np.round(e_y))
+                ]),
+                np.array([
+                    int(np.round(closest[0, 0])),
+                    int(np.round(closest[1, 0]))
+                ])
+            ])
+            degree = degree + np.deg2rad(30)
 
 
 if __name__ == '__main__':
