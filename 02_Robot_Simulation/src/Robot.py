@@ -162,10 +162,25 @@ class Robot:
                      int(np.round(e_y)),
                      Const.colors['green']
                      )
+        # Lines initialization & rotation
+        degree = Const.start_rot
+        x = 0
+        while (x < 11 ):
+            e_x, e_y = self.get_sensor_vector(degree)
+            gfxdraw.line(s, int(np.round(s_x)), int(np.round(s_y)), int(np.round(e_x)), int(np.round(e_y)),Const.colors['red'])
+            degree = degree - 20
+            x += 1
 
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
             print("test")
+        return vec[0, 0], vec[1, 0]
+
+#It might be the same code but we don't want for theta to change when we initialize the lines
+    def get_sensor_vector(self, degree):
+        default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
+        rotated = rotate(default_vec, degree)
+        vec = self.pos + rotated
         return vec[0, 0], vec[1, 0]
 
     def get_orientation_vector(self):

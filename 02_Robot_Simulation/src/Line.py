@@ -4,8 +4,6 @@ import pygame
 from src.Constants import robot_radius, epsilon
 
 line_color = (0, 128, 255)
-
-
 class Line:
     def __init__(self, start_x: float, start_y: float, end_x: float, end_y: float):
         self.start_x: float = start_x

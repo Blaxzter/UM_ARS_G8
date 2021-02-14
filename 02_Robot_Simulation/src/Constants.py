@@ -20,6 +20,7 @@ start_rot = 283
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 
+
 robot_radius = 30
 robot_velocity_steps = 0.1
 
@@ -32,4 +33,5 @@ colors = dict(
     white=(255, 255, 255),
     yellow=(255, 255, 0),
     pink=(255, 192, 203),
+    red=(255, 99, 71)
 )

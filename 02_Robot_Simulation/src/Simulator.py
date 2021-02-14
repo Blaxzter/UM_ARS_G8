@@ -30,6 +30,8 @@ class Simulator:
         self.done = False
         pygame.init()
         pygame.display.set_caption("ARS_Robot_Simulation")
+        icon = pygame.image.load('images/robot.png')
+        pygame.display.set_icon(icon)
         self.font = pygame.font.SysFont(None, 24)
 
     def start(self):
