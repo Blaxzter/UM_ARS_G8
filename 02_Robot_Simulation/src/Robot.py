@@ -241,14 +241,18 @@ class Robot:
 
             sensor_intersections = []
             for line in environment.get_bounds():
-                sensor_intersections.append(line_intersection(
+                intersection = line_intersection(
                     sensor_direction,
                     [line.start, line.end]
-                ))
+                )
+                if intersection is not None:
+                    sensor_intersections.append(intersection)
 
             closest = None
             distance = np.inf
             for intersection in sensor_intersections:
+                if intersection is None:
+                    print("Your mama is gay")
                 x_x, x_y = self.get_x_y(intersection)
                 temp_distance = distance_point_to_point([s_x, s_y], [x_x, x_y])
                 if temp_distance < distance:
