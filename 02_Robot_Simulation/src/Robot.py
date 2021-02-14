@@ -107,7 +107,7 @@ class Robot:
             nvec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
                                   if side_of_point(comp_line.start, comp_line.end, current_pos)
                                   else rotate_deg(comp_line.nvec, 90))
-            vec_towards_robot = nvec_towards_robot * dist_to_line
+            vec_towards_robot = nvec_towards_robot * (dist_to_line if dist_to_line < Const.robot_radius else Const.robot_radius)
 
             new_line_start = comp_line.start + vec_towards_robot
             new_line_end = comp_line.end + vec_towards_robot
@@ -162,14 +162,14 @@ class Robot:
                      int(np.round(e_y)),
                      Const.colors['green']
                      )
-        # Lines initialization & rotation
-        degree = Const.start_rot
-        x = 0
-        while (x < 11 ):
-            e_x, e_y = self.get_sensor_vector(degree)
-            gfxdraw.line(s, int(np.round(s_x)), int(np.round(s_y)), int(np.round(e_x)), int(np.round(e_y)),Const.colors['red'])
-            degree = degree - 20
-            x += 1
+        # # Lines initialization & rotation
+        # degree = self.theta
+        # x = 0
+        # while (x < 11 ):
+        #     e_x, e_y = self.get_sensor_vector(degree)
+        #     gfxdraw.line(s, int(np.round(s_x)), int(np.round(s_y)), int(np.round(e_x)), int(np.round(e_y)),Const.colors['red'])
+        #     degree = degree - 20
+        #     x += 1
 
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:

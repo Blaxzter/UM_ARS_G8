@@ -13,15 +13,15 @@ start_y = height / 2
 
 start_rot = 180
 
-start_x = 213
-start_y = 143
-
-start_rot = 283
+# start_x = 213
+# start_y = 143
+#
+# start_rot = 283
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 
 
-robot_radius = 30
+robot_radius = 20
 robot_velocity_steps = 0.1
 
 epsilon = 0.00001

@@ -31,7 +31,7 @@ class Environment:
         for line in self.environment:
 
             distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
-            intersection = line_seg_intersection(robot_current_center, robot_next_center, line.col_start, line.col_end)
+            intersection = line_seg_intersection(robot_current_center, robot_next_center, line.start, line.end)
             occurs_before_next = False
             if intersection is not None:
                 occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(
