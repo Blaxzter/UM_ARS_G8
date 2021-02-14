@@ -13,10 +13,14 @@ start_y = height / 2
 
 start_rot = 180
 
-start_x = 300
-start_y = 250
-
-start_rot = 283
+# start_x = 213
+# start_y = 143
+#
+# start_rot = 283
+# start_x = 300
+# start_y = 250
+#
+# start_rot = 283
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 

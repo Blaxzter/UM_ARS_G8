@@ -61,9 +61,9 @@ class Simulator:
                 if pressed[key_code]:
                     if not key['pressed']:
                         key['callback']()
-                        # key['pressed'] = True
+                #         key['pressed'] = True
                 # else:
-                    # key['pressed'] = False
+                #     key['pressed'] = False
 
     def pygame_defaults(self):
         for event in pygame.event.get():

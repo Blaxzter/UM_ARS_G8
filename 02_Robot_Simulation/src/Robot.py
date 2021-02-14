@@ -11,7 +11,6 @@ from src.MathUtils import rotate, distance_point_to_line, angle_between, line_in
 
 dt = 1
 
-
 class Robot:
     def __init__(self, init_pos: np.ndarray):
         self.v_l = 0
@@ -113,7 +112,7 @@ class Robot:
             nvec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
                                   if side_of_point(comp_line.start, comp_line.end, current_pos)
                                   else rotate_deg(comp_line.nvec, 90))
-            vec_towards_robot = nvec_towards_robot * dist_to_line
+            vec_towards_robot = nvec_towards_robot * (dist_to_line if dist_to_line < Const.robot_radius else Const.robot_radius)
 
             new_line_start = comp_line.start + vec_towards_robot
             new_line_end = comp_line.end + vec_towards_robot
@@ -180,13 +179,6 @@ class Robot:
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
             print("test")
-        return vec[0, 0], vec[1, 0]
-
-    # It might be the same code but we don't want for theta to change when we initialize the lines
-    def get_sensor_vector(self, degree):
-        default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
-        rotated = rotate(default_vec, degree)
-        vec = self.pos + rotated
         return vec[0, 0], vec[1, 0]
 
     def get_orientation_vector(self, degree=None):
