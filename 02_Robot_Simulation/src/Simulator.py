@@ -72,7 +72,6 @@ class Simulator:
 
     def do_robot_update(self):
         self.robot.update(self.environment)
-        pass
 
     def draw_information(self, screen):
         screen.blit(self.font.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.colors["pink"]), (20, 20))

@@ -2,12 +2,13 @@ from typing import List, Dict
 
 import numpy as np
 from pygame import gfxdraw
+from shapely.geometry import LineString, Point
 
 import Constants as Const
 from src.Line import Line
 from src.MathUtils import rotate, distance_point_to_line, angle_between, line_intersection, \
     rotate_deg, side_of_point, outside_of_line, get_orientation_vector, distance_point_to_line_seg, \
-    distance_point_to_point
+    distance_point_to_point, angle_between_lines, intersection_semiline_segment
 
 dt = 1
 
@@ -17,7 +18,7 @@ class Robot:
         self.v_r = 0
         self.l = Const.robot_radius * 2
         self.pos: np.ndarray = init_pos
-        self.sensors: List[List[np.ndarray]] = []
+        self.sensors: List[LineString] = []
 
         self.theta = np.deg2rad(Const.start_rot)
 
@@ -168,13 +169,16 @@ class Robot:
                      Const.colors['green']
                      )
         for sensor in self.sensors:
-            gfxdraw.line(s,
-                         sensor[0][0],
-                         sensor[0][1],
-                         sensor[1][0],
-                         sensor[1][1],
-                         Const.colors['red']
-                         )
+            # Check if the line is big enough to be drawn
+            if sensor.length > 0:
+                gfxdraw.line(
+                    s,
+                    int(np.round(sensor.boundary[0].x)),
+                    int(np.round(sensor.boundary[0].y)),
+                    int(np.round(sensor.boundary[1].x)),
+                    int(np.round(sensor.boundary[1].y)),
+                    Const.colors['red']
+                )
 
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
@@ -230,46 +234,50 @@ class Robot:
     def update_sensors(self, environment):
         # Lines initialization & rotation
         self.sensors.clear()
-        s_x, s_y = self.get_x_y(self.pos)
-        degree = self.theta
+        robot_center_x, robot_center_y = self.get_x_y(self.pos)
+        sensor_orientation = self.theta
         for x in range(12):
-            e_x, e_y = self.get_orientation_vector(degree)
-            sensor_direction = [
-                np.array([int(np.round(s_x)), int(np.round(s_y))]).reshape(2, 1),
-                np.array([int(np.round(e_x)), int(np.round(e_y))]).reshape(2, 1)
-            ]
+            # Recalculate new sensor orientation with 30 degrees offset from the previous one
+            sensor_start_x, sensor_start_y = self.get_orientation_vector(sensor_orientation)
 
+            # For every boundary in the map calculate the intersection if there is one
             sensor_intersections = []
             for line in environment.get_bounds():
-                intersection = line_intersection(
-                    sensor_direction,
-                    [line.start, line.end]
+
+                intersection = intersection_semiline_segment(
+                    line,
+                    (robot_center_x, robot_center_y),
+                    (sensor_start_x, sensor_start_y)
                 )
+
                 if intersection is not None:
                     sensor_intersections.append(intersection)
+                else:
+                    continue
 
-            closest = None
-            distance = np.inf
+            # Pick the intersection that is closer to the starting point of the sensor
+            closest_intersection = None
+            distance_closest_intersection = np.inf
             for intersection in sensor_intersections:
-                if intersection is None:
-                    print("Your mama is gay")
-                x_x, x_y = self.get_x_y(intersection)
-                temp_distance = distance_point_to_point([s_x, s_y], [x_x, x_y])
-                if temp_distance < distance:
-                    distance = temp_distance
-                    closest = intersection
+                intersection_x, intersection_y = self.get_x_y(intersection)
+                temp_distance = distance_point_to_point(
+                    [sensor_start_x, sensor_start_y],
+                    [intersection_x, intersection_y]
+                )
+                if temp_distance < distance_closest_intersection:
+                    distance_closest_intersection = temp_distance
+                    closest_intersection = intersection
 
-            self.sensors.append([
-                np.array([
-                    int(np.round(e_x)),
-                    int(np.round(e_y))
-                ]),
-                np.array([
-                    int(np.round(closest[0, 0])),
-                    int(np.round(closest[1, 0]))
+            # Append sensor segment to the list of sensor to be drawn after the update
+            self.sensors.append(
+                LineString([
+                    [sensor_start_x, sensor_start_y],
+                    [closest_intersection[0, 0], closest_intersection[1, 0]]
                 ])
-            ])
-            degree = degree + np.deg2rad(30)
+            )
+
+            # Update degrees for next sensor
+            sensor_orientation = sensor_orientation + np.deg2rad(30)
 
 
 if __name__ == '__main__':

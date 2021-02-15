@@ -106,6 +106,7 @@ def distance_point_to_line_seg(p: np.ndarray, s: np.ndarray, e: np.ndarray):
         return np.linalg.norm(p - e)
     return np.linalg.norm(np.cross(s - e, s - p, axis=0)) / np.linalg.norm(e - s)
 
+
 # from: https://gist.github.com/nim65s/5e9902cd67f094ce65b0
 def outside_of_line(p: np.ndarray, s: np.ndarray, e: np.ndarray):
     if all(s == p) or all(e == p):
@@ -115,7 +116,6 @@ def outside_of_line(p: np.ndarray, s: np.ndarray, e: np.ndarray):
     if np.arccos(np.dot(((p - e) / np.linalg.norm(p - e)).T, (s - e) / np.linalg.norm(s - e))).item() > np.pi / 2:
         return e, s
     return None, None
-
 
 
 # def line_angle(line: Line) -> int:
@@ -143,3 +143,28 @@ def perpendicular_angles(angle_1: int, angle_2: int) -> bool:
 
 def parallel_angles(angle_1: int, angle_2: int) -> bool:
     return np.abs(angle_1 - angle_2) == 0 or np.abs(angle_1 - angle_2) == 180
+
+
+def intersection_semiline_segment(line, center, circle_edge):
+    x1 = line.start_x
+    y1 = line.start_y
+    x2 = line.end_x
+    y2 = line.end_y
+    x0 = center[0]
+    y0 = center[1]
+    xd = circle_edge[0] - center[0]
+    yd = circle_edge[1] - center[1]
+
+    denominator = xd * (y2 - y1) - yd * (x2 - x1)
+    if denominator == 0:
+        return None
+
+    t = ((x1 - x0) * yd - (y1 - y0) * xd) / denominator
+    tao = (x0 * (y1 - y2) + x1 * (y2 - y0) + x2 * (y0 - y1)) / denominator
+
+    if 0 <= t <= 1 and tao >= 0:
+        intersection_x = x0 + tao * xd
+        intersection_y = y0 + tao * yd
+        return np.array([intersection_x, intersection_y]).reshape(2, 1)
+    else:
+        return None
