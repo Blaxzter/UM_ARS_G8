@@ -2,10 +2,10 @@ import numpy as np
 
 environment_speed = 0.1
 
-padding = 10
+padding = 20
 padding_top = 100
 
-width = 1000
+width = 1100
 height = 700
 
 start_x = 300

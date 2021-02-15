@@ -1,6 +1,7 @@
 from typing import List, Dict
 
 import numpy as np
+import pygame
 from pygame import gfxdraw
 from shapely.geometry import LineString, Point
 
@@ -20,6 +21,8 @@ class Robot:
         self.pos: np.ndarray = init_pos
         self.sensors: List[LineString] = []
         self.theta = np.deg2rad(Const.start_rot)
+        pygame.init()
+        self.font = pygame.font.SysFont(None, 24)
 
     def update(self, environment):
         if self.v_r == 0 and self.v_l == 0:
@@ -178,6 +181,30 @@ class Robot:
                     int(np.round(sensor.boundary[1].y)),
                     Const.colors['red']
                 )
+                s.blit(
+                    self.font.render(
+                        f'{np.round(sensor.length, decimals=1)}',
+                        True,
+                        Const.colors["pink"]
+                    ),
+                    (
+                        int(np.round(sensor.boundary[0].x)) - 15,
+                        int(np.round(sensor.boundary[0].y))
+                    )
+                )
+            else:
+                s.blit(
+                    self.font.render(
+                        f'0.0',
+                        True,
+                        Const.colors["pink"]
+                    ),
+                    (
+                        int(np.round(sensor.bounds[0])) - 15,
+                        int(np.round(sensor.bounds[0]))
+                    )
+                )
+
 # Returns robot oriented x and y axis
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
