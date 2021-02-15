@@ -8,21 +8,14 @@ padding_top = 100
 width = 1000
 height = 700
 
-# start_x = width / 2 + 150
-# start_y = height / 2
-#
-# start_rot = 180
-
-# start_x = 213
-# start_y = 143
-#
-# start_rot = 283
 start_x = 300
 start_y = 250
 
 start_rot = 270
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
+
+number_of_sensors = 12
 
 
 robot_radius = 100

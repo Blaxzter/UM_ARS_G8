@@ -19,7 +19,6 @@ class Robot:
         self.l = Const.robot_radius * 2
         self.pos: np.ndarray = init_pos
         self.sensors: List[LineString] = []
-
         self.theta = np.deg2rad(Const.start_rot)
 
     def update(self, environment):
@@ -232,12 +231,12 @@ class Robot:
         self.v_r = np.round(self.v_r, decimals=3)
 
     def update_sensors(self, environment):
-        # Lines initialization & rotation
         self.sensors.clear()
         robot_center_x, robot_center_y = self.get_x_y(self.pos)
         sensor_orientation = self.theta
-        for x in range(12):
-            # Recalculate new sensor orientation with 30 degrees offset from the previous one
+
+        for x in range(Const.number_of_sensors):
+            # Recalculate new sensor orientation with 360 /  degrees offset from the previous one
             sensor_start_x, sensor_start_y = self.get_orientation_vector(sensor_orientation)
 
             # For every boundary in the map calculate the intersection if there is one
@@ -277,7 +276,7 @@ class Robot:
             )
 
             # Update degrees for next sensor
-            sensor_orientation = sensor_orientation + np.deg2rad(30)
+            sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.number_of_sensors)
 
 
 if __name__ == '__main__':

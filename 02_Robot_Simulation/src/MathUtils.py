@@ -145,15 +145,15 @@ def parallel_angles(angle_1: int, angle_2: int) -> bool:
     return np.abs(angle_1 - angle_2) == 0 or np.abs(angle_1 - angle_2) == 180
 
 
-def intersection_semiline_segment(line, center, circle_edge):
-    x1 = line.start_x
-    y1 = line.start_y
-    x2 = line.end_x
-    y2 = line.end_y
-    x0 = center[0]
-    y0 = center[1]
-    xd = circle_edge[0] - center[0]
-    yd = circle_edge[1] - center[1]
+def intersection_semiline_segment(segment, line_start, direction_point):
+    x1 = segment.start_x
+    y1 = segment.start_y
+    x2 = segment.end_x
+    y2 = segment.end_y
+    x0 = line_start[0]
+    y0 = line_start[1]
+    xd = direction_point[0] - line_start[0]
+    yd = direction_point[1] - line_start[1]
 
     denominator = xd * (y2 - y1) - yd * (x2 - x1)
     if denominator == 0:
