@@ -178,7 +178,7 @@ class Robot:
                     int(np.round(sensor.boundary[1].y)),
                     Const.colors['red']
                 )
-
+# Returns robot oriented x and y axis
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
             print("test")
@@ -240,8 +240,9 @@ class Robot:
             sensor_start_x, sensor_start_y = self.get_orientation_vector(sensor_orientation)
 
             # For every boundary in the map calculate the intersection if there is one
-            sensor_intersections = []
-            for line in environment.get_bounds():
+            sensor_intersections = None
+            distance_closest_intersection = np.inf
+            for line in environment.environment:
 
                 intersection = intersection_semiline_segment(
                     line,
@@ -250,31 +251,25 @@ class Robot:
                 )
 
                 if intersection is not None:
-                    sensor_intersections.append(intersection)
+                    intersection_x, intersection_y = self.get_x_y(intersection)
+
+                    temp_distance = distance_point_to_point(
+                        [sensor_start_x, sensor_start_y],
+                        [intersection_x, intersection_y]
+                    )
+                    if temp_distance < distance_closest_intersection:
+                        distance_closest_intersection = temp_distance
+                        sensor_intersections = intersection
                 else:
                     continue
-
-            # Pick the intersection that is closer to the starting point of the sensor
-            closest_intersection = None
-            distance_closest_intersection = np.inf
-            for intersection in sensor_intersections:
-                intersection_x, intersection_y = self.get_x_y(intersection)
-                temp_distance = distance_point_to_point(
-                    [sensor_start_x, sensor_start_y],
-                    [intersection_x, intersection_y]
-                )
-                if temp_distance < distance_closest_intersection:
-                    distance_closest_intersection = temp_distance
-                    closest_intersection = intersection
 
             # Append sensor segment to the list of sensor to be drawn after the update
             self.sensors.append(
                 LineString([
                     [sensor_start_x, sensor_start_y],
-                    [closest_intersection[0, 0], closest_intersection[1, 0]]
+                    [sensor_intersections[0, 0], sensor_intersections[1, 0]]
                 ])
             )
-
             # Update degrees for next sensor
             sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.number_of_sensors)
 
