@@ -14,7 +14,7 @@ class Simulator:
         self.clock = pygame.time.Clock()
         self.screen = pygame.display.set_mode((width, height))
         self.environment = Environment()
-        self.robot = Robot(Const.start_location)
+        self.robot = Robot(Const.start_pos)
         self.keys = [
             dict(key_code=[pygame.K_KP7], callback=self.robot.increase_left, pressed=False),
             dict(key_code=[pygame.K_KP4], callback=self.robot.decrease_left, pressed=False),
