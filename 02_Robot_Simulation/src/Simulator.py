@@ -26,6 +26,8 @@ class Simulator:
             dict(key_code=[pygame.K_x], callback=self.robot.stop, pressed=False),
             dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, pressed=False),
             dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, pressed=False),
+            dict(key_code=[pygame.K_KP_MULTIPLY], callback=self.robot.hide_sensor, pressed=False),
+            dict(key_code=[pygame.K_KP_MINUS], callback=self.robot.show_sensor, pressed=False)
         ]
         self.done = False
         pygame.display.set_caption("ARS_Robot_Simulation")

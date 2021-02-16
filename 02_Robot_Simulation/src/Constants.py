@@ -19,7 +19,7 @@ start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 number_of_sensors = 12
 
 
-robot_radius = 100
+robot_radius = 30
 robot_velocity_steps = 0.1
 
 epsilon = 0.00001
@@ -36,3 +36,4 @@ colors = dict(
 
 pygame.init()
 font = pygame.font.SysFont(None, 24)
+font_sensor = pygame.font.SysFont(None, 18)

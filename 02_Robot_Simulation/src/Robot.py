@@ -2,6 +2,8 @@ from typing import List, Dict
 
 from pygame import gfxdraw
 
+import Constants as Const
+from src.Environment import Collision
 from src.Line import Line
 from src.MathUtils import *
 
@@ -16,6 +18,7 @@ class Robot:
         self.pos: np.ndarray = init_pos
         self.sensors: List[LineString] = []
         self.theta = np.deg2rad(Const.start_rot)
+        self.sensor_hidden = False
 
     def update(self, environment):
         # Update sensors
@@ -59,26 +62,27 @@ class Robot:
             # if self.recalc_next_pos(current_pos, next_pos, closest_line)[1].shape == (2,2):
             #     t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
             new_collisions = environment.collides(t_current_pos, t_next_pos)
-            prev_collision.append(closest_line['line'])
+            prev_collision.append(closest_line.line)
             if len(new_collisions) == 0:
                 return t_next_pos
             else:
-                if new_collisions[0]['line'] in prev_collision:
+                if new_collisions[0].line in prev_collision:
                     return current_pos
                 else:
                     return self.check_collisions(environment, t_current_pos, t_next_pos, prev_collision)
 
-    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Dict) -> (
+    def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Collision) -> (
             np.ndarray, np.ndarray):
         pos_x, pos_y = self.get_x_y(current_pos)
         npos_x, npos_y = self.get_x_y(next_pos)
         vec = next_pos - current_pos
         vec_norm = np.linalg.norm(vec)
         n_vec = vec / vec_norm
-        comp_line: Line = collisions['line']
+        comp_line: Line = collisions.line
 
         # We are going perpendicular to the wall
-        if np.abs(vec_norm) < Const.epsilon or np.abs(np.dot(comp_line.vec.T, vec)) < Const.epsilon:
+        if (np.abs(vec_norm) < Const.epsilon or np.abs(np.dot(comp_line.vec.T, vec)) < Const.epsilon) \
+                and collisions.true_intersection is not None:
             new_intersection = line_intersection(
                 ([pos_x, pos_y], [npos_x, npos_y]),
                 ([comp_line.start[0], comp_line.start[1]], [comp_line.end[0], comp_line.end[1]])
@@ -135,7 +139,8 @@ class Robot:
         # Draw robot body
         self.draw_robot(s)
         # Draw sensors
-        self.draw_sensors(s)
+        if self.sensor_hidden:
+            self.draw_sensors(s)
 
     def draw_robot(self, screen):
         s_x, s_y = self.get_x_y(self.pos)
@@ -168,14 +173,14 @@ class Robot:
                 Const.colors['red']
             )
             screen.blit(
-                Const.font.render(
+                Const.font_sensor.render(
                     f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
                     True,
                     Const.colors["pink"]
                 ),
                 (
-                    int(np.round(sensor.coords.xy[0][0])) - 15,
-                    int(np.round(sensor.coords.xy[1][0]))
+                    int(np.round(sensor.coords.xy[0][1])) - 15,
+                    int(np.round(sensor.coords.xy[1][1]))
                 )
             )
 
@@ -231,6 +236,12 @@ class Robot:
         self.v_r -= Const.robot_velocity_steps
         self.v_r = np.round(self.v_r, decimals=3)
 
+    def hide_sensor(self):
+        self.sensor_hidden = True
+
+    def show_sensor(self):
+        self.sensor_hidden = False
+
     def update_sensors(self, environment):
         self.sensors.clear()
         robot_center_x, robot_center_y = self.get_x_y(self.pos)
@@ -274,13 +285,13 @@ class Robot:
             sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.number_of_sensors)
 
     @staticmethod
-    def closest_collision(collisions: List[Dict], position) -> Dict:
+    def closest_collision(collisions: List[Collision], position) -> Collision:
         min = np.inf
         closest = None
         dist_to_projection = -np.inf
 
         for collision in collisions:
-            line_: Line = collision['line']
+            line_: Line = collision.line
             dist = distance_point_to_line_seg(position, line_.start, line_.end)
 
             if dist <= min:
@@ -294,6 +305,7 @@ class Robot:
                     min = dist
                     closest = collision
         return closest
+
 
 
 if __name__ == '__main__':
