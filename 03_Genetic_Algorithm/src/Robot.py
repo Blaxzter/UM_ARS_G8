@@ -1,5 +1,8 @@
 from typing import List, Dict
+
 from pygame import gfxdraw
+
+from src.Genome import Genome
 from src.Line import Line
 from src.MathUtils import *
 
@@ -13,6 +16,19 @@ class Robot:
         self.pos: np.ndarray = init_pos
         self.sensors: List[LineString] = []
         self.theta = np.deg2rad(Const.start_rot)
+        self.genome = Genome()
+        self.genome_counter = 0
+
+    def apply_genome(self):
+        if self.genome_counter == Const.individuals_life_steps:
+            self.v_l = 0.0
+            self.v_r = 0.0
+            return
+        self.v_l += self.genome.genes[self.genome_counter]['d_v_l']
+        self.v_l = np.round(self.v_l, decimals=3)
+        self.v_r += self.genome.genes[self.genome_counter]['d_v_r']
+        self.v_r = np.round(self.v_r, decimals=3)
+        self.genome_counter += 1
 
     def update(self, environment):
         # Update sensors

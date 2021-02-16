@@ -3,6 +3,7 @@ import pygame
 
 from src.Constants import width, height
 from src.Environment import Environment
+from src.Population import Population
 from src.Robot import Robot
 
 import Constants as Const
@@ -15,6 +16,7 @@ class Simulator:
         self.screen = pygame.display.set_mode((width, height))
         self.environment = Environment()
         self.robot = Robot(Const.start_location)
+        self.population = Population()
         self.keys = [
             dict(key_code=[pygame.K_KP7], callback=self.robot.increase_left, pressed=False),
             dict(key_code=[pygame.K_KP4], callback=self.robot.decrease_left, pressed=False),
@@ -42,13 +44,15 @@ class Simulator:
 
     def update(self):
         self.get_key_update()
-        self.do_robot_update()
+        # self.do_robot_update()
+        self.population.update(self.environment)
 
     def draw(self):
         self.screen.fill((0, 0, 0))
         self.environment.draw(self.screen)
-        self.robot.draw(self.screen)
-        self.draw_information(self.screen)
+        self.population.draw(self.screen)
+        #self.robot.draw(self.screen)
+        #self.draw_information(self.screen)
         pygame.display.flip()
 
     def get_key_update(self):
