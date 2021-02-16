@@ -286,22 +286,14 @@ class Robot:
     def closest_collision(collisions: List[Collision], position) -> Collision:
         min = np.inf
         closest = None
-        dist_to_projection = -np.inf
 
         for collision in collisions:
             line_: Line = collision.line
             dist = distance_point_to_line_seg(position, line_.start, line_.end)
 
             if dist <= min:
-                if len(collisions) > 1:
-                    new_dist_to_projection = distance_point_to_line(position, line_.start, line_.end)
-                    if new_dist_to_projection > dist_to_projection:
-                        min = dist
-                        closest = collision
-                        dist_to_projection = new_dist_to_projection
-                else:
-                    min = dist
-                    closest = collision
+                min = dist
+                closest = collision
         return closest
 
 

@@ -5,12 +5,13 @@ import numpy as np
 from Line import Line
 from src.Constants import padding, width, height, robot_radius, padding_top, epsilon
 from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line, \
-    distance_point_to_line_seg, line_seg_intersection
+    distance_point_to_line_seg, line_seg_intersection, outside_of_line
 
 
 class Collision:
-    def __init__(self, line, true_intersection, extend_intersection, jumped_through, distance_to_line):
+    def __init__(self, line, outside_of_line, true_intersection, extend_intersection, jumped_through, distance_to_line):
         self.line = line
+        self.outside_of_line = outside_of_line
         self.extend_intersection = extend_intersection
         self.true_intersection = true_intersection
         self.jumped_through = jumped_through
@@ -54,6 +55,7 @@ class Environment:
             if (robot_radius - distance_to_line > epsilon) or jumped_through:
                 collisions.append(Collision(
                     line,
+                    outside_of_line(robot_current_center, line.start, line.end),
                     true_intersection,
                     extend_intersection,
                     jumped_through,
