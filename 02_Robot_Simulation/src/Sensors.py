@@ -19,7 +19,7 @@ class Sensors:
         self.sensors.clear()
         robot_center_x, robot_center_y = get_x_y(robot_center)
 
-        for x in range(Const.number_of_sensors):
+        for _ in range(Const.number_of_sensors):
             # Recalculate new sensor orientation with 360 /  degrees offset from the previous one
             sensor_start_x, sensor_start_y = self.get_orientation_vector(robot_center, sensor_orientation)
 
@@ -70,7 +70,7 @@ class Sensors:
                 Const.font_sensor.render(
                     f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
                     True,
-                    Const.colors["pink"]
+                    Const.colors["white"]
                 ),
                 (
                     int(np.round(sensor.coords.xy[0][1])),
