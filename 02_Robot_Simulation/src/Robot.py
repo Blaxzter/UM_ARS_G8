@@ -13,6 +13,7 @@ from src.MathUtils import rotate, distance_point_to_line, angle_between, line_in
 
 dt = 1
 
+
 class Robot:
     def __init__(self, init_pos: np.ndarray):
         self.v_l = 0
@@ -21,16 +22,21 @@ class Robot:
         self.pos: np.ndarray = init_pos
         self.sensors: List[LineString] = []
         self.theta = np.deg2rad(Const.start_rot)
-        pygame.init()
-        self.font = pygame.font.SysFont(None, 24)
 
     def update(self, environment):
-        if self.v_r == 0 and self.v_l == 0:
-            return
+        # Update sensors
+        self.update_sensors(environment)
+        # Update position
+        if not (self.v_r == 0 and self.v_l == 0):
+            self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
+
+    def get_position_update(self):
+        # Rotate on the spot
         if self.v_r - self.v_l == 0:
             default_vec = np.array([self.v_r, 0]).reshape((2, 1))
             rotated = rotate(default_vec, self.theta)
             d_position = self.pos + rotated
+        # Move
         else:
             R = (self.l / 2) * ((self.v_l + self.v_r) / (self.v_r - self.v_l))
             w = (self.v_r - self.v_l) / self.l
@@ -47,12 +53,9 @@ class Robot:
 
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
+        return d_position
 
-        self.pos = self.check_collisions(environment, self.pos, d_position, [])
-        self.update_sensors(environment)
-
-    def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray,
-                         prev_collision) -> np.ndarray:
+    def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray, prev_collision) -> np.ndarray:
         collisions = environment.collides(current_pos, next_pos)
         if len(collisions) == 0 or self.get_x_y(next_pos) == (0, 0):
             return next_pos
@@ -66,10 +69,10 @@ class Robot:
             if len(new_collisions) == 0:
                 return t_next_pos
             else:
-                if new_collisions[0]['line'] not in prev_collision:
-                    return self.check_collisions(environment, t_current_pos, t_next_pos, prev_collision)
-                else:
+                if new_collisions[0]['line'] in prev_collision:
                     return current_pos
+                else:
+                    return self.check_collisions(environment, t_current_pos, t_next_pos, prev_collision)
 
     def recalc_next_pos(self, current_pos: np.ndarray, next_pos: np.ndarray, collisions: Dict) -> (
             np.ndarray, np.ndarray):
@@ -115,7 +118,8 @@ class Robot:
             nvec_towards_robot = (rotate_deg(comp_line.nvec, 90) * -1
                                   if side_of_point(comp_line.start, comp_line.end, current_pos)
                                   else rotate_deg(comp_line.nvec, 90))
-            vec_towards_robot = nvec_towards_robot * (dist_to_line if dist_to_line < Const.robot_radius else Const.robot_radius)
+            vec_towards_robot = nvec_towards_robot * (
+                dist_to_line if dist_to_line < Const.robot_radius else Const.robot_radius)
 
             new_line_start = comp_line.start + vec_towards_robot
             new_line_end = comp_line.end + vec_towards_robot
@@ -133,59 +137,44 @@ class Robot:
 
         return pos_on_line, new_next_pos
 
-    def closest_collision(self, collisions: List[Dict], position) -> Dict:
-        min = np.inf
-        closest = None
-        dist_to_projection = -np.inf
-
-        for collision in collisions:
-            line_: Line = collision['line']
-            dist = distance_point_to_line_seg(position, line_.start, line_.end)
-
-            if dist <= min:
-                if len(collisions) > 1:
-                    new_dist_to_projection = distance_point_to_line(position, line_.start, line_.end)
-                    if new_dist_to_projection > dist_to_projection:
-                        min = dist
-                        closest = collision
-                        dist_to_projection = new_dist_to_projection
-                else:
-                    min = dist
-                    closest = collision
-        return closest
-
     def draw(self, s):
         # Draw robot body
-        s_x, s_y = self.get_x_y(self.pos)
-        gfxdraw.aacircle(s,
-                         int(np.round(s_x)),
-                         int(np.round(s_y)),
-                         Const.robot_radius,
-                         Const.colors['robot'],
-                         )
+        self.draw_robot(s)
+        # Draw sensors
+        self.draw_sensors(s)
 
+    def draw_robot(self, screen):
+        s_x, s_y = self.get_x_y(self.pos)
+        gfxdraw.aacircle(
+            screen,
+            int(np.round(s_x)),
+            int(np.round(s_y)),
+            Const.robot_radius,
+            Const.colors['robot'],
+        )
         # Draw orientation line ("front" of the robot)
         e_x, e_y = self.get_orientation_vector()
-        gfxdraw.line(s,
-                     int(np.round(s_x)),
-                     int(np.round(s_y)),
-                     int(np.round(e_x)),
-                     int(np.round(e_y)),
-                     Const.colors['green']
-                     )
+        gfxdraw.line(
+            screen,
+            int(np.round(s_x)),
+            int(np.round(s_y)),
+            int(np.round(e_x)),
+            int(np.round(e_y)),
+            Const.colors['green']
+        )
 
-        # Draw sensors
+    def draw_sensors(self, screen):
         for sensor in self.sensors:
             gfxdraw.line(
-                s,
+                screen,
                 int(np.round(sensor.coords.xy[0][0])),
                 int(np.round(sensor.coords.xy[1][0])),
                 int(np.round(sensor.coords.xy[0][1])),
                 int(np.round(sensor.coords.xy[1][1])),
                 Const.colors['red']
             )
-            s.blit(
-                self.font.render(
+            screen.blit(
+                Const.font.render(
                     f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
                     True,
                     Const.colors["pink"]
@@ -196,7 +185,7 @@ class Robot:
                 )
             )
 
-# Returns robot oriented x and y axis
+    # Returns robot oriented x and y axis
     def get_x_y(self, vec):
         if vec is None or vec[0] is None:
             print("test")
@@ -257,11 +246,11 @@ class Robot:
             # Recalculate new sensor orientation with 360 /  degrees offset from the previous one
             sensor_start_x, sensor_start_y = self.get_orientation_vector(sensor_orientation)
 
-            # For every boundary in the map calculate the intersection if there is one
-            sensor_intersections = None
+            # For every boundary in the map calculate the intersection if there is one and it's the best
+            sensor_intersection = None
             distance_closest_intersection = np.inf
-            for line in environment.environment:
 
+            for line in environment.environment:
                 intersection = intersection_semiline_segment(
                     line,
                     (robot_center_x, robot_center_y),
@@ -270,14 +259,13 @@ class Robot:
 
                 if intersection is not None:
                     intersection_x, intersection_y = self.get_x_y(intersection)
-
                     temp_distance = distance_point_to_point(
                         [sensor_start_x, sensor_start_y],
                         [intersection_x, intersection_y]
                     )
                     if temp_distance < distance_closest_intersection:
                         distance_closest_intersection = temp_distance
-                        sensor_intersections = intersection
+                        sensor_intersection = intersection
                 else:
                     continue
 
@@ -285,11 +273,33 @@ class Robot:
             self.sensors.append(
                 LineString([
                     [sensor_start_x, sensor_start_y],
-                    [sensor_intersections[0, 0], sensor_intersections[1, 0]]
+                    [sensor_intersection[0, 0], sensor_intersection[1, 0]]
                 ])
             )
             # Update degrees for next sensor
             sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.number_of_sensors)
+
+    @staticmethod
+    def closest_collision(collisions: List[Dict], position) -> Dict:
+        min = np.inf
+        closest = None
+        dist_to_projection = -np.inf
+
+        for collision in collisions:
+            line_: Line = collision['line']
+            dist = distance_point_to_line_seg(position, line_.start, line_.end)
+
+            if dist <= min:
+                if len(collisions) > 1:
+                    new_dist_to_projection = distance_point_to_line(position, line_.start, line_.end)
+                    if new_dist_to_projection > dist_to_projection:
+                        min = dist
+                        closest = collision
+                        dist_to_projection = new_dist_to_projection
+                else:
+                    min = dist
+                    closest = collision
+        return closest
 
 
 if __name__ == '__main__':

@@ -1,4 +1,5 @@
 import numpy as np
+import pygame
 
 environment_speed = 0.1
 
@@ -32,3 +33,6 @@ colors = dict(
     pink=(255, 192, 203),
     red=(255, 99, 71)
 )
+
+pygame.init()
+font = pygame.font.SysFont(None, 24)
