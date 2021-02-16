@@ -155,6 +155,7 @@ class Robot:
         return closest
 
     def draw(self, s):
+        # Draw robot body
         s_x, s_y = self.get_x_y(self.pos)
         gfxdraw.aacircle(s,
                          int(np.round(s_x)),
@@ -162,6 +163,8 @@ class Robot:
                          Const.robot_radius,
                          Const.colors['robot'],
                          )
+
+        # Draw orientation line ("front" of the robot)
         e_x, e_y = self.get_orientation_vector()
         gfxdraw.line(s,
                      int(np.round(s_x)),
@@ -170,40 +173,28 @@ class Robot:
                      int(np.round(e_y)),
                      Const.colors['green']
                      )
+
+        # Draw sensors
         for sensor in self.sensors:
-            # Check if the line is big enough to be drawn
-            if sensor.length > 0:
-                gfxdraw.line(
-                    s,
-                    int(np.round(sensor.boundary[0].x)),
-                    int(np.round(sensor.boundary[0].y)),
-                    int(np.round(sensor.boundary[1].x)),
-                    int(np.round(sensor.boundary[1].y)),
-                    Const.colors['red']
+            gfxdraw.line(
+                s,
+                int(np.round(sensor.coords.xy[0][0])),
+                int(np.round(sensor.coords.xy[1][0])),
+                int(np.round(sensor.coords.xy[0][1])),
+                int(np.round(sensor.coords.xy[1][1])),
+                Const.colors['red']
+            )
+            s.blit(
+                self.font.render(
+                    f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
+                    True,
+                    Const.colors["pink"]
+                ),
+                (
+                    int(np.round(sensor.coords.xy[0][0])) - 15,
+                    int(np.round(sensor.coords.xy[1][0]))
                 )
-                s.blit(
-                    self.font.render(
-                        f'{np.round(sensor.length, decimals=1)}',
-                        True,
-                        Const.colors["pink"]
-                    ),
-                    (
-                        int(np.round(sensor.boundary[0].x)) - 15,
-                        int(np.round(sensor.boundary[0].y))
-                    )
-                )
-            else:
-                s.blit(
-                    self.font.render(
-                        f'0.0',
-                        True,
-                        Const.colors["pink"]
-                    ),
-                    (
-                        int(np.round(sensor.bounds[0])) - 15,
-                        int(np.round(sensor.bounds[0]))
-                    )
-                )
+            )
 
 # Returns robot oriented x and y axis
     def get_x_y(self, vec):
