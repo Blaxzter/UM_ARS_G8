@@ -67,8 +67,14 @@ class Simulator:
 
     def draw_information(self, screen):
         screen.blit(
-            Const.font.render(f'Generation: {self.population.generation}', True, Const.colors["pink"]), (20, 20)
+            Const.font.render(f'Generation: {self.population.generation + 1}', True, Const.colors["pink"]), (20, 20)
         )
         screen.blit(
             Const.font.render(f'Frames Left: {self.frame_to_death}', True, Const.colors["pink"]), (20, 40)
+        )
+        screen.blit(
+            Const.font.render(f'AVG Fitness: {np.round(self.population.avg_fitness[self.population.generation], decimals=3)}', True, Const.colors["pink"]), (175, 20)
+        )
+        screen.blit(
+            Const.font.render(f'Best Fitness: {np.round(self.population.best_fitness[self.population.generation], decimals=3)}', True, Const.colors["pink"]), (175, 40)
         )

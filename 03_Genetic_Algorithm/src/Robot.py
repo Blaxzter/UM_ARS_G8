@@ -26,7 +26,8 @@ class Robot:
     def compute_fitness(self):
         approximated_covered_distance = distance_point_to_point(self.pos, Const.start_location)
         distance_from_goal = distance_point_to_point(self.pos, Const.goal)
-        self.fitness = 1 / distance_from_goal
+        distance_goal_start = distance_point_to_point(Const.start_pos, Const.goal)
+        self.fitness = distance_goal_start - distance_from_goal
 
     def apply_genome(self, frame):
         self.v_l += self.genome.genes[frame]['d_v_l']

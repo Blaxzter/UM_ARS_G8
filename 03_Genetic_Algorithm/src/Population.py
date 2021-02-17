@@ -10,7 +10,9 @@ class Population:
     def __init__(self):
         self.individuals = self.init_individuals()
         self.best_from_previous_generation = None
-        self.generation = 1
+        self.generation = 0
+        self.avg_fitness = [-1]
+        self.best_fitness = [-1]
 
     def update(self, environment, frame):
         for individual in self.individuals:
@@ -30,6 +32,10 @@ class Population:
     def evaluation(self):
         for individual in self.individuals:
             individual.compute_fitness()
+
+        self.avg_fitness.append(np.sum([x.fitness for x in self.individuals]) / len(self.individuals))
+        self.best_fitness.append(np.max([x.fitness for x in self.individuals]))
+
 
     def selection(self):
         new_population = []

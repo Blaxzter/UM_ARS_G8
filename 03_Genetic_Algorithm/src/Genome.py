@@ -10,7 +10,7 @@ class Genome:
         self.genes: List[Dict[float, float]] = self.init_genome()
 
     def crossover(self, partner):
-        first_point = randint(Const.individuals_life_steps // 2, Const.individuals_life_steps)
+        first_point = randint(0, Const.individuals_life_steps)
         new_genes = []
         for i in range(Const.individuals_life_steps):
             if first_point < i:
