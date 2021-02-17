@@ -168,3 +168,9 @@ def intersection_semiline_segment(segment, line_start, direction_point):
         return np.array([intersection_x, intersection_y]).reshape(2, 1)
     else:
         return None
+
+
+def get_x_y(vec):
+    if vec is None or vec[0] is None:
+        print("test")
+    return vec[0, 0], vec[1, 0]

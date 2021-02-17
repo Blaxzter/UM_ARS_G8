@@ -1,15 +1,27 @@
-from typing import List, Tuple, Dict
+from typing import List
 
 import numpy as np
+from pygame import gfxdraw
+
+import Constants as Const
 
 from Line import Line
 from src.Constants import padding, width, height, robot_radius, padding_top, epsilon
-from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line, \
-    distance_point_to_line_seg, line_seg_intersection
+from src.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
 
+
+class Collision:
+    def __init__(self, line, outside_of_line, true_intersection, extend_intersection, jumped_through, distance_to_line):
+        self.line = line
+        self.outside_of_line = outside_of_line
+        self.extend_intersection = extend_intersection
+        self.true_intersection = true_intersection
+        self.jumped_through = jumped_through
+        self.distance = distance_to_line
 
 class Environment:
     def __init__(self):
+        self.goal = Const.goal
         self.environment = [
             Line(width / 2, padding_top + 70, width / 2, height / 2 + 50),
             Line(width / 2, height / 2 + 50, width - padding, height / 2 + 50),
@@ -25,24 +37,42 @@ class Environment:
     def draw(self, screen):
         for line in self.environment:
             line.draw(screen)
+        gfxdraw.circle(
+            screen,
+            int(np.round(self.goal[0, 0])),
+            int(np.round(self.goal[1, 0])),
+            5,
+            Const.colors['red'],
+        )
 
-    def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List:
+    def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List[Collision]:
         collisions = []
 
         for line in self.environment:
-            distance_next_center_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
-            intersection = line_seg_intersection(robot_current_center, robot_next_center, line.start, line.end)
-            occurs_before_next = False
-            if intersection is not None:
-                occurs_before_next = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(robot_current_center, intersection)
 
-            if (robot_radius - distance_next_center_to_line > epsilon) or occurs_before_next:
-                collisions.append({
-                    'line': line,
-                    'intersect': intersection,
-                    # 'jumped_through': occurs_before_next,
-                    'distance': distance_next_center_to_line
-                })
+            distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
+            extend_intersection = line_seg_intersection(robot_current_center, robot_next_center, line.col_start,
+                                                        line.col_end)
+            true_intersection = line_seg_intersection(robot_current_center, robot_next_center, line.start, line.end)
+            jumped_through = False
+            if extend_intersection is not None:
+                jumped_through = distance_point_to_point(robot_current_center,
+                                                         robot_next_center) > distance_point_to_point(
+                    robot_current_center, extend_intersection)
+
+            if extend_intersection is not None and true_intersection is None and np.dot(
+                    (robot_current_center - robot_next_center).T, line.vec) < epsilon:
+                continue
+
+            if (robot_radius - distance_to_line > epsilon) or jumped_through:
+                collisions.append(Collision(
+                    line,
+                    outside_of_line(robot_current_center, line.start, line.end),
+                    true_intersection,
+                    extend_intersection,
+                    jumped_through,
+                    distance_to_line
+                ))
         return collisions
 
 
