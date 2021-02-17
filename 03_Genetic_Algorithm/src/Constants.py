@@ -4,7 +4,7 @@ import pygame
 environment_speed = 0.1
 
 padding = 20
-padding_top = 20
+padding_top = 70
 
 width = 1100
 height = 700
@@ -42,3 +42,4 @@ start_location = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 goal = np.array([width - 100, 100], dtype=float).reshape((2, 1))
 
 individuals_life_steps = 500
+elitism_rate = 3

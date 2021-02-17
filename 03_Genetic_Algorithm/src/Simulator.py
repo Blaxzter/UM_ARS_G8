@@ -57,9 +57,18 @@ class Simulator:
         self.screen.fill((0, 0, 0))
         self.environment.draw(self.screen)
         self.population.draw(self.screen)
+        self.draw_information(self.screen)
         pygame.display.flip()
 
     def pygame_defaults(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
+
+    def draw_information(self, screen):
+        screen.blit(
+            Const.font.render(f'Generation: {self.population.generation}', True, Const.colors["pink"]), (20, 20)
+        )
+        screen.blit(
+            Const.font.render(f'Frames Left: {self.frame_to_death}', True, Const.colors["pink"]), (20, 40)
+        )
