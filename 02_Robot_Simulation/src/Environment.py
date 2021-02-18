@@ -1,26 +1,26 @@
-from typing import List, Tuple, Dict
+from typing import List
 
 import numpy as np
+import pygame
 
 from Line import Line
 from src.Constants import PADDING, WIDTH, HEIGHT, ROBOT_RADIUS, PADDING_TOP, EPSILON
-from src.MathUtils import line_intersection, distance_point_to_point, distance_point_to_line, \
-    distance_point_to_line_seg, line_seg_intersection, outside_of_line
+from src.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
 
 
 class Collision:
-    def __init__(self, line, outside_of_line, true_intersection, extend_intersection, jumped_through, distance_to_line):
-        self.line = line
-        self.outside_of_line = outside_of_line
-        self.extend_intersection = extend_intersection
-        self.true_intersection = true_intersection
-        self.jumped_through = jumped_through
-        self.distance = distance_to_line
+    def __init__(self, line: Line, outside_of_line: (np.ndarray, np.ndarray), true_intersection: np.ndarray, extend_intersection: np.ndarray, jumped_through: bool, distance_to_line: float):
+        self.line: Line = line                                              # Line that generated the collision
+        self.outside_of_line: (np.ndarray, np.ndarray) = outside_of_line    # Frederic fill this
+        self.extend_intersection: np.ndarray = extend_intersection          # Frederic fill this
+        self.true_intersection: np.ndarray = true_intersection              # Frederic fill this
+        self.jumped_through: bool = jumped_through                          # Robot jumped through the line
+        self.distance: float = distance_to_line                             # Distance from the collision
 
 
 class Environment:
     def __init__(self):
-        self.environment = [
+        self.environment: List[Line] = [
             Line(WIDTH / 2, PADDING_TOP + 70, WIDTH / 2, HEIGHT / 2 + 50),
             Line(WIDTH / 2, HEIGHT / 2 + 50, WIDTH - PADDING, HEIGHT / 2 + 50),
             Line(PADDING, PADDING_TOP, WIDTH - PADDING, PADDING_TOP),
@@ -30,9 +30,9 @@ class Environment:
             # Line(69, 69, 169, 196),
             # Line(width / 2 - ((width / 2) / 2), padding_top + 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
             # Line(width / 2 - ((width / 2) / 2), height - padding - 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
-        ]
+        ]   # Group of boundaries that make up the environment in which the robot moves
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.display) -> None:
         for line in self.environment:
             line.draw(screen)
 

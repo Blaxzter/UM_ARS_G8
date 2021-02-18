@@ -1,21 +1,15 @@
-from typing import List
-
+import pygame
 from pygame import gfxdraw
-from shapely.geometry import LineString
 
+from src.Environment import Environment
 from src.MathUtils import *
+
 
 class Sensors:
     def __init__(self):
-        self.sensors: List[LineString] = []
+        self.sensors: List[LineString] = []     # Collection of all the sensor in a Robot
 
-    def get_orientation_vector(self, pos, degree):
-        default_vec = np.array([Const.ROBOT_RADIUS, 0]).reshape((2, 1))
-        rotated = rotate(default_vec, degree)
-        vec = pos + rotated
-        return vec[0, 0], vec[1, 0]
-
-    def update(self, environment, sensor_orientation, robot_center):
+    def update(self, environment: Environment, sensor_orientation: float, robot_center: np.ndarray) -> None:
         self.sensors.clear()
         robot_center_x, robot_center_y = get_x_y(robot_center)
 
@@ -34,11 +28,11 @@ class Sensors:
                     (sensor_start_x, sensor_start_y)
                 )
 
-                if intersection is not None:
+                if intersection.size != 0:
                     intersection_x, intersection_y = get_x_y(intersection)
                     temp_distance = distance_point_to_point(
-                        [sensor_start_x, sensor_start_y],
-                        [intersection_x, intersection_y]
+                        (sensor_start_x, sensor_start_y),
+                        (intersection_x, intersection_y)
                     )
                     if temp_distance < distance_closest_intersection:
                         distance_closest_intersection = temp_distance
@@ -56,7 +50,7 @@ class Sensors:
             # Update degrees for next sensor
             sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.NUMBER_OF_SENSORS)
 
-    def draw(self, screen):
+    def draw(self, screen: pygame.display) -> None:
         for sensor in self.sensors:
             gfxdraw.line(
                 screen,
@@ -77,3 +71,10 @@ class Sensors:
                     int(np.round(sensor.coords.xy[1][1]))
                 )
             )
+
+    @staticmethod
+    def get_orientation_vector(pos: np.ndarray, degree: float) -> (float, float):
+        default_vec = np.array([Const.ROBOT_RADIUS, 0]).reshape((2, 1))
+        rotated = rotate(default_vec, degree)
+        vec = pos + rotated
+        return vec[0, 0], vec[1, 0]

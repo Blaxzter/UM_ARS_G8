@@ -1,7 +1,8 @@
+import pygame
+
 from typing import List
 from pygame import gfxdraw
-
-from src.Environment import Collision
+from src.Environment import Collision, Environment
 from src.Line import Line
 from src.MathUtils import *
 from src.MathUtils import get_x_y
@@ -9,24 +10,25 @@ from src.Sensors import Sensors
 
 dt = 1
 
+
 class Robot:
     def __init__(self, init_pos: np.ndarray):
-        self.v_l = 0
-        self.v_r = 0
-        self.l = Const.ROBOT_RADIUS * 2
-        self.pos: np.ndarray = init_pos
-        self.sensors: Sensors = Sensors()
-        self.theta = np.deg2rad(Const.START_ROT)
-        self.sensor_hidden = False
+        self.v_l: float = 0                                 # Velocity of left wheel
+        self.v_r: float = 0                                 # Velocity of right wheel
+        self.l: int = Const.ROBOT_RADIUS * 2                # Diameter ? Frederic comment this one, you're using it
+        self.pos: np.ndarray = init_pos                     # Current position of the robot
+        self.sensors: Sensors = Sensors()                   # Sensor used by the robots
+        self.theta: float = np.deg2rad(Const.START_ROT)     # Rotation of the robot (wrt the "front")
+        self.sensor_hidden: bool = False                    # Show/Hide sensors
 
-    def update(self, environment):
+    def update(self, environment: Environment) -> None:
         # Update sensors
         self.sensors.update(environment, self.theta, self.pos)
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
-    def get_position_update(self):
+    def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
         if self.v_r - self.v_l == 0:
             default_vec = np.array([self.v_r, 0]).reshape((2, 1))
@@ -51,7 +53,8 @@ class Robot:
             self.theta = next_pos[2, 0] % (2 * np.pi)
         return d_position
 
-    def check_collisions(self, environment, current_pos: np.ndarray, next_pos: np.ndarray, prev_collision) -> np.ndarray:
+    def check_collisions(self, environment: Environment, current_pos: np.ndarray, next_pos: np.ndarray,
+                         prev_collision: List[Collision]) -> np.ndarray:
         collisions = environment.collides(current_pos, next_pos)
         if len(collisions) == 0 or get_x_y(next_pos) == (0, 0):
             return next_pos
@@ -134,14 +137,14 @@ class Robot:
 
         return pos_on_line, new_next_pos
 
-    def draw(self, s):
+    def draw(self, screen: pygame.display) -> None:
         # Draw robot body
-        self.draw_robot(s)
+        self.draw_robot(screen)
         # Draw sensors
         if self.sensor_hidden:
-            self.sensors.draw(s)
+            self.sensors.draw(screen)
 
-    def draw_robot(self, screen):
+    def draw_robot(self, screen: pygame.display) -> None:
         s_x, s_y = get_x_y(self.pos)
         gfxdraw.aacircle(
             screen,
@@ -161,79 +164,68 @@ class Robot:
             Const.COLORS['green']
         )
 
-    def get_orientation_vector(self, degree=None):
+    def get_orientation_vector(self, degree: float = None) -> (float, float):
         default_vec = np.array([Const.ROBOT_RADIUS, 0]).reshape((2, 1))
         rotated = rotate(default_vec, self.theta if degree is None else degree)
         vec = self.pos + rotated
         return vec[0, 0], vec[1, 0]
 
-    def stop(self):
+    def stop(self) -> None:
         self.v_l = 0
         self.v_r = 0
 
-    def increase_both(self):
+    def increase_both(self) -> None:
         self.v_l += Const.ROBOT_VELOCITY_STEPS
         self.v_r += Const.ROBOT_VELOCITY_STEPS
         self.v_l = np.round(self.v_l, decimals=3)
         self.v_r = np.round(self.v_r, decimals=3)
 
-    def decrease_both(self):
+    def decrease_both(self) -> None:
         self.v_l -= Const.ROBOT_VELOCITY_STEPS
         self.v_r -= Const.ROBOT_VELOCITY_STEPS
         self.v_l = np.round(self.v_l, decimals=3)
         self.v_r = np.round(self.v_r, decimals=3)
 
-    def rotate_left(self):
+    def rotate_left(self) -> None:
         self.theta += np.deg2rad(1)
         self.theta = self.theta % (2 * np.pi)
 
-    def rotate_right(self):
+    def rotate_right(self) -> None:
         self.theta -= np.deg2rad(1)
         self.theta = self.theta % (2 * np.pi)
 
-    def increase_left(self):
+    def increase_left(self) -> None:
         self.v_l += Const.ROBOT_VELOCITY_STEPS
         self.v_l = np.round(self.v_l, decimals=3)
 
-    def decrease_left(self):
+    def decrease_left(self) -> None:
         self.v_l -= Const.ROBOT_VELOCITY_STEPS
         self.v_l = np.round(self.v_l, decimals=3)
 
-    def increase_right(self):
+    def increase_right(self) -> None:
         self.v_r += Const.ROBOT_VELOCITY_STEPS
         self.v_r = np.round(self.v_r, decimals=3)
 
-    def decrease_right(self):
+    def decrease_right(self) -> None:
         self.v_r -= Const.ROBOT_VELOCITY_STEPS
         self.v_r = np.round(self.v_r, decimals=3)
 
-    def hide_sensor(self):
+    def hide_sensor(self) -> None:
         self.sensor_hidden = True
 
-    def show_sensor(self):
+    def show_sensor(self) -> None:
         self.sensor_hidden = False
 
     @staticmethod
     def closest_collision(collisions: List[Collision], position) -> Collision:
-        min = np.inf
+        minimum = np.inf
         closest = None
 
         for collision in collisions:
             line_: Line = collision.line
             dist = distance_point_to_line_seg(position, line_.start, line_.end)
 
-            if dist <= min:
-                min = dist
+            if dist <= minimum:
+                minimum = dist
                 closest = collision
         return closest
-
-
-
-if __name__ == '__main__':
-    robot = Robot(init_pos=np.array([0, 0]).reshape((2, 1)))
-    next_pos = np.array([2, 2]).reshape((2, 1))
-
-    vec = next_pos - robot.pos
-
-    line = Line(start=np.array([1, 0]).reshape((2, 1)), end=np.array([1, 2]).reshape((2, 1)))
-    robot.recalc_next_pos(next_pos, line)
