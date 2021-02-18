@@ -7,7 +7,7 @@ import Constants as Const
 
 class Genome:
     def __init__(self):
-        self.genes: List[Dict[float, float]] = self.init_genome()
+        self.genes: List[Dict[str, float]] = self.init_genome()
 
     def crossover(self, partner):
         first_point = randint(0, Const.individuals_life_steps)
@@ -26,6 +26,12 @@ class Genome:
                     'd_v_l': np.random.choice([-1, 0, 1]) * Const.robot_velocity_steps,
                     'd_v_r': np.random.choice([-1, 0, 1]) * Const.robot_velocity_steps
                 }
+
+    def extend_genome(self):
+        self.genes.extend([{
+                'd_v_l': np.random.choice([-1, 0, 1]) * Const.robot_velocity_steps,
+                'd_v_r': np.random.choice([-1, 0, 1]) * Const.robot_velocity_steps
+            } for _ in range(Const.life_update)])
 
     @staticmethod
     def init_genome():

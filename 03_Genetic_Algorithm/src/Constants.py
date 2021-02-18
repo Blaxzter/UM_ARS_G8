@@ -37,9 +37,10 @@ colors = dict(
 pygame.init()
 font = pygame.font.SysFont(None, 24)
 
-number_of_individuals = 5
+number_of_individuals = 20
 start_location = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 goal = np.array([width - 100, 100], dtype=float).reshape((2, 1))
 
-individuals_life_steps = 500
+individuals_life_steps = 50
+life_update = 50
 elitism_rate = min(2, number_of_individuals // 3)

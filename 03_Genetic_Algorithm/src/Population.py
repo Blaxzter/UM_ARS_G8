@@ -19,6 +19,7 @@ class Population:
             individual.apply_genome(frame)
             individual.update(environment)
 
+
     def draw(self, screen):
         for individual in self.individuals:
             individual.draw(screen)
@@ -28,6 +29,10 @@ class Population:
         self.selection()
         self.crossover_mutation()
         self.generation += 1
+        if self.generation % 50 == 0:
+            Const.individuals_life_steps += Const.life_update
+            for individual in self.individuals:
+                individual.genome.extend_genome()
 
     def evaluation(self):
         for individual in self.individuals:
@@ -38,10 +43,10 @@ class Population:
 
     def selection(self):
         self.best_from_previous_generation.clear()
-        ordered_by_fitness = sorted(zip([x.fitness for x in self.individuals], self.individuals), reverse=True)[:Const.elitism_rate]
+        ordered_by_fitness = sorted(self.individuals, key=lambda robot: robot.fitness, reverse=True)[:Const.elitism_rate]
         for best in ordered_by_fitness:
             elite = Robot(Const.start_pos)
-            elite.genome = best[1].genome
+            elite.genome = best.genome
             self.best_from_previous_generation.append(elite)
 
     def crossover_mutation(self):
