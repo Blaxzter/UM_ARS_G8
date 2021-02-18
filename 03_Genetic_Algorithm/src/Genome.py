@@ -14,9 +14,9 @@ class Genome:
         new_genes = []
         for i in range(Const.individuals_life_steps):
             if first_point < i:
-                new_genes.append(partner.genes[i])
-            else:
                 new_genes.append(self.genes[i])
+            else:
+                new_genes.append(partner.genes[i])
         return new_genes
 
     def mutation(self):

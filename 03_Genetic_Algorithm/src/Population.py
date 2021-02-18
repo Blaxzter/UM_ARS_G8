@@ -9,7 +9,7 @@ class Population:
 
     def __init__(self):
         self.individuals = self.init_individuals()
-        self.best_from_previous_generation = None
+        self.best_from_previous_generation = []
         self.generation = 0
         self.avg_fitness = [-1]
         self.best_fitness = [-1]
@@ -36,29 +36,19 @@ class Population:
         self.avg_fitness.append(np.sum([x.fitness for x in self.individuals]) / len(self.individuals))
         self.best_fitness.append(np.max([x.fitness for x in self.individuals]))
 
-
     def selection(self):
-        new_population = []
-        for _ in range(Const.number_of_individuals):
-            tournament = random.sample(self.individuals, 5)
-            best: Robot = max(tournament, key=lambda item: item.fitness)
-
-            new_individual = Robot(Const.start_pos)
-            new_individual.genome = best.genome
-            new_population.append(new_individual)
-
-        best_overall: Robot = max(self.individuals, key=lambda item: item.fitness)
-        elite = Robot(Const.start_pos)
-        elite.genome = best_overall.genome
-        self.best_from_previous_generation = elite
-
-        self.individuals = new_population
+        self.best_from_previous_generation.clear()
+        ordered_by_fitness = sorted(zip([x.fitness for x in self.individuals], self.individuals), reverse=True)[:Const.elitism_rate]
+        for best in ordered_by_fitness:
+            elite = Robot(Const.start_pos)
+            elite.genome = best[1].genome
+            self.best_from_previous_generation.append(elite)
 
     def crossover_mutation(self):
         new_population = []
         for _ in range(Const.number_of_individuals - Const.elitism_rate):
-            parent1 = random.sample(self.individuals, 1)[0]
-            parent2 = random.sample(self.individuals, 1)[0]
+            parent1 = random.sample(self.best_from_previous_generation, 1)[0]
+            parent2 = random.sample(self.best_from_previous_generation, 1)[0]
             child = Robot(Const.start_pos)
 
             child.genome.genes = parent1.genome.crossover(parent2.genome)
@@ -66,7 +56,7 @@ class Population:
 
             new_population.append(child)
 
-        new_population.append(self.best_from_previous_generation)
+        new_population.extend(self.best_from_previous_generation)
         self.individuals = new_population
 
     @staticmethod

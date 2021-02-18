@@ -43,7 +43,7 @@ class Simulator:
             self.update()
             self.draw()
 
-            self.clock.tick(1200)
+            self.clock.tick(12000)
 
     def update(self):
         if self.frame_to_death > 0:
