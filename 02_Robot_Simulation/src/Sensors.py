@@ -10,7 +10,7 @@ class Sensors:
         self.sensors: List[LineString] = []
 
     def get_orientation_vector(self, pos, degree):
-        default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
+        default_vec = np.array([Const.ROBOT_RADIUS, 0]).reshape((2, 1))
         rotated = rotate(default_vec, degree)
         vec = pos + rotated
         return vec[0, 0], vec[1, 0]
@@ -19,7 +19,7 @@ class Sensors:
         self.sensors.clear()
         robot_center_x, robot_center_y = get_x_y(robot_center)
 
-        for _ in range(Const.number_of_sensors):
+        for _ in range(Const.NUMBER_OF_SENSORS):
             # Recalculate new sensor orientation with 360 /  degrees offset from the previous one
             sensor_start_x, sensor_start_y = self.get_orientation_vector(robot_center, sensor_orientation)
 
@@ -54,7 +54,7 @@ class Sensors:
                 ])
             )
             # Update degrees for next sensor
-            sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.number_of_sensors)
+            sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.NUMBER_OF_SENSORS)
 
     def draw(self, screen):
         for sensor in self.sensors:
@@ -64,13 +64,13 @@ class Sensors:
                 int(np.round(sensor.coords.xy[1][0])),
                 int(np.round(sensor.coords.xy[0][1])),
                 int(np.round(sensor.coords.xy[1][1])),
-                Const.colors['red']
+                Const.COLORS['red']
             )
             screen.blit(
-                Const.font_sensor.render(
+                Const.FONT_SENSORS.render(
                     f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
                     True,
-                    Const.colors["white"]
+                    Const.COLORS["white"]
                 ),
                 (
                     int(np.round(sensor.coords.xy[0][1])),

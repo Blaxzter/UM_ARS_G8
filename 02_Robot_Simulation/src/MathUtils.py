@@ -29,7 +29,7 @@ def distance_point_to_line(point: np.ndarray, line_start: np.ndarray, line_end: 
 
 
 def get_orientation_vector(orientation, position):
-    default_vec = np.array([Const.robot_radius, 0]).reshape((2, 1))
+    default_vec = np.array([Const.ROBOT_RADIUS, 0]).reshape((2, 1))
     rotated = rotate(default_vec, orientation)
     vec = position + rotated
     return np.array([vec[0, 0], vec[1, 0]]).reshape((2, 1))
@@ -146,8 +146,8 @@ def parallel_angles(angle_1: int, angle_2: int) -> bool:
 
 
 def intersection_semiline_segment(segment, line_start, direction_point):
-    x1 = segment.start_x
-    y1 = segment.start_y
+    x1 = segment.START_X
+    y1 = segment.START_Y
     x2 = segment.end_x
     y2 = segment.end_y
     x0 = line_start[0]

@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from src.Constants import robot_radius, epsilon
+from src.Constants import ROBOT_RADIUS, EPSILON
 
 line_color = (0, 128, 255)
 class Line:
@@ -17,8 +17,8 @@ class Line:
         self.vec = np.array(self.end - self.start).reshape((2, 1))
         self.nvec = (self.vec / np.linalg.norm(self.vec)).reshape((2, 1))
 
-        self.col_start: np.ndarray = self.start + (self.nvec * -1) * robot_radius
-        self.col_end: np.ndarray = self.end + self.nvec * robot_radius
+        self.col_start: np.ndarray = self.start + (self.nvec * -1) * ROBOT_RADIUS
+        self.col_end: np.ndarray = self.end + self.nvec * ROBOT_RADIUS
 
         self.col_start_x: float = self.col_start[0].item()
         self.col_start_y: float = self.col_start[1].item()
@@ -34,7 +34,7 @@ class Line:
         crossproduct = (point[1].item() - self.col_start_y) * (self.col_end_x - self.col_start_x) - (point[0].item() - self.col_start_x) * (self.col_end_y - self.col_start_y)
 
         # compare versus epsilon for floating point values, or != 0 if using integers
-        if abs(crossproduct) > epsilon:
+        if abs(crossproduct) > EPSILON:
             return False
 
         dotproduct = (point[0].item() - self.col_start_x) * (self.col_end_x - self.col_start_x) + (point[1].item() - self.col_start_y) * (self.col_end_y - self.col_start_y)
@@ -51,7 +51,7 @@ class Line:
         crossproduct = (point[1].item() - self.start_y) * (self.end_x - self.start_x) - (point[0].item() - self.start_x) * (self.end_y - self.start_y)
 
         # compare versus epsilon for floating point values, or != 0 if using integers
-        if abs(crossproduct) > epsilon:
+        if abs(crossproduct) > EPSILON:
             return False
 
         dotproduct = (point[0].item() - self.start_x) * (self.end_x - self.start_x) + (point[1].item() - self.start_y) * (self.end_y - self.start_y)

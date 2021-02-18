@@ -1,7 +1,7 @@
 import numpy as np
 import pygame
 
-from src.Constants import width, height
+from src.Constants import WIDTH, HEIGHT
 from src.Environment import Environment
 from src.Robot import Robot
 
@@ -12,9 +12,9 @@ class Simulator:
 
     def __init__(self):
         self.clock = pygame.time.Clock()
-        self.screen = pygame.display.set_mode((width, height))
+        self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
         self.environment = Environment()
-        self.robot = Robot(Const.start_pos)
+        self.robot = Robot(Const.START_POS)
         self.keys = [
             dict(key_code=[pygame.K_KP7], callback=self.robot.increase_left, pressed=False),
             dict(key_code=[pygame.K_KP4], callback=self.robot.decrease_left, pressed=False),
@@ -73,8 +73,8 @@ class Simulator:
         self.robot.update(self.environment)
 
     def draw_information(self, screen):
-        screen.blit(Const.font.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.colors["pink"]), (20, 20))
-        screen.blit(Const.font.render(f'v_l: {self.robot.v_l}', True, Const.colors["pink"]), (20, 40))
-        screen.blit(Const.font.render(f'v_r: {self.robot.v_r}', True, Const.colors["pink"]), (20, 60))
-        screen.blit(Const.font.render(f'pos_x: {np.round(self.robot.pos[0].item(), decimals=3)}', True, Const.colors["pink"]), (180, 20))
-        screen.blit(Const.font.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, Const.colors["pink"]), (180, 40))
+        screen.blit(Const.FONT.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, Const.COLORS["pink"]), (20, 20))
+        screen.blit(Const.FONT.render(f'v_l: {self.robot.v_l}', True, Const.COLORS["pink"]), (20, 40))
+        screen.blit(Const.FONT.render(f'v_r: {self.robot.v_r}', True, Const.COLORS["pink"]), (20, 60))
+        screen.blit(Const.FONT.render(f'pos_x: {np.round(self.robot.pos[0].item(), decimals=3)}', True, Const.COLORS["pink"]), (180, 20))
+        screen.blit(Const.FONT.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, Const.COLORS["pink"]), (180, 40))
