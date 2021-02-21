@@ -29,7 +29,7 @@ class Population:
         self.selection()
         self.crossover_mutation()
         self.generation += 1
-        if self.generation % 50 == 0:
+        if self.generation <= 250:
             Const.individuals_life_steps += Const.life_update
             for individual in self.individuals:
                 individual.genome.extend_genome()

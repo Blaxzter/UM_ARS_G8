@@ -12,7 +12,7 @@ height = 700
 start_x = 300
 start_y = 250
 
-start_rot = 270
+start_rot = 0
 
 start_pos = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 
@@ -37,10 +37,10 @@ colors = dict(
 pygame.init()
 font = pygame.font.SysFont(None, 24)
 
-number_of_individuals = 20
+number_of_individuals = 100
 start_location = np.array([start_x, start_y], dtype=float).reshape((2, 1))
 goal = np.array([width - 100, 100], dtype=float).reshape((2, 1))
 
-individuals_life_steps = 50
-life_update = 50
+individuals_life_steps = 1
+life_update = 1
 elitism_rate = min(2, number_of_individuals // 3)
