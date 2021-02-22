@@ -5,8 +5,8 @@ import pygame
 ENVIRONMENT_SPEED = 0.1                                                 # Frederic fill this please
 PADDING = 20                                                            # Right, Left and Bottom padding
 PADDING_TOP = 100                                                       # Top padding to make space for data
-WIDTH = 1100                                                            # Width of window
-HEIGHT = 700                                                            # Height of window
+WIDTH = 2000                                                            # Width of window
+HEIGHT = 1200                                                            # Height of window
 EPSILON = 0.00001                                                       # Workaround for floats with weird values
 
 # ROBOT

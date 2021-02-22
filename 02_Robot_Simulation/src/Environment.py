@@ -21,15 +21,17 @@ class Collision:
 class Environment:
     def __init__(self):
         self.environment: List[Line] = [
+            # OBSTACLES
             Line(WIDTH / 2, PADDING_TOP + 70, WIDTH / 2, HEIGHT / 2 + 50),
             Line(WIDTH / 2, HEIGHT / 2 + 50, WIDTH - PADDING, HEIGHT / 2 + 50),
+            # EXTERNAL BOX
             Line(PADDING, PADDING_TOP, WIDTH - PADDING, PADDING_TOP),
             Line(WIDTH - PADDING, PADDING_TOP, WIDTH - PADDING, HEIGHT - PADDING),
             Line(WIDTH - PADDING, HEIGHT - PADDING, PADDING, HEIGHT - PADDING),
             Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
-            # Line(69, 69, 169, 196),
-            # Line(width / 2 - ((width / 2) / 2), padding_top + 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
-            # Line(width / 2 - ((width / 2) / 2), height - padding - 50, width / 2 + ((width / 2) / 2), (height + padding_top) / 2),
+            # RIGHT ARROW
+            Line(PADDING + 50, PADDING_TOP + 50, PADDING + 500, PADDING_TOP + 500),
+            Line(PADDING + 500, PADDING_TOP + 500, PADDING + 50, PADDING_TOP + 1000)
         ]   # Group of boundaries that make up the environment in which the robot moves
 
     def draw(self, screen: pygame.display) -> None:
