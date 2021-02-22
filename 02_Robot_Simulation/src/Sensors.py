@@ -17,7 +17,10 @@ class Sensors:
 
         for _ in range(Const.NUMBER_OF_SENSORS):
             # Recalculate new sensor orientation with 360 /  degrees offset from the previous one
-            sensor_start_x, sensor_start_y = self.get_orientation_vector(robot_center, sensor_orientation)
+            n_vec_orient = self.get_orientation_vector(sensor_orientation)
+            pos_on_edge = robot_center + n_vec_orient * Const.ROBOT_RADIUS
+            sensor_start_x = pos_on_edge[0, 0]
+            sensor_start_y = pos_on_edge[1, 0]
 
             # For every boundary in the map calculate the intersection if there is one and it's the best
             sensor_intersection = None
@@ -39,14 +42,19 @@ class Sensors:
                     if temp_distance < distance_closest_intersection:
                         distance_closest_intersection = temp_distance
                         sensor_intersection = intersection
-                else:
-                    continue
+
+            end_point_x = sensor_intersection[0, 0]
+            end_point_y = sensor_intersection[1, 0]
+            if distance_closest_intersection > Const.SENSOR_MAX_LENGTH:
+                end_pos = robot_center + n_vec_orient * (Const.SENSOR_MAX_LENGTH + Const.ROBOT_RADIUS)
+                end_point_x = end_pos[0, 0]
+                end_point_y = end_pos[1, 0]
 
             # Append sensor segment to the list of sensor to be drawn after the update
             self.sensors.append(
                 LineString([
                     [sensor_start_x, sensor_start_y],
-                    [sensor_intersection[0, 0], sensor_intersection[1, 0]]
+                    [end_point_x, end_point_y]
                 ])
             )
             # Update degrees for next sensor
@@ -75,8 +83,7 @@ class Sensors:
             )
 
     @staticmethod
-    def get_orientation_vector(pos: np.ndarray, degree: float) -> (float, float):
-        default_vec = np.array([Const.ROBOT_RADIUS, 0]).reshape((2, 1))
+    def get_orientation_vector(degree: float) -> (float, float):
+        default_vec = np.array([1, 0]).reshape((2, 1))
         rotated = rotate(default_vec, degree)
-        vec = pos + rotated
-        return vec[0, 0], vec[1, 0]
+        return rotated

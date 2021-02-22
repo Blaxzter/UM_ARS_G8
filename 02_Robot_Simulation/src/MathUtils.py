@@ -90,6 +90,8 @@ def line_seg_intersection(a1: float, a2: float, b1: float, b2: float) -> np.ndar
     intersection = line1.intersection(line2)
     if intersection.is_empty:
         return None
+    if type(intersection) is LineString:
+        return np.array(intersection.boundary[0]).reshape((2, 1))
     return np.array(intersection).reshape((2, 1))
 
 

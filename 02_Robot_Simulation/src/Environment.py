@@ -31,7 +31,7 @@ class Environment:
             Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
             # RIGHT ARROW
             Line(PADDING + 50, PADDING_TOP + 50, PADDING + 500, PADDING_TOP + 500),
-            Line(PADDING + 500, PADDING_TOP + 500, PADDING + 650, PADDING_TOP + 1000)
+            Line(PADDING + 500, PADDING_TOP + 500, PADDING + 650, HEIGHT - PADDING)
         ]   # Group of boundaries that make up the environment in which the robot moves
 
     def draw(self, screen: pygame.display) -> None:
@@ -51,7 +51,8 @@ class Environment:
                 jumped_through = distance_point_to_point(robot_current_center, robot_next_center) > distance_point_to_point(
                     robot_current_center, extend_intersection)
 
-            if extend_intersection is not None and true_intersection is None and np.dot((robot_current_center - robot_next_center).T, line.vec) < EPSILON:
+            # We need this because otherwise we would stop at the extended line of a
+            if extend_intersection is not None and true_intersection is None and np.abs(np.dot((robot_current_center - robot_next_center).T, line.vec)) < EPSILON:
                 continue
 
             if (ROBOT_RADIUS - distance_to_line > EPSILON) or jumped_through:

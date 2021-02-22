@@ -28,11 +28,12 @@ class Robot:
             self.pos = np.array([x, y], dtype=float).reshape(2, 1)
 
     def update(self, environment: Environment) -> None:
-        # Update sensors
-        self.sensors.update(environment, self.theta, self.pos)
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
+
+        # Update sensors
+        self.sensors.update(environment, self.theta, self.pos)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
