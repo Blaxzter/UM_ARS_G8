@@ -20,6 +20,12 @@ class Robot:
         self.sensors: Sensors = Sensors()                   # Sensor used by the robots
         self.theta: float = np.deg2rad(Const.START_ROT)     # Rotation of the robot (wrt the "front")
         self.sensor_hidden: bool = False                    # Show/Hide sensors
+        self.dragging = False
+
+    def drag(self, x, y):
+        if Const.PADDING + Const.ROBOT_RADIUS < x < Const.WIDTH - Const.PADDING - Const.ROBOT_RADIUS \
+                and Const.PADDING_TOP + Const.ROBOT_RADIUS < y < Const.HEIGHT - Const.PADDING - Const.ROBOT_RADIUS:
+            self.pos = np.array([x, y], dtype=float).reshape(2, 1)
 
     def update(self, environment: Environment) -> None:
         # Update sensors

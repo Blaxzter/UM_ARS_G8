@@ -37,7 +37,7 @@ class Simulator:
 
     def start(self) -> None:
         while not self.done:
-            self.pygame_defaults()
+            # self.pygame_defaults()
 
             self.update()
             self.draw()
@@ -46,6 +46,7 @@ class Simulator:
 
     def update(self) -> None:
         self.get_key_update()
+        self.get_drag_update()
         self.do_robot_update()
 
     def draw(self) -> None:
@@ -66,10 +67,29 @@ class Simulator:
                 # else:
                 #     key['pressed'] = False
 
-    def pygame_defaults(self) -> None:
+    # def pygame_defaults(self) -> None:
+    #     for event in pygame.event.get():
+
+
+    def get_drag_update(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 self.done = True
+                return
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.robot.dragging = True
+                    mouse_x, mouse_y = event.pos
+                    self.robot.drag(mouse_x, mouse_y)
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.robot.dragging = False
+
+            elif event.type == pygame.MOUSEMOTION:
+                if self.robot.dragging:
+                    mouse_x, mouse_y = event.pos
+                    self.robot.drag(mouse_x, mouse_y)
 
     def do_robot_update(self) -> None:
         self.robot.update(self.environment)
