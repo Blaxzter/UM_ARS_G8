@@ -1,6 +1,9 @@
 import numpy as np
 import pygame
 
+# This was done by everyone piece by piece
+
+
 # ENVIRONMENT
 ENVIRONMENT_SPEED = 0.1                                                 # Frederic fill this please
 PADDING = 20                                                            # Right, Left and Bottom padding

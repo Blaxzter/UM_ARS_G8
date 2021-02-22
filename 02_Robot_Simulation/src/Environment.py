@@ -7,6 +7,8 @@ from Line import Line
 from src.Constants import PADDING, WIDTH, HEIGHT, ROBOT_RADIUS, PADDING_TOP, EPSILON
 from src.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
 
+# This class was mostly created by Guillaume
+
 
 class Collision:
     def __init__(self, line: Line, outside_of_line: (np.ndarray, np.ndarray), true_intersection: np.ndarray, extend_intersection: np.ndarray, jumped_through: bool, distance_to_line: float):

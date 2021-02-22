@@ -6,6 +6,8 @@ from pygame import gfxdraw
 from src.Environment import Environment
 from src.MathUtils import *
 
+# Mostly done by Teo
+
 
 class Sensors:
     def __init__(self):

@@ -8,6 +8,8 @@ from src.MathUtils import *
 from src.MathUtils import get_x_y
 from src.Sensors import Sensors
 
+# Mostly done by frederic
+
 dt = 1
 
 

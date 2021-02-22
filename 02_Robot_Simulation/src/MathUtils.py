@@ -5,6 +5,10 @@ from shapely.geometry import LineString
 import Constants as Const
 from src.Line import Line
 
+# Some of the code inside here is taken from somewhere else (Stack overflow...)
+# But because it is just math stuff and sometimes we forgot to add where we took it from
+# I hope that isn't a problem
+
 x_axes = np.array([1, 0]).reshape((2, 1))
 
 

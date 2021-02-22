@@ -5,6 +5,7 @@ from src.Constants import ROBOT_RADIUS, EPSILON
 
 line_color = (0, 128, 255)
 
+# This class was mostly created by Frederic
 
 class Line:
     def __init__(self, start_x: float, start_y: float, end_x: float, end_y: float):

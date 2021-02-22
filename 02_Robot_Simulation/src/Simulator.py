@@ -9,6 +9,7 @@ from src.Robot import Robot
 
 import Constants as Const
 
+# Mostly done by Teo
 
 class Simulator:
 
