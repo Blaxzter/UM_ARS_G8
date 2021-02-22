@@ -13,13 +13,13 @@ dt = 1
 
 class Robot:
     def __init__(self, init_pos: np.ndarray):
-        self.v_l: float = 0                                 # Velocity of left wheel
-        self.v_r: float = 0                                 # Velocity of right wheel
-        self.l: int = Const.ROBOT_RADIUS * 2                # Diameter ? Frederic comment this one, you're using it
-        self.pos: np.ndarray = init_pos                     # Current position of the robot
-        self.sensors: Sensors = Sensors()                   # Sensor used by the robots
-        self.theta: float = np.deg2rad(Const.START_ROT)     # Rotation of the robot (wrt the "front")
-        self.sensor_hidden: bool = False                    # Show/Hide sensors
+        self.v_l: float = 0  # Velocity of left wheel
+        self.v_r: float = 0  # Velocity of right wheel
+        self.l: int = Const.ROBOT_RADIUS * 2  # distance between the moters
+        self.pos: np.ndarray = init_pos  # Current position of the robot
+        self.sensors: Sensors = Sensors()  # Sensor used by the robots
+        self.theta: float = np.deg2rad(Const.START_ROT)  # Rotation of the robot (wrt the "front")
+        self.sensor_hidden: bool = False  # Show/Hide sensors
         self.dragging = False
 
     def drag(self, x, y):
@@ -103,7 +103,9 @@ class Robot:
         closest_point, further_point = outside_of_line(current_pos, comp_line.start, comp_line.end)
         if closest_point is not None and same_direct > 0:
 
-            end_point = get_orientation_vector(self.theta, current_pos)
+            curr_orientation = angle_between(n_vec, x_axes)
+            curr_orientation = (2 * np.pi - curr_orientation) % (2 * np.pi)
+            end_point = get_orientation_vector(curr_orientation, current_pos)
             direct_vector = (rotate_deg(n_vec, 90) if side_of_point(further_point, closest_point, end_point)
                              else rotate_deg(n_vec, 90) * -1)
 
@@ -216,11 +218,8 @@ class Robot:
         self.v_r -= Const.ROBOT_VELOCITY_STEPS
         self.v_r = np.round(self.v_r, decimals=3)
 
-    def hide_sensor(self) -> None:
-        self.sensor_hidden = True
-
-    def show_sensor(self) -> None:
-        self.sensor_hidden = False
+    def toggle_sensor(self) -> None:
+        self.sensor_hidden = not self.sensor_hidden
 
     @staticmethod
     def closest_collision(collisions: List[Collision], position) -> Collision:

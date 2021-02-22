@@ -6,13 +6,13 @@ ENVIRONMENT_SPEED = 0.1                                                 # Freder
 PADDING = 20                                                            # Right, Left and Bottom padding
 PADDING_TOP = 100                                                       # Top padding to make space for data
 WIDTH = 2000                                                            # Width of window
-HEIGHT = 1200                                                            # Height of window
+HEIGHT = 1000                                                            # Height of window
 EPSILON = 0.00001                                                       # Workaround for floats with weird values
 
 # ROBOT
 START_X = 300                                                           # Start X
 START_Y = 250                                                           # Start y
-START_ROT = 270                                                         # Starting rotation wrt to x-axis
+START_ROT = 0                                                         # Starting rotation wrt to x-axis
 START_POS = np.array([START_X, START_Y], dtype=float).reshape((2, 1))   # Starting position of Robot
 NUMBER_OF_SENSORS = 12                                                  # Number of sensor for Robot
 ROBOT_RADIUS = 30                                                       # Radius of the robot

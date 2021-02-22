@@ -1,3 +1,5 @@
+from typing import List
+
 import pygame
 from pygame import gfxdraw
 
@@ -7,7 +9,7 @@ from src.MathUtils import *
 
 class Sensors:
     def __init__(self):
-        self.sensors: List[LineString] = []     # Collection of all the sensor in a Robot
+        self.sensors: List[LineString] = []  # Collection of all the sensor in a Robot
 
     def update(self, environment: Environment, sensor_orientation: float, robot_center: np.ndarray) -> None:
         self.sensors.clear()

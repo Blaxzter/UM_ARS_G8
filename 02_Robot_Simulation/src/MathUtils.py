@@ -1,10 +1,11 @@
 import math
-from typing import List
 
 import numpy as np
 from shapely.geometry import LineString
 import Constants as Const
 from src.Line import Line
+
+x_axes = np.array([1, 0]).reshape((2, 1))
 
 
 def rotate(vec: np.ndarray, rad: float) -> np.ndarray:
@@ -134,7 +135,8 @@ def parallel_angles(angle_1: int, angle_2: int) -> bool:
     return np.abs(angle_1 - angle_2) == 0 or np.abs(angle_1 - angle_2) == 180
 
 
-def intersection_semiline_segment(segment: Line, line_start: (float, float), direction_point: (float, float)) -> np.ndarray:
+def intersection_semiline_segment(segment: Line, line_start: (float, float),
+                                  direction_point: (float, float)) -> np.ndarray:
     x1 = segment.start_x
     y1 = segment.start_y
     x2 = segment.end_x

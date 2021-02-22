@@ -11,7 +11,7 @@ from src.MathUtils import distance_point_to_point, distance_point_to_line_seg, l
 class Collision:
     def __init__(self, line: Line, outside_of_line: (np.ndarray, np.ndarray), true_intersection: np.ndarray, extend_intersection: np.ndarray, jumped_through: bool, distance_to_line: float):
         self.line: Line = line                                              # Line that generated the collision
-        self.outside_of_line: (np.ndarray, np.ndarray) = outside_of_line    # Frederic fill this
+        self.outside_of_line: (np.ndarray, np.ndarray) = outside_of_line    # (None, None) if inside of the line otherwise the end and
         self.extend_intersection: np.ndarray = extend_intersection          # Frederic fill this
         self.true_intersection: np.ndarray = true_intersection              # Frederic fill this
         self.jumped_through: bool = jumped_through                          # Robot jumped through the line
@@ -31,7 +31,7 @@ class Environment:
             Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
             # RIGHT ARROW
             Line(PADDING + 50, PADDING_TOP + 50, PADDING + 500, PADDING_TOP + 500),
-            Line(PADDING + 500, PADDING_TOP + 500, PADDING + 50, PADDING_TOP + 1000)
+            Line(PADDING + 500, PADDING_TOP + 500, PADDING + 650, PADDING_TOP + 1000)
         ]   # Group of boundaries that make up the environment in which the robot moves
 
     def draw(self, screen: pygame.display) -> None:
