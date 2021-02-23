@@ -1,9 +1,12 @@
 import numpy as np
 import pygame
 
-from src.Constants import robot_radius, epsilon
+from src.Constants import ROBOT_RADIUS, EPSILON
 
 line_color = (0, 128, 255)
+
+# This class was mostly created by Frederic
+
 class Line:
     def __init__(self, start_x: float, start_y: float, end_x: float, end_y: float):
         self.start_x: float = start_x
@@ -17,8 +20,8 @@ class Line:
         self.vec = np.array(self.end - self.start).reshape((2, 1))
         self.nvec = (self.vec / np.linalg.norm(self.vec)).reshape((2, 1))
 
-        self.col_start: np.ndarray = self.start + (self.nvec * -1) * robot_radius
-        self.col_end: np.ndarray = self.end + self.nvec * robot_radius
+        self.col_start: np.ndarray = self.start + (self.nvec * -1) * ROBOT_RADIUS
+        self.col_end: np.ndarray = self.end + self.nvec * ROBOT_RADIUS
 
         self.col_start_x: float = self.col_start[0].item()
         self.col_start_y: float = self.col_start[1].item()
@@ -31,34 +34,40 @@ class Line:
         self.angle = self.compute_slope()
 
     def is_on(self, point):
-        crossproduct = (point[1].item() - self.col_start_y) * (self.col_end_x - self.col_start_x) - (point[0].item() - self.col_start_x) * (self.col_end_y - self.col_start_y)
+        crossproduct = (point[1].item() - self.col_start_y) * (self.col_end_x - self.col_start_x) - (
+                point[0].item() - self.col_start_x) * (self.col_end_y - self.col_start_y)
 
         # compare versus epsilon for floating point values, or != 0 if using integers
-        if abs(crossproduct) > epsilon:
+        if abs(crossproduct) > EPSILON:
             return False
 
-        dotproduct = (point[0].item() - self.col_start_x) * (self.col_end_x - self.col_start_x) + (point[1].item() - self.col_start_y) * (self.col_end_y - self.col_start_y)
+        dotproduct = (point[0].item() - self.col_start_x) * (self.col_end_x - self.col_start_x) + (
+                point[1].item() - self.col_start_y) * (self.col_end_y - self.col_start_y)
         if dotproduct < 0:
             return False
 
-        squaredlengthba = (self.col_end_x - self.col_start_x) * (self.col_end_x - self.col_start_x) + (self.col_end_y - self.col_start_y) * (self.col_end_y - self.col_start_y)
+        squaredlengthba = (self.col_end_x - self.col_start_x) * (self.col_end_x - self.col_start_x) + (
+                self.col_end_y - self.col_start_y) * (self.col_end_y - self.col_start_y)
         if dotproduct > squaredlengthba:
             return False
 
         return True
 
     def is_on_1(self, point):
-        crossproduct = (point[1].item() - self.start_y) * (self.end_x - self.start_x) - (point[0].item() - self.start_x) * (self.end_y - self.start_y)
+        crossproduct = (point[1].item() - self.start_y) * (self.end_x - self.start_x) - (
+                point[0].item() - self.start_x) * (self.end_y - self.start_y)
 
         # compare versus epsilon for floating point values, or != 0 if using integers
-        if abs(crossproduct) > epsilon:
+        if abs(crossproduct) > EPSILON:
             return False
 
-        dotproduct = (point[0].item() - self.start_x) * (self.end_x - self.start_x) + (point[1].item() - self.start_y) * (self.end_y - self.start_y)
+        dotproduct = (point[0].item() - self.start_x) * (self.end_x - self.start_x) + (
+                point[1].item() - self.start_y) * (self.end_y - self.start_y)
         if dotproduct < 0:
             return False
 
-        squaredlengthba = (self.end_x - self.start_x) * (self.end_x - self.start_x) + (self.end_y - self.start_y) * (self.end_y - self.start_y)
+        squaredlengthba = (self.end_x - self.start_x) * (self.end_x - self.start_x) + (self.end_y - self.start_y) * (
+                self.end_y - self.start_y)
         if dotproduct > squaredlengthba:
             return False
 
@@ -71,7 +80,8 @@ class Line:
         pygame.draw.line(screen, line_color, self.pyStart, self.pyEnd, 2)
 
     def compute_slope(self):
-        return (self.start[1] - self.end[1]) / (self.start[0] - self.end[0]) if (self.start[0] - self.end[0]) != 0 else np.inf
+        return (self.start[1] - self.end[1]) / (self.start[0] - self.end[0]) if (self.start[0] - self.end[
+            0]) != 0 else np.inf
 
     def get_vec_towards_point(self, pos):
         ep = np.linalg.norm(pos - self.end)

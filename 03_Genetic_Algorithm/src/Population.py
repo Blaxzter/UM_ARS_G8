@@ -29,10 +29,12 @@ class Population:
         self.selection()
         self.crossover_mutation()
         self.generation += 1
-        if self.generation <= 250:
-            Const.individuals_life_steps += Const.life_update
-            for individual in self.individuals:
-                individual.genome.extend_genome()
+
+        # INCREMENT LIFE EVERY GENERATION
+        # if self.generation <= 250:
+        #     Const.LIFES_STEPS += Const.LIFE_UPDATE
+        #     for individual in self.individuals:
+        #         individual.genome.extend_genome()
 
     def evaluation(self):
         for individual in self.individuals:
@@ -43,18 +45,18 @@ class Population:
 
     def selection(self):
         self.best_from_previous_generation.clear()
-        ordered_by_fitness = sorted(self.individuals, key=lambda robot: robot.fitness, reverse=True)[:Const.elitism_rate]
+        ordered_by_fitness = sorted(self.individuals, key=lambda robot: robot.fitness, reverse=True)[:Const.ELITISM_RATE]
         for best in ordered_by_fitness:
-            elite = Robot(Const.start_pos)
+            elite = Robot(Const.START_POS)
             elite.genome = best.genome
             self.best_from_previous_generation.append(elite)
 
     def crossover_mutation(self):
         new_population = []
-        for _ in range(Const.number_of_individuals - Const.elitism_rate):
+        for _ in range(Const.N_INDIVIDUALS - Const.ELITISM_RATE):
             parent1 = random.sample(self.best_from_previous_generation, 1)[0]
             parent2 = random.sample(self.best_from_previous_generation, 1)[0]
-            child = Robot(Const.start_pos)
+            child = Robot(Const.START_POS)
 
             child.genome.genes = parent1.genome.crossover(parent2.genome)
             child.genome.mutation()
@@ -66,4 +68,4 @@ class Population:
 
     @staticmethod
     def init_individuals():
-        return [Robot(Const.start_location) for _ in range(Const.number_of_individuals)]
+        return [Robot(Const.START_POS) for _ in range(Const.N_INDIVIDUALS)]
