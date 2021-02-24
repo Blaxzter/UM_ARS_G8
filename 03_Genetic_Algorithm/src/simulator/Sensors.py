@@ -3,8 +3,8 @@ from typing import List
 import pygame
 from pygame import gfxdraw
 
-from src.Environment import Environment
-from src.MathUtils import *
+from src.simulator.Environment import Environment
+from src.utils.MathUtils import *
 
 # Mostly done by Teo
 
