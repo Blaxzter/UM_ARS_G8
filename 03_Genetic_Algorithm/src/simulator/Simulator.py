@@ -1,8 +1,9 @@
+from concurrent.futures.process import ProcessPoolExecutor
 from typing import List, Dict, Callable
 
-import numpy as np
+import os
 import pygame
-from multiprocessing import Process
+import numpy as np
 
 
 from src.simulator.Robot import Robot
@@ -24,6 +25,7 @@ class Simulator:
         self.gui_enabled = gui_enabled
 
         if gui_enabled:
+            # initialize pygame
             pygame.init()
             self.clock: pygame.time.Clock = pygame.time.Clock()                     # PyGame Clock to set frame rate
             self.screen: pygame.screen = pygame.display.set_mode((WIDTH, HEIGHT))   # Window where simulation is played
@@ -34,12 +36,15 @@ class Simulator:
                 dict(key_code=[pygame.K_r], callback=self.reinit_robots, hold=False, pressed=False),
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
+        else:
+            self.pool = ProcessPoolExecutor(os.cpu_count())
 
         self.environment: Environment = Environment()                               # Environment where the robot is placed
         self.done: bool = False                                                     # Window closed ?
         self.robots: List[Robot] = []
         self.simulation_time = simulation_time
         self.time_left = simulation_time
+
 
     def reinit_robots(self):
         robo_amount = len(self.robots)
@@ -59,28 +64,37 @@ class Simulator:
             )
 
     def start(self) -> None:
-        while not self.done:
-            if self.gui_enabled:
+
+        if self.gui_enabled:
+            while not self.done:
+
                 self.get_key_update()
                 self.pygame_defaults()
 
-            self.update()
-
-            if self.gui_enabled:
+                self.update()
                 self.draw()
                 self.clock.tick(FPS)
+        else:
+            futures = []
+            environment = self.environment
+            for robot in self.robots:
+                # self.run_robot_evaluation(self.time_left, robot, environment)
+                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environment)
+                futures.append(dict(future=future, robot=robot))
+
+            for future in futures:
+                future["future"].done()
+                future["robot"].genome.fitness = future["future"].result()
+            # print("Future Done")
+
+    @staticmethod
+    def run_robot_evaluation(generations, robot, environment):
+        # print("Run robot evaluation: " + str(robot.genome.genes))
+        for i in range(generations):
+            robot.update(environment)
+        return robot.genome.fitness
 
     def update(self) -> None:
-
-        # processes = []
-        #
-        # for robot in self.robots:
-        #     p = Process(target = robot.update, args = (self.environment, ))
-        #     p.start()
-        #
-        # for process in processes:
-        #     process.join()
-
         for robot in self.robots:
             robot.update(self.environment)
 
@@ -92,7 +106,7 @@ class Simulator:
         self.screen.fill((0, 0, 0))
         self.environment.draw(self.screen)
         for robot in self.robots:
-            robot.draw(self.screen)
+            robot.draw(self.screen, pygame)
         self.draw_information(self.screen)
         pygame.display.flip()
 

@@ -15,8 +15,6 @@ HEIGHT = 500  # Height of window
 
 EPSILON = 0.00001  # Workaround for floats with weird values
 
-
-
 # ROBOT
 START_X = 300  # Start X
 START_Y = 250  # Start y
@@ -49,4 +47,4 @@ ELITISM_AMOUNT = 2
 
 GENOME_LENGTH = 20
 N_GENERATION = 100
-DRAW = True
+DRAW = False

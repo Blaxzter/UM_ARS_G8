@@ -1,6 +1,5 @@
 from typing import List
 
-import pygame
 from pygame import gfxdraw
 
 from src.simulator.Environment import Environment
@@ -62,7 +61,7 @@ class Sensors:
             # Update degrees for next sensor
             sensor_orientation = sensor_orientation + np.deg2rad(360 / Const.NUMBER_OF_SENSORS)
 
-    def draw(self, screen: pygame.display) -> None:
+    def draw(self, screen) -> None:
         for sensor in self.sensors:
             gfxdraw.line(
                 screen,

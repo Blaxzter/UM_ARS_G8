@@ -1,8 +1,6 @@
 from typing import List
 
-import pygame
 from pygame import gfxdraw
-
 from src.genetic.Decoder import robot_decoder
 from src.simulator.Environment import Collision, Environment
 from src.genetic.Genome import Genome
@@ -17,6 +15,8 @@ class Robot:
         self.v_l = 0
         self.v_r = 0
         self.l = Const.ROBOT_RADIUS * 2
+
+
 
         self.prev_pos = None
         self.pos: np.ndarray = init_pos
@@ -158,14 +158,14 @@ class Robot:
 
         return pos_on_line, new_next_pos
 
-    def draw(self, screen: pygame.display) -> None:
+    def draw(self, screen, pygame) -> None:
         # Draw robot body
         self.draw_robot(screen)
         # Draw sensors
         if self.sensor_hidden:
             self.sensors.draw(screen)
 
-    def draw_robot(self, screen: pygame.display) -> None:
+    def draw_robot(self, screen) -> None:
         s_x, s_y = get_x_y(self.pos)
         gfxdraw.aacircle(
             screen,
