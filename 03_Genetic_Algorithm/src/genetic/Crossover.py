@@ -49,12 +49,11 @@ def uniform_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
 
 # TODO mask_uniform_crossover, linear_crossover, multi-point_crossover
 # Testing main just for my part :
-"""""
-def main():
-    genome1 = Genome()
-    genome2 = Genome()
-    print(uniform_crossover(genome1, genome2))
 
-if __name__ == "__main__":
-    main()
-"""""
+#def main():
+#    genome1 = Genome()
+#    genome2 = Genome()
+#   print(uniform_crossover(genome1, genome2))
+
+#if __name__ == "__main__":
+#    main()
