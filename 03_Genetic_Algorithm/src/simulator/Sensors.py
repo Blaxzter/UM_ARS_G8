@@ -1,9 +1,11 @@
 from typing import List
 
+import pygame
 from pygame import gfxdraw
 
 from src.simulator.Environment import Environment
 from src.utils.MathUtils import *
+from src.utils.Constants import DRAW
 
 # Mostly done by Teo
 
@@ -11,6 +13,8 @@ from src.utils.MathUtils import *
 class Sensors:
     def __init__(self):
         self.sensors: List[LineString] = []  # Collection of all the sensor in a Robot
+        if DRAW:
+            self.font_sensors = pygame.font.SysFont(None, 28)  #
 
     def update(self, environment: Environment, sensor_orientation: float, robot_center: np.ndarray) -> None:
         self.sensors.clear()
@@ -72,7 +76,7 @@ class Sensors:
                 Const.COLORS['red']
             )
             screen.blit(
-                Const.FONT_SENSORS.render(
+                self.font_sensors.render(
                     f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
                     True,
                     Const.COLORS["white"]
