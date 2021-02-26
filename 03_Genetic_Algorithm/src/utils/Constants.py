@@ -45,6 +45,6 @@ N_INDIVIDUALS = 10
 SELECT_AMOUNT = 4
 ELITISM_AMOUNT = 2
 
-GENOME_LENGTH = 20
+GENOME_LENGTH = NUMBER_OF_SENSORS * 2  # Number of sensors * Number of components of the velocity
 N_GENERATION = 100
-DRAW = False
+DRAW = True

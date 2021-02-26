@@ -61,14 +61,24 @@ class GeneticAlgorithm:
     def selection(self) -> List:
         next_population = []
         ordered_by_fitness = list(sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
+        sum_fitness = sum([individual.fitness for individual in self.populations[-1].individuals])
 
         # Select first n as elite
         for i in range(0, ELITISM_AMOUNT):
             next_population.append(ordered_by_fitness[i])
 
-        # Do roulette wheel selection # TODO implement something smart here
+        # Do roulette wheel selection
         for i in range(ELITISM_AMOUNT, ELITISM_AMOUNT + SELECT_AMOUNT):
-            next_population.append(ordered_by_fitness[i])
+            # https://stackoverflow.com/questions/10324015/fitness-proportionate-selection-roulette-wheel-selection-in-python
+            random_pick = random.uniform(0, sum_fitness)
+            current_fitness = 0
+            choice = None
+            for individual in self.populations[-1].individuals:
+                current_fitness += individual.fitness
+                if current_fitness > random_pick:
+                    choice = individual
+                    break
+            next_population.append(choice)
 
         return next_population
 

@@ -27,7 +27,10 @@ class Robot:
         self.number_of_total_collisions = 0
 
     def update(self, environment):
-        self.v_r, self.v_l = robot_decoder(self.genome)
+        # Update sensors and collision counter
+        self.sensors.update(environment, self.theta, self.pos)
+
+        self.v_r, self.v_l = robot_decoder(self.genome, self.sensors)
 
         self.number_of_total_collisions += np.sum([(1 if line.length == 0 else 0) for line in self.sensors.sensors])
 
@@ -37,13 +40,11 @@ class Robot:
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
-        # Update sensors and collision counter
-        self.sensors.update(environment, self.theta, self.pos)
 
         self.calc_fitness()
 
     def calc_fitness(self):
-        # TODO do correct fitness calculation for roombot
+        # TODO do correct fitness calculation for roombot (for week 2)
         dist_covered = np.linalg.norm(self.pos - self.prev_pos)
         self.genome.set_fitness(dist_covered - self.number_of_total_collisions)
 

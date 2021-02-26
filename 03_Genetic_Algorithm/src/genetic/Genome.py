@@ -19,7 +19,7 @@ class Genome:
 
     @staticmethod
     def init_genome():
-        return np.random.rand(GENOME_LENGTH)
+        return np.random.rand(GENOME_LENGTH) * 0.1
 
     def get_fitness(self):
         return self.fitness
