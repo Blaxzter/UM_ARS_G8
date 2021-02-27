@@ -16,7 +16,7 @@ def robot_decoder(genome: Genome, sensors: Sensors, prev_vel: List[float]) -> (f
 
 
     input_nn = np.array([sensor.length for sensor in sensors.sensors] + prev_vel).reshape(1, NUMBER_OF_SENSORS + 2)
-    weights_input = np.array([gene * 0.1 for gene in genome.genes]).reshape(2, NUMBER_OF_SENSORS + 2)
+    weights_input = np.array([gene for gene in genome.genes]).reshape(2, NUMBER_OF_SENSORS + 2)
 
     output = sigmoid(np.dot(input_nn, weights_input.T))
 
