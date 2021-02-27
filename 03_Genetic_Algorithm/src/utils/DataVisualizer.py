@@ -5,6 +5,27 @@ import numpy as np
 import time
 from matplotlib import pyplot as plt
 
+from src.utils.Constants import GRAPH_WINDOW
+
+
+def animate(x, data, colors):
+    plt.cla()
+
+    for i, key in enumerate(data.keys()):
+        y = data[key]
+        viz_x = x
+
+        if GRAPH_WINDOW != -1:
+            y = data[key][-GRAPH_WINDOW:]
+            viz_x = x[-GRAPH_WINDOW:]
+
+        plt.plot(viz_x, y, color = colors[i], label = f'{key}')
+    plt.pause(0.00001)
+
+    plt.legend(loc='upper left')
+    plt.tight_layout()
+
+
 def run(done, iteration, line_dict):
     """
     Display the simulation using matplotlib, optionally using blit for speed
@@ -27,11 +48,15 @@ def run(done, iteration, line_dict):
         if old_value < iteration.value:
             # print(old_value, iteration.value)
             for i, key in enumerate(line_dict.keys()):
+
                 data[key].append(line_dict[key])
+                y = data[key]
                 x = np.arange(len(data[key]))
 
-                y = data[key][-10:]
-                x = x[-10:]
+                if GRAPH_WINDOW != -1:
+                    y = data[key][-GRAPH_WINDOW:]
+                    x = x[-GRAPH_WINDOW:]
+
                 print(key, x)
                 print(key, y)
                 ax.plot(x, y, color = colors[i], label = f'{key}')
@@ -39,8 +64,9 @@ def run(done, iteration, line_dict):
             old_value = iteration.value
 
             fig.canvas.draw()
-            plt.cla()
-            time.sleep(0.1)
+            # plt.legend()
+            # plt.cla()
+            time.sleep(0.001)
 
     plt.close(fig)
 
@@ -51,24 +77,47 @@ class DataManager:
     @author Frederic Abraham
     """
 
-    def __init__(self, data_names: List, pull_rate: int):
-        self.manager = Manager()
-        self.done = self.manager.Value("done", True)
-        self.time_step = self.manager.Value("timestep", 0)
-        self.line_dict = self.manager.dict({data_name: 0 for data_name in data_names})
-        self.p = Process(target=run, args = (self.done, self.time_step, self.line_dict, ))
-        self.p.start()
+    def __init__(self, data_names: List, parallel: bool = False):
+
+        self.parallel = parallel
+
+        if parallel:
+            self.manager = Manager()
+            self.done = self.manager.Value("done", True)
+            self.time_step = self.manager.Value("timestep", 0)
+            self.line_dict = self.manager.dict({data_name: 0 for data_name in data_names})
+
+            self.p = Process(target = run, args = (self.done, self.time_step, self.line_dict,))
+            self.p.start()
+        else:
+            plt.tight_layout()
+            plt.ion()
+            plt.show()
+            self.time_steps = []
+            self.data = {data_name: [] for data_name in data_names}
+            self.colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(self.data)))
 
     def update_time_step(self, new_time_step):
-        self.time_step.value = new_time_step
+        if self.parallel:
+            self.time_step.value = new_time_step
+        else:
+            self.time_steps.append(new_time_step)
 
     def update_value(self, key, value):
-        self.line_dict[key] = value
+        if self.parallel:
+            self.line_dict[key] = value
+        else:
+            self.data[key].append(value)
+
+    def update(self):
+        if not self.parallel:
+            animate(self.time_steps, self.data, self.colors)
 
     def stop(self):
-        self.done.value = False
-        self.p.join()
-        self.p.close()
+        if self.parallel:
+            self.done.value = False
+            self.p.join()
+            self.p.close()
 
 
 if __name__ == '__main__':

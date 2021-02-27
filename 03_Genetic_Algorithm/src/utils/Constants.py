@@ -47,17 +47,18 @@ FPS = 144
 LIFE_STEPS = 200
 LIFE_UPDATE = 1
 
-N_INDIVIDUALS = 10
-ELITISM_AMOUNT = 2
-SELECT_AMOUNT = N_INDIVIDUALS - ELITISM_AMOUNT
+N_INDIVIDUALS = 100
+SELECT_PERCENTAGE = 0.5
+ELITISM_PERCENTAGE = 0.1
 
-GENOME_LENGTH = (NUMBER_OF_SENSORS + 2) * 2  # Number of sensors * Number of components of the velocity
-N_GENERATION = 1000
+GENOME_LENGTH = (NUMBER_OF_SENSORS + 2) * 2   # Number of sensors * Number of components of the velocity
+N_GENERATION = 10000
+GRAPH_WINDOW = -1
 DRAW = True
 
 # Optimization
-SEARCH_SPACE = 1
+SEARCH_SPACE = 100
 VALUES_PER_AXIS = 10
 optimisation = OptimizationFunction(0, 100)
 OPTI_FUNC = optimisation.rastrigin
-# GENOME_LENGTH = VALUES_PER_AXIS * 2  # for two dimension
+GENOME_LENGTH = VALUES_PER_AXIS * 2  # for two dimension
