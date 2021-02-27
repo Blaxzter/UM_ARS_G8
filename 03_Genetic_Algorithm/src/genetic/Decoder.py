@@ -1,3 +1,5 @@
+from typing import List
+
 import numpy as np
 
 from src.genetic.Genome import Genome
@@ -9,11 +11,12 @@ def optimization_decoder(genome: Genome) -> np.ndarray:
     return np.sum(np.array(genome.genes).reshape((int(len(genome.genes)/VALUES_PER_AXIS), VALUES_PER_AXIS)), axis=1) / VALUES_PER_AXIS
 
 
-def robot_decoder(genome: Genome, sensors: Sensors) -> (float, float):
+def robot_decoder(genome: Genome, sensors: Sensors, prev_vel: List[float]) -> (float, float):
     # TODO The velocity should feed back into the NN like a RNN 
 
-    input_nn = np.array([sensor.length for sensor in sensors.sensors]).reshape(1, NUMBER_OF_SENSORS)
-    weights_input = np.array([gene for gene in genome.genes]).reshape(2, NUMBER_OF_SENSORS)
+
+    input_nn = np.array([sensor.length for sensor in sensors.sensors] + prev_vel).reshape(1, NUMBER_OF_SENSORS + 2)
+    weights_input = np.array([gene * 0.1 for gene in genome.genes]).reshape(2, NUMBER_OF_SENSORS + 2)
 
     output = sigmoid(np.dot(input_nn, weights_input.T))
 

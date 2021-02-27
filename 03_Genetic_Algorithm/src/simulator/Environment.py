@@ -4,6 +4,7 @@ import numpy as np
 import pygame
 
 from src.simulator.Line import Line
+from src.simulator.Room import Room
 from src.utils.Constants import PADDING, WIDTH, HEIGHT, ROBOT_RADIUS, PADDING_TOP, EPSILON
 from src.utils.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
 
@@ -22,28 +23,16 @@ class Collision:
 
 class Environment:
     def __init__(self):
-        self.environment: List[Line] = [
-            # OBSTACLES
-            # Line(WIDTH / 2, PADDING_TOP + 70, WIDTH / 2, HEIGHT / 2 + 50),
-            # Line(WIDTH / 2, HEIGHT / 2 + 50, WIDTH - PADDING, HEIGHT / 2 + 50),
-            # RIGHT ARROW
-            # Line(PADDING + 50, PADDING_TOP + 50, PADDING + 500, PADDING_TOP + 500),
-            # Line(PADDING + 500, PADDING_TOP + 500, PADDING + 650, HEIGHT - PADDING),
-            # EXTERNAL BOX
-            Line(PADDING, PADDING_TOP, WIDTH - PADDING, PADDING_TOP),
-            Line(WIDTH - PADDING, PADDING_TOP, WIDTH - PADDING, HEIGHT - PADDING),
-            Line(WIDTH - PADDING, HEIGHT - PADDING, PADDING, HEIGHT - PADDING),
-            Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
-        ]   # Group of boundaries that make up the environment in which the robot moves
+        self.environment: Room = Room(1) # parameter: room number
 
     def draw(self, screen: pygame.display) -> None:
-        for line in self.environment:
+        for line in self.environment.map:
             line.draw(screen)
 
     def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List[Collision]:
         collisions = []
 
-        for line in self.environment:
+        for line in self.environment.map:
 
             distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
             extend_intersection = line_seg_intersection(robot_current_center, robot_next_center, line.col_start, line.col_end)

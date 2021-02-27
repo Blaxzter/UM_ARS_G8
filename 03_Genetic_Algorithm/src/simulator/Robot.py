@@ -15,22 +15,23 @@ class Robot:
         self.v_l = 0
         self.v_r = 0
         self.l = Const.ROBOT_RADIUS * 2
-
         self.prev_pos = None
+        self.prev_vel = None
         self.pos: np.ndarray = init_pos
         self.sensors: Sensors = Sensors()
         self.theta = np.deg2rad(init_rotation)
         self.sensor_hidden = False
         self.genome = genome
         self.number_of_total_collisions = 0
+        self.dist_covered = 0
 
     def update(self, environment):
         # Update sensors and collision counter
         self.sensors.update(environment, self.theta, self.pos)
 
-        self.v_r, self.v_l = robot_decoder(self.genome, self.sensors)
+        self.prev_vel = [self.v_r, self.v_r]
 
-        self.number_of_total_collisions += np.sum([(1 if line.length == 0 else 0) for line in self.sensors.sensors])
+        self.v_r, self.v_l = robot_decoder(self.genome, self.sensors, self.prev_vel)
 
         self.prev_pos = self.pos
 
@@ -38,12 +39,13 @@ class Robot:
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
+        self.dist_covered = np.linalg.norm(self.pos - self.prev_pos)
+
         self.calc_fitness()
 
     def calc_fitness(self):
         # TODO do correct fitness calculation for roombot (for week 2)
-        dist_covered = np.linalg.norm(self.pos - self.prev_pos)
-        self.genome.set_fitness(dist_covered - self.number_of_total_collisions)
+        self.genome.set_fitness(self.dist_covered - self.number_of_total_collisions)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
@@ -76,6 +78,7 @@ class Robot:
         if len(collisions) == 0 or get_x_y(next_pos) == (0, 0):
             return next_pos
         else:
+            self.number_of_total_collisions += 1
             closest_line = self.closest_collision(collisions, current_pos)
             t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
             # if self.recalc_next_pos(current_pos, next_pos, closest_line)[1].shape == (2,2):

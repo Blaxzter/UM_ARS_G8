@@ -49,7 +49,7 @@ class Simulator:
         self.robots.clear()
         for individual in range(robo_amount):
             self.robots.append(
-                Robot(init_pos = self.environment.get_random_pos(), init_rotation = np.random.randint(low=0, high=360), genome = None)
+                Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low=0, high=360), genome = None)
             )
 
     def set_population(self, population: Population):
@@ -58,7 +58,7 @@ class Simulator:
         self.done = False
         for individual in population.individuals:
             self.robots.append(
-                Robot(init_pos = self.environment.get_random_pos(), init_rotation = np.random.randint(low=0, high=360), genome = individual)
+                Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low=0, high=360), genome = individual)
             )
 
     def start(self) -> None:

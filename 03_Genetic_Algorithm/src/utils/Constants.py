@@ -17,6 +17,10 @@ HEIGHT = 500  # Height of window
 
 EPSILON = 0.00001  # Workaround for floats with weird values
 
+ORIGIN = [PADDING, PADDING_TOP]
+MAP_WIDTH = WIDTH - 2 * PADDING
+MAP_HEIGHT = HEIGHT - PADDING_TOP - PADDING
+
 # ROBOT
 START_X = 300  # Start X
 START_Y = 250  # Start y
@@ -43,17 +47,17 @@ FPS = 144
 LIFE_STEPS = 200
 LIFE_UPDATE = 1
 
-N_INDIVIDUALS = 10000
-SELECT_AMOUNT = 100
-ELITISM_AMOUNT = 50
+N_INDIVIDUALS = 10
+ELITISM_AMOUNT = 2
+SELECT_AMOUNT = N_INDIVIDUALS - ELITISM_AMOUNT
 
-GENOME_LENGTH = NUMBER_OF_SENSORS * 2  # Number of sensors * Number of components of the velocity
+GENOME_LENGTH = (NUMBER_OF_SENSORS + 2) * 2  # Number of sensors * Number of components of the velocity
 N_GENERATION = 1000
 DRAW = True
 
 # Optimization
-SEARCH_SPACE = 100
+SEARCH_SPACE = 1
 VALUES_PER_AXIS = 10
 optimisation = OptimizationFunction(0, 100)
 OPTI_FUNC = optimisation.rastrigin
-GENOME_LENGTH = VALUES_PER_AXIS * 2  # for two dimension
+# GENOME_LENGTH = VALUES_PER_AXIS * 2  # for two dimension

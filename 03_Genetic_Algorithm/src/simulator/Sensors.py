@@ -31,7 +31,7 @@ class Sensors:
             sensor_intersection = None
             distance_closest_intersection = np.inf
 
-            for line in environment.environment:
+            for line in environment.environment.map:
                 intersection = intersection_semiline_segment(
                     line,
                     (robot_center_x, robot_center_y),

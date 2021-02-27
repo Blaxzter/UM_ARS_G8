@@ -83,7 +83,7 @@ class GeneticAlgorithm:
             next_population.append(ordered_by_fitness[i])
 
         # Do roulette wheel selection
-        for i in range(ELITISM_AMOUNT, ELITISM_AMOUNT + SELECT_AMOUNT):
+        for i in range(SELECT_AMOUNT):
             # https://stackoverflow.com/questions/10324015/fitness-proportionate-selection-roulette-wheel-selection-in-python
             random_pick = random.uniform(0, sum_fitness)
             current_fitness = 0

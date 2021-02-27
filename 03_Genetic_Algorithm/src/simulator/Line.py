@@ -6,6 +6,7 @@ import pygame
 
 line_color = (0, 128, 255)
 
+
 # This class was mostly created by Frederic
 
 class Line:
