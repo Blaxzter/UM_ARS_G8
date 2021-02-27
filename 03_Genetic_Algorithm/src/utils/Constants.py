@@ -4,6 +4,8 @@ import numpy as np
 
 
 # ENVIRONMENT
+from src.optimization_function.OptimizationFunction import OptimizationFunction
+
 ENVIRONMENT_SPEED = 0.1  # Frederic fill this please
 PADDING = 20  # Right, Left and Bottom padding
 PADDING_TOP = 100  # Top padding to make space for data
@@ -41,10 +43,17 @@ FPS = 144
 LIFE_STEPS = 200
 LIFE_UPDATE = 1
 
-N_INDIVIDUALS = 10
-SELECT_AMOUNT = 4
-ELITISM_AMOUNT = 2
+N_INDIVIDUALS = 10000
+SELECT_AMOUNT = 100
+ELITISM_AMOUNT = 50
 
 GENOME_LENGTH = NUMBER_OF_SENSORS * 2  # Number of sensors * Number of components of the velocity
-N_GENERATION = 100
+N_GENERATION = 1000
 DRAW = True
+
+# Optimization
+SEARCH_SPACE = 100
+VALUES_PER_AXIS = 10
+optimisation = OptimizationFunction(0, 100)
+OPTI_FUNC = optimisation.rastrigin
+GENOME_LENGTH = VALUES_PER_AXIS * 2  # for two dimension

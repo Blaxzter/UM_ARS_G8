@@ -11,7 +11,6 @@ from src.utils.Constants import WIDTH, HEIGHT, LIFE_STEPS, FPS, COLORS, DRAW
 from src.simulator.Environment import Environment
 from src.genetic.Population import Population
 
-
 class Simulator:
     test = 0
 
@@ -44,7 +43,6 @@ class Simulator:
         self.robots: List[Robot] = []
         self.simulation_time = simulation_time
         self.time_left = simulation_time
-
 
     def reinit_robots(self):
         robo_amount = len(self.robots)

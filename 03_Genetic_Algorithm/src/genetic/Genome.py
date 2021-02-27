@@ -3,13 +3,13 @@ import numpy as np
 
 from typing import List
 
-from src.utils.Constants import GENOME_LENGTH
+from src.utils.Constants import GENOME_LENGTH, SEARCH_SPACE
 
 
 class Genome:
     def __init__(self, genes: List = None):
         if genes is None:
-            self.genes: List[float] = self.init_genome()
+            self.genes: np.ndarray = self.init_genome()
         else:
             self.genes = genes
         self.fitness: float = math.nan
@@ -19,7 +19,7 @@ class Genome:
 
     @staticmethod
     def init_genome():
-        return np.random.rand(GENOME_LENGTH) * 0.1
+        return np.random.randint(low = -SEARCH_SPACE, high = SEARCH_SPACE, size = GENOME_LENGTH)  # np.random.rand(GENOME_LENGTH) * 0.1
 
     def get_fitness(self):
         return self.fitness

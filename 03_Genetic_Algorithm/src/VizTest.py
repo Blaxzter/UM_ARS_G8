@@ -1,3 +1,5 @@
+import sys
+import threading
 from multiprocessing import Manager, Process
 from typing import List
 
@@ -16,9 +18,8 @@ def run(done, iteration, line_dict):
 
     colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(line_dict)))
     data = {key: [] for key in line_dict.keys()}
-    for i, key in enumerate(data):
-        ax.plot([], [], color=colors[i], label=f'{key}')
-    plt.legend()
+
+    lines = {key: ax.plot([], [], color=colors[i], label=f'{key}')[0] for i, key in enumerate(data)}
     old_value = iteration.value
     x = []
 
@@ -26,20 +27,17 @@ def run(done, iteration, line_dict):
         # print(done.value)
         if old_value < iteration.value:
             # print(old_value, iteration.value)
-            for i, key in enumerate(line_dict.keys()):
+            for key in line_dict.keys():
                 data[key].append(line_dict[key])
                 x = np.arange(len(data[key]))
-
-                y = data[key][-10:]
-                x = x[-10:]
-                print(key, x)
-                print(key, y)
-                ax.plot(x, y, color = colors[i], label = f'{key}')
-
             old_value = iteration.value
 
+            for i, key in enumerate(data.keys()):
+                ax.plot(x, data[key], color=colors[i], label=f'{key}')
+
             fig.canvas.draw()
-            plt.cla()
+
+            fig.canvas.flush_events()
             time.sleep(0.1)
 
     plt.close(fig)

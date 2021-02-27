@@ -2,11 +2,15 @@ import numpy as np
 
 from src.genetic.Genome import Genome
 from src.simulator.Sensors import Sensors
-from src.utils.Constants import NUMBER_OF_SENSORS
+from src.utils.Constants import NUMBER_OF_SENSORS, VALUES_PER_AXIS
+
+
+def optimization_decoder(genome: Genome) -> np.ndarray:
+    return np.sum(np.array(genome.genes).reshape((int(len(genome.genes)/VALUES_PER_AXIS), VALUES_PER_AXIS)), axis=1) / VALUES_PER_AXIS
 
 
 def robot_decoder(genome: Genome, sensors: Sensors) -> (float, float):
-    # TODO implement the neural network that decodes the genome into a velocity
+    # TODO The velocity should feed back into the NN like a RNN 
 
     input_nn = np.array([sensor.length for sensor in sensors.sensors]).reshape(1, NUMBER_OF_SENSORS)
     weights_input = np.array([gene for gene in genome.genes]).reshape(2, NUMBER_OF_SENSORS)

@@ -16,8 +16,6 @@ class Robot:
         self.v_r = 0
         self.l = Const.ROBOT_RADIUS * 2
 
-
-
         self.prev_pos = None
         self.pos: np.ndarray = init_pos
         self.sensors: Sensors = Sensors()
@@ -39,7 +37,6 @@ class Robot:
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
-
 
         self.calc_fitness()
 

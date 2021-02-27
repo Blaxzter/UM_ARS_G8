@@ -4,15 +4,17 @@ from typing import List
 import numpy as np
 
 from src.genetic import Crossover, Mutations
+from src.genetic.Decoder import optimization_decoder
 from src.genetic.Population import Population
+from src.optimization_function.OptimizationFunction import OptimizationFunction
 from src.simulator.Simulator import Simulator
-from src.utils.Constants import N_GENERATION, ELITISM_AMOUNT, SELECT_AMOUNT, N_INDIVIDUALS, DRAW
+from src.utils.Constants import N_GENERATION, ELITISM_AMOUNT, SELECT_AMOUNT, N_INDIVIDUALS, DRAW, OPTI_FUNC
 from src.utils.DataVisualizer import DataManager
 
 
 class GeneticAlgorithm:
 
-    def __init__(self):
+    def __init__(self, robot: bool = False):
         self.emergency_break = False
         self.display_data = dict(
             avg_fitness = dict(display_name = 'avg fitness',  value = 0, graph = True),
@@ -24,7 +26,9 @@ class GeneticAlgorithm:
             display_name['display_name'] for display_name in list(filter(lambda ele: ele['graph'], self.display_data.values()))
         ], pull_rate = 100)
 
-        self.sim = Simulator(display_data = self.display_data, simulation_time = 50, gui_enabled = DRAW, stop_callback = self.stop)
+        self.robot = robot
+        if self.robot:
+            self.sim = Simulator(display_data = self.display_data, simulation_time = 50, gui_enabled = DRAW, stop_callback = self.stop)
 
         self.populations: List[Population] = []
 
@@ -51,12 +55,23 @@ class GeneticAlgorithm:
 
             population = Population(next_population)
 
+        self.data_manager.stop()
+
     def evaluation(self, population: Population):
+        if self.robot:
+            self.robot_evaluation(population)
+        else:
+            self.optimisation_evaluation(population)
+
+    def robot_evaluation(self, population):
         self.sim.set_population(population)
         self.sim.start()
+
+    def optimisation_evaluation(self, population):
         individuals = population.individuals
         for individual in individuals:
-            individual.get_fitness()
+            coordinates = optimization_decoder(individual)
+            individual.set_fitness(-OPTI_FUNC(coordinates))
 
     def selection(self) -> List:
         next_population = []
@@ -107,3 +122,4 @@ class GeneticAlgorithm:
         for data in self.display_data.values():
             if 'graph' in data and data['graph']:
                 self.data_manager.update_value(data['display_name'], data['value'])
+
