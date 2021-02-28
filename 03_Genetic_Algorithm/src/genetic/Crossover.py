@@ -73,9 +73,9 @@ def uniform_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
     for i in range(const.GENOME_LENGTH):
         selection = rd.choices([0, 1], weights=[5, 5], k=1)
         if selection[0] == 0:
-            new_genes.append(genome_1.genes)
+            new_genes.append(genome_1.genes[i])
         else:
-            new_genes.append(genome_2.genes)
+            new_genes.append(genome_2.genes[i])
     return Genome(new_genes)
 
 # Linear Crossover Operation:
@@ -93,7 +93,8 @@ def linear_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
 #def main():
 #    genome1 = Genome()
 #    genome2 = Genome()
-#    print(multi_point_crossover(genome1, genome2))
+#    offspring = uniform_crossover(genome1, genome2)
+
 
 #if __name__ == "__main__":
 #    main()
