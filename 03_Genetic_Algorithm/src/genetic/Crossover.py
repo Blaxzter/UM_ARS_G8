@@ -90,10 +90,10 @@ def linear_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
 # TODO mask_uniform_crossover, linear_crossover, multi-point_crossover
 # Testing main just for my part :
 
-def main():
-    genome1 = Genome()
-    genome2 = Genome()
-    print(multi_point_crossover(genome1, genome2))
+#def main():
+#    genome1 = Genome()
+#    genome2 = Genome()
+#    print(multi_point_crossover(genome1, genome2))
 
-if __name__ == "__main__":
-    main()
+#if __name__ == "__main__":
+#    main()
