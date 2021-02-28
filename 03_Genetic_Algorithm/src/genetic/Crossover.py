@@ -62,9 +62,9 @@ def multi_point_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
             if i >= multi_points[counter]:
                 counter += 1
             if counter % 2 == 0:
-                new_genes.append(genome_1.genes[i])
-            else:
                 new_genes.append(genome_2.genes[i])
+            else:
+                new_genes.append(genome_1.genes[i])
     return Genome(new_genes)
 
 # Uniform Crossover Operation
