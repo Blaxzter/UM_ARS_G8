@@ -7,10 +7,11 @@ from src.simulator.Environment import Environment
 from src.utils.MathUtils import *
 from src.utils.Constants import DRAW
 
-# Mostly done by Teo
-
 
 class Sensors:
+    """
+    Author Theodoros Giannilias & Guillaume Franzoni Darnois
+    """
     def __init__(self):
         self.sensors: List[LineString] = []  # Collection of all the sensor in a Robot
         if DRAW:

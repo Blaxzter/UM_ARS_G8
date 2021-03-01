@@ -3,7 +3,9 @@ import random as rd
 import src.utils.Constants as const
 from src.genetic.Genome import Genome
 
-# TODO write some different cross over operators
+"""
+Author Theodoros Giannilias & Guillaume Franzoni Darnois
+"""
 
 #  Normally we have to return at least 2 offsprings
 def one_point_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
@@ -92,18 +94,6 @@ def linear_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
 def arithmetic_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
     new_genes = []
     for i in range(const.GENOME_LENGTH):
-        new_genes.append(genome_1.genes[i] * genome_2.genes[i] / 2)
+        new_genes.append((genome_1.genes[i] + genome_2.genes[i]) / 2)
     return Genome(new_genes)
 
-
-# TODO mask_uniform_crossover, linear_crossover, multi-point_crossover
-# Testing main just for my part :
-
-#def main():
-#    genome1 = Genome()
-#    genome2 = Genome()
-#    offspring = uniform_crossover(genome1, genome2)
-
-
-#if __name__ == "__main__":
-#    main()

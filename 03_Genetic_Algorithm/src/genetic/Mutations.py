@@ -5,6 +5,9 @@ from src.genetic import Genome
 # todo write some other mutation operators
 from src.utils.Constants import SEARCH_SPACE, MUTATION_PROBABILITY
 
+"""
+Author Guillaume Franzoni Darnois
+"""
 
 def mutation(genome: Genome):
     for i in range(len(genome.genes)):

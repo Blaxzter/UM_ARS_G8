@@ -14,6 +14,9 @@ from src.utils.DataVisualizer import DataManager
 
 
 class GeneticAlgorithm:
+    """
+    Author Frederic Abraham
+    """
 
     def __init__(self, robot: bool = False):
         self.emergency_break = False

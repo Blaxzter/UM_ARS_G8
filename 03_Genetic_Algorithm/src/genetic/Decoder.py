@@ -6,6 +6,9 @@ from src.genetic.Genome import Genome
 from src.simulator.Sensors import Sensors
 from src.utils.Constants import NUMBER_OF_SENSORS, VALUES_PER_AXIS
 
+"""
+Author Guillaume Franzoni Darnois & Frederic Abraham
+"""
 
 def optimization_decoder(genome: Genome) -> np.ndarray:
     return np.sum(np.array(genome.genes).reshape((int(len(genome.genes)/VALUES_PER_AXIS), VALUES_PER_AXIS)), axis=1) / VALUES_PER_AXIS

@@ -12,6 +12,10 @@ from src.simulator.Environment import Environment
 from src.genetic.Population import Population
 
 class Simulator:
+    """
+    Author Frederic Abraham
+    """
+
     test = 0
 
     def __init__(self, display_data: Dict, simulation_time = LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None):

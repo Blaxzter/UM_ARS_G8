@@ -5,6 +5,10 @@ import numpy as np
 # ENVIRONMENT
 from src.optimization_function.OptimizationFunction import OptimizationFunction
 
+"""
+Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
+"""
+
 ENVIRONMENT_SPEED = 0.1  # Frederic fill this please
 PADDING = 20  # Right, Left and Bottom padding
 PADDING_TOP = 100  # Top padding to make space for data

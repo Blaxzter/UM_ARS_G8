@@ -12,6 +12,9 @@ from src.utils.MathUtils import distance_point_to_point, distance_point_to_line_
 
 
 class Collision:
+    """
+    Author Frederic Abraham & Guillaume Franzoni Darnois
+    """
     def __init__(self, line: Line, outside_of_line: (np.ndarray, np.ndarray), true_intersection: np.ndarray, extend_intersection: np.ndarray, jumped_through: bool, distance_to_line: float):
         self.line: Line = line                                              # Line that generated the collision
         self.outside_of_line: (np.ndarray, np.ndarray) = outside_of_line    # (None, None) if inside of the line otherwise the end

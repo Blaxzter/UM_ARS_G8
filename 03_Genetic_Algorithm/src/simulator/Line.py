@@ -7,9 +7,10 @@ import pygame
 line_color = (0, 128, 255)
 
 
-# This class was mostly created by Frederic
-
 class Line:
+    """
+    Author Frederic Abraham
+    """
     def __init__(self, start_x: float, start_y: float, end_x: float, end_y: float):
         self.start_x: float = start_x
         self.start_y: float = start_y

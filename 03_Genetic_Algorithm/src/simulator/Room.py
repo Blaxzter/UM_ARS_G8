@@ -5,6 +5,9 @@ from src.utils.Constants import *
 
 
 class Room:
+    """
+    Author Guillaume Franzoni Darnois
+    """
     def __init__(self, room: int):
         self.map: List[Line] = rooms[room][0]
         self.initial_random_pos: np.ndarray = rooms[room][1]

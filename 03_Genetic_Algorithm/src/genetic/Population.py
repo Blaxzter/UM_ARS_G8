@@ -5,6 +5,9 @@ from src.genetic.Genome import Genome
 
 
 class Population:
+    """
+    Author Frederic Abraham
+    """
 
     def __init__(self, individuals: List = None):
         if individuals is None:

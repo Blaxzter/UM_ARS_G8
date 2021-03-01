@@ -11,6 +11,9 @@ dt = 1
 
 
 class Robot:
+    """
+    Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
+    """
     def __init__(self, init_pos: np.ndarray, init_rotation: float, genome: Genome):
         self.v_l = 0
         self.v_r = 0

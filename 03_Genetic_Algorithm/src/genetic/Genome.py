@@ -7,6 +7,9 @@ from src.utils.Constants import VALUES_PER_AXIS, DIMENSION, MAX_POS, MIN_POS
 
 
 class Genome:
+    """
+    Author Frederic Abraham & Guillaume Franzoni Darnois
+    """
     def __init__(self, genes: List = None):
         if genes is None:
             self.genes: np.ndarray = self.init_genome()
