@@ -87,6 +87,15 @@ def linear_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
 
     return Genome(new_genes)
 
+
+# Arithmetic Crossover Operation
+def arithmetic_crossover(genome_1: Genome, genome_2: Genome) -> Genome:
+    new_genes = []
+    for i in range(const.GENOME_LENGTH):
+        new_genes.append(genome_1.genes[i] * genome_2.genes[i] / 2)
+    return Genome(new_genes)
+
+
 # TODO mask_uniform_crossover, linear_crossover, multi-point_crossover
 # Testing main just for my part :
 

@@ -3,7 +3,7 @@ import numpy as np
 
 from typing import List
 
-from src.utils.Constants import GENOME_LENGTH, SEARCH_SPACE
+from src.utils.Constants import VALUES_PER_AXIS, DIMENSION, MAX_POS, MIN_POS
 
 
 class Genome:
@@ -19,7 +19,8 @@ class Genome:
 
     @staticmethod
     def init_genome():
-        return np.random.randint(low = -SEARCH_SPACE, high = SEARCH_SPACE, size = GENOME_LENGTH)  # np.random.rand(GENOME_LENGTH) * 0.1
+        # return list(np.repeat(np.random.uniform(low = MAX_POS - (MAX_POS / 3), high = MAX_POS, size = (DIMENSION, 1)), VALUES_PER_AXIS))  # np.random.rand(GENOME_LENGTH) * 0.1
+        return list(np.repeat(np.random.uniform(low = MIN_POS, high = MAX_POS, size = (DIMENSION, 1)), VALUES_PER_AXIS))  # np.random.rand(GENOME_LENGTH) * 0.1
 
     def get_fitness(self):
         return self.fitness

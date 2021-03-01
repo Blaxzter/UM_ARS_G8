@@ -77,22 +77,24 @@ class DataManager:
     @author Frederic Abraham
     """
 
-    def __init__(self, data_names: List, parallel: bool = False):
+    def __init__(self, data_names: List, parallel: bool = False, visualize: bool = True):
 
         self.parallel = parallel
-
+        self.visualize = visualize
         if parallel:
-            self.manager = Manager()
-            self.done = self.manager.Value("done", True)
-            self.time_step = self.manager.Value("timestep", 0)
-            self.line_dict = self.manager.dict({data_name: 0 for data_name in data_names})
+            if self.visualize:
+                self.manager = Manager()
+                self.done = self.manager.Value("done", True)
+                self.time_step = self.manager.Value("timestep", 0)
+                self.line_dict = self.manager.dict({data_name: 0 for data_name in data_names})
 
-            self.p = Process(target = run, args = (self.done, self.time_step, self.line_dict,))
-            self.p.start()
+                self.p = Process(target = run, args = (self.done, self.time_step, self.line_dict,))
+                self.p.start()
         else:
-            plt.tight_layout()
-            plt.ion()
-            plt.show()
+            if self.visualize:
+                plt.tight_layout()
+                plt.ion()
+                plt.show()
             self.time_steps = []
             self.data = {data_name: [] for data_name in data_names}
             self.colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(self.data)))
@@ -109,8 +111,11 @@ class DataManager:
         else:
             self.data[key].append(value)
 
+    def get_data(self, key):
+        return self.data[key]
+
     def update(self):
-        if not self.parallel:
+        if not self.parallel and self.visualize:
             animate(self.time_steps, self.data, self.colors)
 
     def stop(self):

@@ -22,6 +22,9 @@ class OptimizationFunction:
     def rastrigin(self, pos: np.ndarray):
         return 10 * len(pos) + np.sum(pos ** 2 - 10 * np.cos(2 * math.pi * pos))
 
+    def multi_min(self, pos: np.ndarray):
+        return 1 + np.sin(pos[0] / 5) * np.sin(pos[1] / 5)
+
     def square(self, pos: np.ndarray):
         return np.sum(pos ** 2)
 

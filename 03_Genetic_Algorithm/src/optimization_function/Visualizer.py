@@ -3,7 +3,7 @@ from typing import Dict, Callable, List
 from colour import Color
 from plotly.subplots import make_subplots
 
-import Constants as Const
+import src.utils.Constants as Const
 import plotly.graph_objects as go
 import numpy as np
 import plotly.express as px
@@ -37,8 +37,8 @@ class Visualizer:
 
         fig = fig.add_trace(
             go.Scatter3d(
-                x=[data.get(0)[i].get("pos")[0][0] for i in range(len(data.get(0)))],
-                y=[data.get(0)[i].get("pos")[1][0] for i in range(len(data.get(0)))],
+                x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
+                y=[data.get(0)[i].get("pos")[1] for i in range(len(data.get(0)))],
                 z=[data.get(0)[i].get("alt") for i in range(len(data.get(0)))],
                 hovertext=[f'team {data.get(0)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
@@ -54,8 +54,8 @@ class Visualizer:
 
         fig = fig.add_trace(
             go.Scatter3d(
-                x=[data.get(0)[i].get("pos")[0][0] for i in range(len(data.get(0)))],
-                y=[data.get(0)[i].get("pos")[1][0] for i in range(len(data.get(0)))],
+                x=[data.get(0)[i].get("pos")[0] for i in range(len(data.get(0)))],
+                y=[data.get(0)[i].get("pos")[1] for i in range(len(data.get(0)))],
                 z=[-2.5 for _ in range(len(data.get(0)))],
                 hovertext=[f'team {data.get(0)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
@@ -144,8 +144,8 @@ class Visualizer:
     def get_current_data_frame(self, gen, data, line_data):
         ret_list = [
             go.Scatter3d(
-                x=[data.get(gen)[i].get("pos")[0][0] for i in range(len(data.get(gen)))],
-                y=[data.get(gen)[i].get("pos")[1][0] for i in range(len(data.get(gen)))],
+                x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
                 z=[data.get(gen)[i].get("alt") for i in range(len(data.get(gen)))],
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
@@ -155,8 +155,8 @@ class Visualizer:
                         "best") else colors[particle_info.get("swarm")] for particle_info in data.get(gen)],
                     size=10)),
             go.Scatter3d(
-                x=[data.get(gen)[i].get("pos")[0][0] for i in range(len(data.get(gen)))],
-                y=[data.get(gen)[i].get("pos")[1][0] for i in range(len(data.get(gen)))],
+                x=[data.get(gen)[i].get("pos")[0] for i in range(len(data.get(gen)))],
+                y=[data.get(gen)[i].get("pos")[1] for i in range(len(data.get(gen)))],
                 z=[-2.5 for _ in range(len(data.get(gen)))],
                 hovertext=[f'team {data.get(gen)[i].get("swarm")}' for i in range(len(data.get(0)))],
                 hoverinfo="text",
@@ -185,7 +185,7 @@ class Visualizer:
                               buttons=[
                                   dict(label="Play",
                                        method="animate",
-                                       args=[None, dict(frame=dict(duration=5, redraw=False),
+                                       args=[None, dict(frame=dict(duration=5, redraw=True),
                                                         fromcurrent=True,
                                                         transition=dict(duration=0, easing='linear')
                                                         )]
