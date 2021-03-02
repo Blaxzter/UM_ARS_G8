@@ -9,7 +9,7 @@ from src.genetic.Genome import Genome
 from src.genetic.Population import Population
 from src.optimization_function.Visualizer import Visualizer
 from src.simulator.Simulator import Simulator
-from src.utils.Constants import N_GENERATION, ELITISM_PERCENTAGE, SELECT_PERCENTAGE, N_INDIVIDUALS, DRAW, OPTI_FUNC, CROSSOVER_MUTATION_PERCENTAGE
+from src.utils.Constants import N_GENERATION, ELITISM_PERCENTAGE, SELECT_PERCENTAGE, N_INDIVIDUALS, DRAW, OPTI_FUNC, CROSSOVER_MUTATION_PERCENTAGE, VALUES_PER_AXIS, MUTATION_PROBABILITY
 from src.utils.DataVisualizer import DataManager
 
 
@@ -42,6 +42,15 @@ class GeneticAlgorithm:
         self.avg_fitness = [-1]
         self.best_fitness = [-1]
 
+        self.test_name = "sim"
+        self.func_name = "Rosenbrock"
+        self.crossover_str = "two_point_crossover"
+        self.crossover_func = Crossover.two_point_crossover
+        self.mutation_str = "gaussian"
+        self.mutation = Mutations.gaussian
+        self.title = f"Genetic Algorithm - crossover: {self.crossover_str} with {VALUES_PER_AXIS} Values per axis and {self.mutation_str} mutation with {MUTATION_PROBABILITY} probability - {self.func_name}"
+        self.write_title = f"{self.test_name.replace(' ', '_')}_{self.func_name}_{self.crossover_str.replace(' ', '_')}"
+
     def run(self):
 
         population = Population()
@@ -67,20 +76,15 @@ class GeneticAlgorithm:
 
         self.data_manager.stop()
 
-        test_name = "sim"
-        func_name = "Rastrigin"
-        parameter = "Simulation"
-        title = f"Genetic Algorithm - {parameter} - {func_name}"
-        write_title = f"{test_name.replace(' ', '_')}_{func_name}_{parameter.replace(' ', '_')}"
-        viz = Visualizer(OPTI_FUNC, self.history, title,
+        viz = Visualizer(OPTI_FUNC, self.history, self.title,
                       dict(
-                        avg_fitness = self.data_manager.get_data("avg fitness"),
-                        best_fitness = self.data_manager.get_data("best fitness"),
-                        diversity = self.data_manager.get_data("diversity"),
+                        avg_fitness = np.log(self.data_manager.get_data("avg fitness")),
+                        best_fitness = np.log(self.data_manager.get_data("best fitness")),
+                        diversity = np.log(self.data_manager.get_data("diversity")),
                       ))
         print("Viz Done")
         viz.show_fig()
-        viz.write_fig(write_title.lower())
+        viz.write_fig(self.write_title.lower())
 
 
     def evaluation(self, population: Population):
@@ -133,9 +137,9 @@ class GeneticAlgorithm:
         for i in range(int(N_INDIVIDUALS * CROSSOVER_MUTATION_PERCENTAGE)):
             parent1 = random.sample(next_population, 1)[0]
             parent2 = random.sample(next_population, 1)[0]
-            child = Crossover.two_point_crossover(parent1, parent2)
+            child = self.crossover_func(parent1, parent2)
 
-            child = Mutations.gaussian(child)
+            child = self.mutation(child)
 
             next_population.append(child)
 
