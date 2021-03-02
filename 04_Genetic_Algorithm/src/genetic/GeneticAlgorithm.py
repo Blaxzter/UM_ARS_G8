@@ -29,7 +29,7 @@ class GeneticAlgorithm:
 
         self.data_manager: DataManager = DataManager(data_names = [
             display_name['display_name'] for display_name in list(filter(lambda ele: ele['graph'], self.display_data.values()))
-        ], parallel = False, visualize=False)
+        ], parallel = True, visualize=True)
 
         self.robot = robot
         if self.robot:
