@@ -47,9 +47,13 @@ class GeneticAlgorithm:
                              stop_callback=self.stop, seed=seed)
 
         self.populations: List[Population] = []
+
         self.history = {i: [] for i in range(0, Const.N_GENERATION)}
 
         self.generation = 0
+        if load and generation is not None:
+            if generation == -1:
+                self.generation = len(self.sim_data['genomes']) - 1
         self.avg_fitness = [-1]
         self.best_fitness = [-1]
 
@@ -164,6 +168,8 @@ class GeneticAlgorithm:
         self.data_manager.update()
 
     def load_constants(self):
+        if 'constants' not in self.sim_data:
+            return
         for const in self.sim_data['constants']:
             if const is not None:
                 c_name, c_value = const['name'], const['value']
@@ -208,9 +214,7 @@ class GeneticAlgorithm:
                     Const.INIT_SIZE = c_value
                 elif c_name == 'N_GENERATION':
                     Const.N_GENERATION = c_value
-                elif c_name == 'GRAPH_WINDOW':
+                elif c_name == 'DENSITY':
                     Const.GRAPH_WINDOW = c_value
-                elif c_name == 'DUST_HORIZONTAL':
+                elif c_name == 'DENSITY':
                     Const.DUST_HORIZONTAL = c_value
-                elif c_name == 'DUST_VERTICAL':
-                    Const.DUST_VERTICAL = c_value
