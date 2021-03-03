@@ -52,7 +52,7 @@ class Simulator:
         self.environment: Environment = Environment()                               # Environment where the robot is placed
         self.done: bool = False                                                     # Window closed ?
         self.robots: List[Robot] = [
-            Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(Const.N_INDIVIDUALS)
+            Robot(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(Const.N_INDIVIDUALS)
         ]
         self.simulation_time = simulation_time
         self.time_left = simulation_time
@@ -61,7 +61,7 @@ class Simulator:
         self.time_left = self.simulation_time
         self.done = False
         for i, individual in enumerate(population.individuals):
-            self.robots[i].reset(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low=0, high=360), genome = individual)
+            self.robots[i].reset(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low=0, high=360), genome = individual)
 
     def start(self) -> None:
 
@@ -80,7 +80,6 @@ class Simulator:
             futures = []
             environment = self.environment
             for robot in self.robots:
-                # self.run_robot_evaluation(self.time_left, robot, environment)
                 future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environment)
                 futures.append(dict(future=future, robot=robot))
 

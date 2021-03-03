@@ -26,7 +26,14 @@ rooms = [
     # Room 1
     (
         default_boundaries,  # Map
-        np.array([Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]).reshape(2, 1)  # Initial Position
+        [
+            [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10,                     Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],                     # Top left corner
+            [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,   Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],                     # top right
+            [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,   Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
+            [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10,                     Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
+
+            [Const.ORIGIN[0] + Const.MAP_WIDTH / 2,                         Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]                         # Middle
+        ]
     ),
 
     # Room 2
@@ -34,13 +41,17 @@ rooms = [
         default_boundaries + [
             Line(Const.ORIGIN[0], Const.ORIGIN[1], Const.ORIGIN[0] + Const.MAP_WIDTH, Const.ORIGIN[1] + Const.MAP_HEIGHT)
         ],  # Map
-        np.array([Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]).reshape(2, 1)  # Initial Position
+        [
+            [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]
+        ]
     ),
 
     # Room 3 - Box with robot inside
     (
         default_boundaries + box([Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 5, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 5], 150, 100),  # Map
-        np.array([Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]).reshape(2, 1)  # Initial Position
+        [
+            [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+        ]
     )
 ]
 
@@ -52,4 +63,8 @@ class Room:
 
     def __init__(self, room: int):
         self.map: List[Line] = rooms[room][0]
-        self.initial_random_pos: np.ndarray = rooms[room][1]
+        self.initial_random_positions = rooms[room][1]
+
+    def get_initial_position(self):
+        pos_index = np.random.randint(len(self.initial_random_positions))
+        return np.array(self.initial_random_positions[pos_index]).reshape((2, 1))

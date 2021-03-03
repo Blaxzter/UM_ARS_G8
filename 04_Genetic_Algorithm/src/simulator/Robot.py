@@ -33,7 +33,7 @@ class Robot:
         self.number_of_total_collisions = 0
         self.dist_covered = 0
         self.prev_pos = None
-        self.previous_hidden = np.zeros(shape=(HIDDEN_SIZE, 1))
+        self.previous_hidden = np.zeros(shape=(Const.HIDDEN_SIZE, 1))
         self.dust: List = self.generate_dust()
         self.dust_collected = 0
 
@@ -45,7 +45,7 @@ class Robot:
 
         self.dust: List = self.generate_dust()
         self.prev_pos = None
-        self.previous_hidden = np.zeros(shape = (HIDDEN_SIZE, 1))
+        self.previous_hidden = np.zeros(shape = (Const.HIDDEN_SIZE, 1))
         self.genome = genome
         self.number_of_total_collisions = 0
         self.dist_covered = 0
@@ -74,7 +74,7 @@ class Robot:
     def check_dust_particles(self, robot_current_center: np.ndarray):
         for i in range(len(self.dust) - 1, -1, -1):
             dust = self.dust[i]
-            if np.linalg.norm(robot_current_center - dust) < ROBOT_RADIUS:
+            if np.linalg.norm(robot_current_center - dust) < Const.ROBOT_RADIUS:
                 self.dust_collected += 1
                 del self.dust[i]
 
@@ -201,7 +201,7 @@ class Robot:
 
         if self.id == 0:
             for dust in self.dust:
-                pygame.draw.circle(screen, COLORS["red"], dust.flatten(), 2)
+                pygame.draw.circle(screen, Const.COLORS["red"], dust.flatten(), 2)
 
     def draw_robot(self, screen) -> None:
         s_x, s_y = get_x_y(self.pos)
@@ -245,9 +245,9 @@ class Robot:
 
     @staticmethod
     def generate_dust() -> List:
-        y_amount = int(MAP_HEIGHT / DUST_HORIZONTAL)
-        x_amount = int(MAP_WIDTH / DUST_VERTICAL)
-        X, Y = np.meshgrid(np.linspace(ORIGIN[0] + 20, ORIGIN[0] + MAP_WIDTH - 20, x_amount), np.linspace(ORIGIN[1] + 20, ORIGIN[1] + MAP_HEIGHT - 20, y_amount))
+        y_amount = int(Const.MAP_HEIGHT / Const.DUST_HORIZONTAL)
+        x_amount = int(Const.MAP_WIDTH / Const.DUST_VERTICAL)
+        X, Y = np.meshgrid(np.linspace(Const.ORIGIN[0] + 20, Const.ORIGIN[0] + Const.MAP_WIDTH - 20, x_amount), np.linspace(Const.ORIGIN[1] + 20, Const.ORIGIN[1] + Const.MAP_HEIGHT - 20, y_amount))
         return list(map(lambda x: np.reshape(x, (2, 1)), np.column_stack([X.ravel(), Y.ravel()])))
         # n = int(MAP_WIDTH * MAP_HEIGHT / ROBOT_RADIUS)
         # xy_min = ORIGIN

@@ -201,5 +201,7 @@ class GeneticAlgorithm:
                     Const.N_GENERATION = c_value
                 elif c_name == 'GRAPH_WINDOW':
                     Const.GRAPH_WINDOW = c_value
-                elif c_name == 'DRAW':
-                    Const.DRAW = c_value
+                elif c_name == 'DUST_HORIZONTAL':
+                    Const.DUST_HORIZONTAL = c_value
+                elif c_name == 'DUST_VERTICAL':
+                    Const.DUST_VERTICAL = c_value
