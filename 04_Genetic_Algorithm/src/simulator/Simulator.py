@@ -18,7 +18,14 @@ class Simulator:
 
     test = 0
 
-    def __init__(self, display_data: Dict, simulation_time = LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None):
+    def __init__(self, display_data: Dict, simulation_time = LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None, seed = None):
+
+        if seed is None:
+            self.seed = np.random.randint(2147483647)
+            np.random.seed(self.seed)
+        else:
+            self.seed = seed
+            np.random.seed(seed)
 
         print(Simulator.test)
         Simulator.test += 1

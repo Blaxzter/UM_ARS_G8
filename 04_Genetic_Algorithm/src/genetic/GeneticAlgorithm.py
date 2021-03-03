@@ -1,6 +1,8 @@
 import random
 from typing import List
+from datetime import datetime
 
+import json
 import numpy as np
 
 from src.genetic import Crossover, Mutations
@@ -8,8 +10,7 @@ from src.genetic.Genome import Genome
 from src.genetic.Population import Population
 from src.genetic.Selection import ranked_based_selection
 from src.simulator.Simulator import Simulator
-from src.utils.Constants import N_GENERATION, ELITISM_PERCENTAGE, SELECT_PERCENTAGE, N_INDIVIDUALS, DRAW, \
-    CROSSOVER_MUTATION_PERCENTAGE, LIFE_STEPS
+from src.utils.Constants import *
 from src.utils.DataVisualizer import DataManager
 
 
@@ -61,7 +62,22 @@ class GeneticAlgorithm:
             population = Population(next_population)
 
         self.data_manager.stop()
+        self.store_date()
 
+    def store_date(self):
+        data = dict(
+            seed = self.sim.seed,
+            genomes = {
+                i: [
+                    dict(
+                        fitness = individual.fitness,
+                        genes = list(individual.genes)
+                    ) for individual in population.individuals
+                ] for i, population in enumerate(self.populations)
+            }
+        )
+        with open(f"data/chromosome_{datetime.now().strftime('%Y%m%d-%H%M%S')}_data.json", "w") as write_file:
+            json.dump(data, write_file)
 
     def evaluation(self, population: Population):
         self.robot_evaluation(population)

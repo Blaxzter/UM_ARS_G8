@@ -14,11 +14,11 @@ def robot_decoder(genome: Genome, sensors: Sensors, prev_hidden: np.ndarray) -> 
 
     # Input -> Hidden
     weights_input = np.array([genome.genes[i] for i in range(INPUT_WEIGHTS_SIZE)]).reshape(HIDDEN_SIZE, INPUT_SIZE)
-    hidden_nn = sigmoid(np.dot(input_nn, weights_input.T)).reshape(1, HIDDEN_SIZE)
+    hidden_nn = np.dot(input_nn, weights_input.T).reshape(1, HIDDEN_SIZE)
 
     # Hidden -> Output
     weights_hidden = np.array([genome.genes[i] for i in range(INPUT_WEIGHTS_SIZE, INPUT_WEIGHTS_SIZE + HIDDEN_WEIGHTS_SIZE)]).reshape(OUTPUT_SIZE, HIDDEN_SIZE)
-    output_nn = sigmoid(np.dot(hidden_nn, weights_hidden.T))
+    output_nn = sigmoid(np.dot(hidden_nn, weights_hidden.T)) * 5
 
     velocity = output_nn.reshape(2, 1)
 
