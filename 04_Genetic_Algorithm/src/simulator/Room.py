@@ -1,13 +1,15 @@
 from typing import List
 
+import numpy as np
+
 from src.simulator.Line import Line
-from src.utils.Constants import *
+import src.utils.Constants as Const
 
 default_boundaries = [
-    Line(PADDING, PADDING_TOP, WIDTH - PADDING, PADDING_TOP),
-    Line(WIDTH - PADDING, PADDING_TOP, WIDTH - PADDING, HEIGHT - PADDING),
-    Line(WIDTH - PADDING, HEIGHT - PADDING, PADDING, HEIGHT - PADDING),
-    Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
+    Line(Const.PADDING, Const.PADDING_TOP, Const.WIDTH - Const.PADDING, Const.PADDING_TOP),
+    Line(Const.WIDTH - Const.PADDING, Const.PADDING_TOP, Const.WIDTH - Const.PADDING, Const.HEIGHT - Const.PADDING),
+    Line(Const.WIDTH - Const.PADDING, Const.HEIGHT - Const.PADDING, Const.PADDING, Const.HEIGHT - Const.PADDING),
+    Line(Const.PADDING, Const.HEIGHT - Const.PADDING, Const.PADDING, Const.PADDING_TOP),
 ]
 
 
@@ -24,21 +26,21 @@ rooms = [
     # Room 1
     (
         default_boundaries,  # Map
-        np.array([ORIGIN[0] + ROBOT_RADIUS + 10, ORIGIN[1] + ROBOT_RADIUS + 10]).reshape(2, 1)  # Initial Position
+        np.array([Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]).reshape(2, 1)  # Initial Position
     ),
 
     # Room 2
     (
         default_boundaries + [
-            Line(ORIGIN[0], ORIGIN[1], ORIGIN[0] + MAP_WIDTH, ORIGIN[1] + MAP_HEIGHT)
+            Line(Const.ORIGIN[0], Const.ORIGIN[1], Const.ORIGIN[0] + Const.MAP_WIDTH, Const.ORIGIN[1] + Const.MAP_HEIGHT)
         ],  # Map
-        np.array([ORIGIN[0] + MAP_WIDTH - ROBOT_RADIUS - 10, ORIGIN[1] + ROBOT_RADIUS + 10]).reshape(2, 1)  # Initial Position
+        np.array([Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]).reshape(2, 1)  # Initial Position
     ),
 
     # Room 3 - Box with robot inside
     (
-        default_boundaries + box([ORIGIN[0] + MAP_WIDTH * 2 / 5, ORIGIN[1] + MAP_HEIGHT * 2 / 5], 150, 100),  # Map
-        np.array([ORIGIN[0] + MAP_WIDTH / 2, ORIGIN[1] + MAP_HEIGHT / 2]).reshape(2, 1)  # Initial Position
+        default_boundaries + box([Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 5, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 5], 150, 100),  # Map
+        np.array([Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]).reshape(2, 1)  # Initial Position
     )
 ]
 

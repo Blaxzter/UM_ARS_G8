@@ -3,7 +3,7 @@ import numpy as np
 
 from typing import List
 
-from src.utils.Constants import GENOME_LENGTH, INIT_SIZE
+import src.utils.Constants as Const
 
 
 class Genome:
@@ -22,7 +22,7 @@ class Genome:
 
     @staticmethod
     def init_genome():
-        return np.random.rand(GENOME_LENGTH) * INIT_SIZE - (INIT_SIZE/2)
+        return np.random.rand(Const.GENOME_LENGTH) * Const.INIT_SIZE - (Const.INIT_SIZE/2)
 
     def get_fitness(self):
         return self.fitness

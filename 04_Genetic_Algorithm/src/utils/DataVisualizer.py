@@ -5,7 +5,7 @@ import numpy as np
 import time
 from matplotlib import pyplot as plt
 
-from src.utils.Constants import GRAPH_WINDOW
+import src.utils.Constants as Const
 
 
 def animate(x, data, colors):
@@ -15,9 +15,9 @@ def animate(x, data, colors):
         y = data[key]
         viz_x = x
 
-        if GRAPH_WINDOW != -1:
-            y = data[key][-GRAPH_WINDOW:]
-            viz_x = x[-GRAPH_WINDOW:]
+        if Const.GRAPH_WINDOW != -1:
+            y = data[key][-Const.GRAPH_WINDOW:]
+            viz_x = x[-Const.GRAPH_WINDOW:]
 
         plt.plot(viz_x, y, color = colors[i], label = f'{key}')
     plt.pause(0.00001)
@@ -54,9 +54,9 @@ def run(done, iteration, line_dict):
                 y = data[key]
                 x = np.arange(len(data[key]))
 
-                if GRAPH_WINDOW != -1:
-                    y = data[key][-GRAPH_WINDOW:]
-                    x = x[-GRAPH_WINDOW:]
+                if Const.GRAPH_WINDOW != -1:
+                    y = data[key][-Const.GRAPH_WINDOW:]
+                    x = x[-Const.GRAPH_WINDOW:]
 
                 # print(key, x)
                 # print(key, y)

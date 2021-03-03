@@ -10,9 +10,8 @@ from src.genetic.Genome import Genome
 from src.genetic.Population import Population
 from src.genetic.Selection import ranked_based_selection
 from src.simulator.Simulator import Simulator
-from src.utils.Constants import *
+import src.utils.Constants as Const
 from src.utils.DataVisualizer import DataManager
-import src.utils.Constants as Consts
 from types import ModuleType
 
 
@@ -42,11 +41,11 @@ class GeneticAlgorithm:
             list(filter(lambda ele: ele['graph'], self.display_data.values()))
         ], parallel=False, visualize=False)
 
-        self.sim = Simulator(display_data=self.display_data, simulation_time=LIFE_STEPS, gui_enabled=DRAW,
+        self.sim = Simulator(display_data=self.display_data, simulation_time=Const.LIFE_STEPS, gui_enabled=Const.DRAW,
                              stop_callback=self.stop, seed=seed)
 
         self.populations: List[Population] = []
-        self.history = {i: [] for i in range(0, N_GENERATION)}
+        self.history = {i: [] for i in range(0, Const.N_GENERATION)}
 
         self.generation = 0
         self.avg_fitness = [-1]
@@ -55,7 +54,7 @@ class GeneticAlgorithm:
     def run(self):
 
         population = Population()
-        for generation in range(1, N_GENERATION + 1):
+        for generation in range(1, Const.N_GENERATION + 1):
             if self.emergency_break:
                 break
 
@@ -78,9 +77,9 @@ class GeneticAlgorithm:
     def store_date(self):
         data = dict(
             seed=self.sim.seed,
-            # Store constants to set simulator accordingly with the current setting in the future
+
             constants=[
-                dict(name=name, value=value) if not isinstance(value, ModuleType) else None for name, value in vars(Consts).items() if not name.startswith('_')
+                dict(name=name, value=value) if not isinstance(value, ModuleType) else None for name, value in vars(Const).items() if not name.startswith('_')
             ],
             genomes={
                 i: [
@@ -107,7 +106,7 @@ class GeneticAlgorithm:
             sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
 
         # Select first n as elite
-        for i in range(1, int(N_INDIVIDUALS * ELITISM_PERCENTAGE) + 1):
+        for i in range(1, int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1):
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 
@@ -116,7 +115,7 @@ class GeneticAlgorithm:
         return next_population
 
     def crossover_mutation(self, next_population: List):
-        for i in range(int(N_INDIVIDUALS * CROSSOVER_MUTATION_PERCENTAGE)):
+        for i in range(int(Const.N_INDIVIDUALS * Const.CROSSOVER_MUTATION_PERCENTAGE)):
             parent1 = random.sample(next_population, 1)[0]
             parent2 = random.sample(next_population, 1)[0]
             child = Crossover.two_point_crossover(parent1, parent2)
@@ -126,7 +125,7 @@ class GeneticAlgorithm:
             next_population.append(child)
 
     def generate_new(self, next_population):
-        while len(next_population) < N_INDIVIDUALS:
+        while len(next_population) < Const.N_INDIVIDUALS:
             next_population.append(Genome())
 
     def stop(self):
@@ -140,9 +139,14 @@ class GeneticAlgorithm:
 
         self.data_manager.update_time_step(generation)
         self.display_data['generation']['value'] = generation
-        self.display_data['avg_fitness']['value'] = np.mean(individual_fitness)
-        self.display_data['best_fitness']['value'] = np.max(individual_fitness)
-        self.display_data['diversity']['value'] = np.mean(np.abs(np.diff(individual_fitness)))
+        avg_fitness = np.mean(individual_fitness)
+        self.display_data['avg_fitness']['value'] = avg_fitness
+        best_fitness = np.max(individual_fitness)
+        self.display_data['best_fitness']['value'] = best_fitness
+        diversity = np.mean(np.abs(np.diff(individual_fitness)))
+        self.display_data['diversity']['value'] = diversity
+
+        print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity}')
 
         for data in self.display_data.values():
             if 'graph' in data and data['graph']:
@@ -154,3 +158,48 @@ class GeneticAlgorithm:
         for const in constants:
             if const is not None:
                 c_name, c_value = const['name'], const['value']
+
+                if c_name == 'ORIGIN':
+                    Const.ORIGIN = c_value
+                elif c_name == 'MAP_WIDTH':
+                    Const.MAP_WIDTH = c_value
+                elif c_name == 'MAP_HEIGHT':
+                    Const.MAP_HEIGHT = c_value
+                elif c_name == 'FPS':
+                    Const.FPS = c_value
+                elif c_name == 'HIDDEN_SIZE':
+                    Const.HIDDEN_SIZE = c_value
+                elif c_name == 'INPUT_SIZE':
+                    Const.INPUT_SIZE = c_value
+                elif c_name == 'OUTPUT_SIZE':
+                    Const.OUTPUT_SIZE = c_value
+                elif c_name == 'INPUT_WEIGHTS_SIZE':
+                    Const.INPUT_WEIGHTS_SIZE = c_value
+                elif c_name == 'HIDDEN_WEIGHTS_SIZE':
+                    Const.HIDDEN_WEIGHTS_SIZE = c_value
+                elif c_name == 'LIFE_STEPS':
+                    Const.LIFE_STEPS = c_value
+                elif c_name == 'LIFE_UPDATE':
+                    Const.LIFE_UPDATE = c_value
+                elif c_name == 'N_INDIVIDUALS':
+                    Const.N_INDIVIDUALS = c_value
+                elif c_name == 'CROSSOVER_MUTATION_PERCENTAGE':
+                    Const.CROSSOVER_MUTATION_PERCENTAGE = c_value
+                elif c_name == 'SELECT_PERCENTAGE':
+                    Const.SELECT_PERCENTAGE = c_value
+                elif c_name == 'ELITISM_PERCENTAGE':
+                    Const.ELITISM_PERCENTAGE = c_value
+                elif c_name == 'MUTATION_PROBABILITY':
+                    Const.MUTATION_PROBABILITY = c_value
+                elif c_name == 'GENOME_LENGTH':
+                    Const.GENOME_LENGTH = c_value
+                elif c_name == 'GENOME_BOUNDS':
+                    Const.GENOME_BOUNDS = c_value
+                elif c_name == 'INIT_SIZE':
+                    Const.INIT_SIZE = c_value
+                elif c_name == 'N_GENERATION':
+                    Const.N_GENERATION = c_value
+                elif c_name == 'GRAPH_WINDOW':
+                    Const.GRAPH_WINDOW = c_value
+                elif c_name == 'DRAW':
+                    Const.DRAW = c_value

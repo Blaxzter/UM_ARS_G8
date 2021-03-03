@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.utils.Constants import ROBOT_RADIUS, EPSILON, DRAW
+import src.utils.Constants as Const
 
 import pygame
 
@@ -23,8 +23,8 @@ class Line:
         self.vec = np.array(self.end - self.start).reshape((2, 1))
         self.nvec = (self.vec / np.linalg.norm(self.vec)).reshape((2, 1))
 
-        self.col_start: np.ndarray = self.start + (self.nvec * -1) * ROBOT_RADIUS
-        self.col_end: np.ndarray = self.end + self.nvec * ROBOT_RADIUS
+        self.col_start: np.ndarray = self.start + (self.nvec * -1) * Const.ROBOT_RADIUS
+        self.col_end: np.ndarray = self.end + self.nvec * Const.ROBOT_RADIUS
 
         self.col_start_x: float = self.col_start[0].item()
         self.col_start_y: float = self.col_start[1].item()
@@ -34,7 +34,7 @@ class Line:
         self.length = np.linalg.norm(self.vec)
         self.angle = self.compute_slope()
 
-        if DRAW:
+        if Const.DRAW:
             self.pyStart = pygame.Vector2(self.start[0], self.start[1])
             self.pyEnd = pygame.Vector2(self.end[0], self.end[1])
 
@@ -43,7 +43,7 @@ class Line:
                 point[0].item() - self.col_start_x) * (self.col_end_y - self.col_start_y)
 
         # compare versus epsilon for floating point values, or != 0 if using integers
-        if abs(crossproduct) > EPSILON:
+        if abs(crossproduct) > Const.EPSILON:
             return False
 
         dotproduct = (point[0].item() - self.col_start_x) * (self.col_end_x - self.col_start_x) + (
@@ -63,7 +63,7 @@ class Line:
                 point[0].item() - self.start_x) * (self.end_y - self.start_y)
 
         # compare versus epsilon for floating point values, or != 0 if using integers
-        if abs(crossproduct) > EPSILON:
+        if abs(crossproduct) > Const.EPSILON:
             return False
 
         dotproduct = (point[0].item() - self.start_x) * (self.end_x - self.start_x) + (

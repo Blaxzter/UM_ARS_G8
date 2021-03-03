@@ -7,7 +7,7 @@ import numpy as np
 
 
 from src.simulator.Robot import Robot
-from src.utils.Constants import *
+import src.utils.Constants as Const
 from src.simulator.Environment import Environment
 from src.genetic.Population import Population
 
@@ -18,7 +18,7 @@ class Simulator:
 
     test = 0
 
-    def __init__(self, display_data: Dict, simulation_time = LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None, seed = None):
+    def __init__(self, display_data: Dict, simulation_time = Const.LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None, seed = None):
 
         if seed is None:
             self.seed = np.random.randint(2147483647)
@@ -38,7 +38,7 @@ class Simulator:
             # initialize pygame
             pygame.init()
             self.clock: pygame.time.Clock = pygame.time.Clock()                     # PyGame Clock to set frame rate
-            self.screen: pygame.screen = pygame.display.set_mode((WIDTH, HEIGHT))   # Window where simulation is played
+            self.screen: pygame.screen = pygame.display.set_mode((Const.WIDTH, Const.HEIGHT))   # Window where simulation is played
             pygame.display.set_caption("ARS_Robot_Simulation")                      # Window title
             icon = pygame.image.load('images/robot.png')                         # Window icon
             pygame.display.set_icon(icon)
@@ -52,7 +52,7 @@ class Simulator:
         self.environment: Environment = Environment()                               # Environment where the robot is placed
         self.done: bool = False                                                     # Window closed ?
         self.robots: List[Robot] = [
-            Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(N_INDIVIDUALS)
+            Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(Const.N_INDIVIDUALS)
         ]
         self.simulation_time = simulation_time
         self.time_left = simulation_time
@@ -73,7 +73,7 @@ class Simulator:
 
                 self.update()
                 self.draw()
-                self.clock.tick(FPS)
+                self.clock.tick(Const.FPS)
             for robi in self.robots:
                 robi.calc_fitness()
         else:
@@ -160,7 +160,7 @@ class Simulator:
                 self.FONT.render(
                     f'{display_name}: {np.round(value, decimals = 3)}',
                     True,
-                    COLORS["pink"]),
+                    Const.COLORS["pink"]),
                 (column_start + column * column_width, row_start + row * row_height)
             )
 

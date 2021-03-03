@@ -8,7 +8,7 @@ import numpy as np
 Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
 """
 
-ENVIRONMENT_SPEED = 0.5  # Frederic fill this please
+ENVIRONMENT_SPEED = 0.1  # Frederic fill this please
 PADDING = 20  # Right, Left and Bottom padding
 PADDING_TOP = 100  # Top padding to make space for data
 # WIDTH = 1920  # Width of window
@@ -27,7 +27,7 @@ MAP_HEIGHT = HEIGHT - PADDING_TOP - PADDING
 START_X = 300  # Start X
 START_Y = 250  # Start y
 START_ROT = 0  # Starting rotation wrt to x-axis
-START_POS = [START_X, START_Y]  # Starting position of Robot
+START_POS = np.array([START_X, START_Y], dtype=float).reshape((2, 1))  # Starting position of Robot
 NUMBER_OF_SENSORS = 12  # Number of sensor for Robot
 ROBOT_RADIUS = 30  # Radius of the robot
 ROBOT_VELOCITY_STEPS = 0.1  # Maximum increment of velocity per wheel
@@ -53,13 +53,10 @@ INPUT_WEIGHTS_SIZE = INPUT_SIZE * HIDDEN_SIZE
 HIDDEN_WEIGHTS_SIZE = HIDDEN_SIZE * OUTPUT_SIZE
 
 # EVOLUTIONARY ALGORITHM
-LIFE_STEPS = 10
+LIFE_STEPS = 500
 LIFE_UPDATE = 1
 
-DUST_HORIZONTAL = MAP_WIDTH / 30
-DUST_VERTICAL = MAP_HEIGHT / 30
-
-N_INDIVIDUALS = 5
+N_INDIVIDUALS = 20
 CROSSOVER_MUTATION_PERCENTAGE = 0.5
 SELECT_PERCENTAGE = 0.4
 ELITISM_PERCENTAGE = 0.1
@@ -69,6 +66,6 @@ MUTATION_PROBABILITY = 0.08
 GENOME_LENGTH = INPUT_WEIGHTS_SIZE + HIDDEN_WEIGHTS_SIZE  # Number of sensors * Number of components of the velocity
 GENOME_BOUNDS = 10
 INIT_SIZE = 0.1
-N_GENERATION = 10
+N_GENERATION = 100
 GRAPH_WINDOW = -1
 DRAW = False

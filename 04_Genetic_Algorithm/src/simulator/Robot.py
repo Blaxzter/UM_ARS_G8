@@ -4,7 +4,7 @@ from pygame import gfxdraw
 from src.genetic.Decoder import robot_decoder
 from src.simulator.Environment import Collision, Environment
 from src.genetic.Genome import Genome
-from src.utils.Constants import *
+import src.utils.Constants as Const
 from src.utils.MathUtils import *
 from src.simulator.Sensors import Sensors
 

@@ -5,7 +5,7 @@ from pygame import gfxdraw
 
 from src.simulator.Environment import Environment
 from src.utils.MathUtils import *
-from src.utils.Constants import DRAW
+import src.utils.Constants as Const
 
 
 class Sensors:
@@ -14,7 +14,7 @@ class Sensors:
     """
     def __init__(self):
         self.sensors: List[LineString] = []  # Collection of all the sensor in a Robot
-        if DRAW:
+        if Const.DRAW:
             self.font_sensors = pygame.font.SysFont(None, 28)  #
 
     def update(self, environment: Environment, sensor_orientation: float, robot_center: np.ndarray) -> None:

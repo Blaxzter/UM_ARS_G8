@@ -5,7 +5,7 @@ import pygame
 
 from src.simulator.Line import Line
 from src.simulator.Room import Room
-from src.utils.Constants import PADDING, WIDTH, HEIGHT, ROBOT_RADIUS, PADDING_TOP, EPSILON, COLORS
+import src.utils.Constants as Const
 from src.utils.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
 
 # This class was mostly created by Guillaume
@@ -41,7 +41,7 @@ class Environment:
             distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
 
             # Check if we actually need to calculate if we jumped through a line based on the velocity and the distance to
-            if distance_to_line > dist_traveled and (ROBOT_RADIUS - distance_to_line) < EPSILON:
+            if distance_to_line > dist_traveled and (Const.ROBOT_RADIUS - distance_to_line) < Const.EPSILON:
                 continue
 
             extend_intersection = line_seg_intersection(robot_current_center, robot_next_center, line.col_start, line.col_end)
@@ -52,10 +52,10 @@ class Environment:
                     robot_current_center, extend_intersection)
 
             # We need this because otherwise we would stop at the extended line of a
-            if extend_intersection is not None and true_intersection is None and np.abs(np.dot((robot_current_center - robot_next_center).T, line.vec)) < EPSILON:
+            if extend_intersection is not None and true_intersection is None and np.abs(np.dot((robot_current_center - robot_next_center).T, line.vec)) < Const.EPSILON:
                 continue
 
-            if (ROBOT_RADIUS - distance_to_line > EPSILON) or jumped_through:
+            if (Const.ROBOT_RADIUS - distance_to_line > Const.EPSILON) or jumped_through:
                 collisions.append(Collision(
                     line,
                     outside_of_line(robot_current_center, line.start, line.end),
