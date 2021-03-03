@@ -81,8 +81,8 @@ class DataManager:
 
         self.parallel = parallel
         self.visualize = visualize
-        if parallel:
-            if self.visualize:
+        if self.visualize:
+            if self.parallel:
                 self.manager = Manager()
                 self.done = self.manager.Value("done", True)
                 self.time_step = self.manager.Value("timestep", 0)
@@ -100,14 +100,16 @@ class DataManager:
             self.colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(self.data)))
 
     def update_time_step(self, new_time_step):
-        if self.parallel:
-            self.time_step.value = new_time_step
+        if self.visualize:
+            if self.parallel:
+                self.time_step.value = new_time_step
         else:
             self.time_steps.append(new_time_step)
 
     def update_value(self, key, value):
-        if self.parallel:
-            self.line_dict[key] = value
+        if self.visualize:
+            if self.parallel:
+                self.line_dict[key] = value
         else:
             self.data[key].append(value)
 
@@ -119,7 +121,7 @@ class DataManager:
             animate(self.time_steps, self.data, self.colors)
 
     def stop(self):
-        if self.parallel:
+        if self.visualize and self.parallel:
             self.done.value = False
             self.p.join()
             self.p.close()

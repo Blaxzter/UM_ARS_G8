@@ -6,7 +6,7 @@ import numpy as np
 from src.genetic import Crossover, Mutations
 from src.genetic.Genome import Genome
 from src.genetic.Population import Population
-from src.optimization_function.Visualizer import Visualizer
+from src.genetic.Selection import ranked_based_selection
 from src.simulator.Simulator import Simulator
 from src.utils.Constants import N_GENERATION, ELITISM_PERCENTAGE, SELECT_PERCENTAGE, N_INDIVIDUALS, DRAW, \
     CROSSOVER_MUTATION_PERCENTAGE, LIFE_STEPS
@@ -18,7 +18,7 @@ class GeneticAlgorithm:
     Author Frederic Abraham
     """
 
-    def __init__(self, robot: bool = False):
+    def __init__(self):
         self.emergency_break = False
         self.display_data = dict(
             avg_fitness = dict(display_name = 'avg fitness',  value = 0, graph = True),
@@ -29,11 +29,9 @@ class GeneticAlgorithm:
 
         self.data_manager: DataManager = DataManager(data_names = [
             display_name['display_name'] for display_name in list(filter(lambda ele: ele['graph'], self.display_data.values()))
-        ], parallel = False, visualize=False)
+        ], parallel = True, visualize = False)
 
-        self.robot = robot
-        if self.robot:
-            self.sim = Simulator(display_data = self.display_data, simulation_time = LIFE_STEPS, gui_enabled = DRAW, stop_callback = self.stop)
+        self.sim = Simulator(display_data = self.display_data, simulation_time = LIFE_STEPS, gui_enabled = DRAW, stop_callback = self.stop)
 
         self.populations: List[Population] = []
         self.history = {i: [] for i in range(0, N_GENERATION)}
@@ -60,72 +58,29 @@ class GeneticAlgorithm:
             self.crossover_mutation(next_population)
             self.generate_new(next_population)
 
-            # for i in range(5):
-            #     print(next_population[-i].genes)
-
             population = Population(next_population)
 
         self.data_manager.stop()
 
-        test_name = "sim"
-        func_name = "Rastrigin"
-        parameter = "Simulation"
-        title = f"Genetic Algorithm - {parameter} - {func_name}"
-        write_title = f"{test_name.replace(' ', '_')}_{func_name}_{parameter.replace(' ', '_')}"
-        # viz = Visualizer(OPTI_FUNC, self.history, title,
-        #               dict(
-        #                 avg_fitness = self.data_manager.get_data("avg fitness"),
-        #                 best_fitness = self.data_manager.get_data("best fitness"),
-        #                 diversity = self.data_manager.get_data("diversity"),
-        #               ))
-        # print("Viz Done")
-        # viz.show_fig()
-        # viz.write_fig(write_title.lower())
-
 
     def evaluation(self, population: Population):
-        if self.robot:
-            self.robot_evaluation(population)
-        else:
-            self.optimisation_evaluation(population)
+        self.robot_evaluation(population)
+
 
     def robot_evaluation(self, population):
         self.sim.set_population(population)
         self.sim.start()
 
-    def optimisation_evaluation(self, population):
-        individuals = population.individuals
-        for i, individual in enumerate(individuals):
-            coordinates = optimization_decoder(individual)
-            altitude = OPTI_FUNC(coordinates)
-            individual.set_fitness(0.00000001 if altitude == 0 else altitude)
-            self.history.get(self.generation - 1).append(
-                dict(
-                    id=i,
-                    alt=altitude,
-                    best=False,
-                    pos=coordinates,
-                    vel=0,
-                    swarm=1
-                )
-            )
-
     def selection(self) -> List[Genome]:
         next_population = []
         ordered_by_fitness = list(sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
-        fitness = [individual.fitness for individual in ordered_by_fitness]
 
         # Select first n as elite
         for i in range(1, int(N_INDIVIDUALS * ELITISM_PERCENTAGE) + 1):
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 
-        weights = fitness  # Invert all weights
-        weights = weights / np.sum(weights)  # Normalize
-        # Do roulette wheel selection
-        for i in range(int(N_INDIVIDUALS * SELECT_PERCENTAGE)):
-            choice = np.random.choice(ordered_by_fitness, p = weights)
-            next_population.append(choice)  # Sample
+        ranked_based_selection(ordered_by_fitness, next_population)
 
         return next_population
 

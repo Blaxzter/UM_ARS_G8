@@ -43,9 +43,17 @@ class Environment:
     def collides(self, robot_current_center: np.ndarray, robot_next_center: np.ndarray) -> List[Collision]:
         collisions = []
 
-        for line in self.environment:
+        dist_traveled = np.linalg.norm(robot_current_center - robot_next_center)
 
+        for line in self.environment:
             distance_to_line = distance_point_to_line_seg(robot_next_center, line.start, line.end)
+
+            # Check if we actually need to calculate if we jumped through a line based on the velocity and the distance to the wall
+            if distance_to_line > dist_traveled and (ROBOT_RADIUS - distance_to_line) < EPSILON:
+                continue
+
+            print("Test", line)
+
             extend_intersection = line_seg_intersection(robot_current_center, robot_next_center, line.col_start, line.col_end)
             true_intersection = line_seg_intersection(robot_current_center, robot_next_center, line.start, line.end)
             jumped_through = False

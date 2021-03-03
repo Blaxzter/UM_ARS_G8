@@ -4,7 +4,7 @@ from pygame import gfxdraw
 from src.genetic.Decoder import robot_decoder
 from src.simulator.Environment import Collision, Environment
 from src.genetic.Genome import Genome
-from src.utils.Constants import LIFE_STEPS, HIDDEN_SIZE
+from src.utils.Constants import *
 from src.utils.MathUtils import *
 from src.simulator.Sensors import Sensors
 
@@ -15,7 +15,13 @@ class Robot:
     """
     Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
     """
+
+    id = 0
+
     def __init__(self, init_pos: np.ndarray, init_rotation: float, genome: Genome):
+        self.id = Robot.id
+        Robot.id += 1
+
         self.v_l = 0
         self.v_r = 0
         self.l = Const.ROBOT_RADIUS * 2
@@ -28,6 +34,22 @@ class Robot:
         self.dist_covered = 0
         self.prev_pos = None
         self.previous_hidden = np.zeros(shape=(HIDDEN_SIZE, 1))
+        self.dust: List = self.generate_dust()
+        self.dust_collected = 0
+
+    def reset(self, init_pos: np.ndarray, init_rotation: float, genome: Genome):
+        self.v_l = 0
+        self.v_r = 0
+        self.theta = np.deg2rad(init_rotation)
+        self.pos: np.ndarray = init_pos
+
+        self.dust: List = self.generate_dust()
+        self.prev_pos = None
+        self.previous_hidden = np.zeros(shape = (HIDDEN_SIZE, 1))
+        self.genome = genome
+        self.number_of_total_collisions = 0
+        self.dist_covered = 0
+        self.dust_collected = 0
 
     def update(self, environment):
         # Update sensors and collision counter
@@ -47,11 +69,18 @@ class Robot:
 
         self.dist_covered = np.linalg.norm(self.pos - self.prev_pos)
 
-        self.calc_fitness()
+        self.check_dust_particles(self.pos)
+
+    def check_dust_particles(self, robot_current_center: np.ndarray):
+        for i in range(len(self.dust) - 1, -1, -1):
+            dust = self.dust[i]
+            if np.linalg.norm(robot_current_center - dust) < ROBOT_RADIUS:
+                self.dust_collected += 1
+                del self.dust[i]
 
     def calc_fitness(self):
         # TODO do correct fitness calculation for roombot (for week 2)
-        self.genome.set_fitness(0.0001 if self.number_of_total_collisions > 0 else self.dist_covered)
+        self.genome.set_fitness(self.dust_collected)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
@@ -87,8 +116,6 @@ class Robot:
             self.number_of_total_collisions += 1
             closest_line = self.closest_collision(collisions, current_pos)
             t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
-            # if self.recalc_next_pos(current_pos, next_pos, closest_line)[1].shape == (2,2):
-            #     t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)
             new_collisions = environment.collides(t_current_pos, t_next_pos)
             prev_collision.append(closest_line.line)
             if len(new_collisions) == 0:
@@ -172,6 +199,10 @@ class Robot:
         if self.sensor_hidden:
             self.sensors.draw(screen)
 
+        if self.id == 0:
+            for dust in self.dust:
+                pygame.draw.circle(screen, COLORS["red"], dust.flatten(), 2)
+
     def draw_robot(self, screen) -> None:
         s_x, s_y = get_x_y(self.pos)
         gfxdraw.aacircle(
@@ -211,3 +242,14 @@ class Robot:
                 minimum = dist
                 closest = collision
         return closest
+
+    @staticmethod
+    def generate_dust() -> List:
+        y_amount = int(MAP_HEIGHT / ROBOT_RADIUS)
+        x_amount = int(MAP_WIDTH / ROBOT_RADIUS)
+        X, Y = np.meshgrid(np.linspace(ORIGIN[0] + 20, ORIGIN[0] + MAP_WIDTH - 20, x_amount), np.linspace(ORIGIN[1] + 20, ORIGIN[1] + MAP_HEIGHT - 20, y_amount))
+        return list(map(lambda x: np.reshape(x, (2, 1)), np.column_stack([X.ravel(), Y.ravel()])))
+        # n = int(MAP_WIDTH * MAP_HEIGHT / ROBOT_RADIUS)
+        # xy_min = ORIGIN
+        # xy_max = [MAP_WIDTH, MAP_HEIGHT]
+        # return list(np.random.uniform(low = xy_min, high = xy_max, size = (n, 2)))

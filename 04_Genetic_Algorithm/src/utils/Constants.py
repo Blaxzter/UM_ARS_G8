@@ -3,7 +3,6 @@ import numpy as np
 # This was done by everyone piece by piece
 
 # ENVIRONMENT
-from src.optimization_function.OptimizationFunction import OptimizationFunction
 
 """
 Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
@@ -69,19 +68,3 @@ GENOME_BOUNDS = 1
 N_GENERATION = 100
 GRAPH_WINDOW = -1
 DRAW = True
-
-# Optimization
-# SEARCH_SPACE = 10
-# VALUES_PER_AXIS = 10
-# optimisation = OptimizationFunction(0, 100)
-# OPTI_FUNC = optimisation.rosenbrock
-# GENOME_LENGTH = VALUES_PER_AXIS * 2  # for two dimension
-
-# ---PARTICLE consts
-# MAX_POS = SEARCH_SPACE             # Maximum value of the position for both X and Y throughout the whole simulation
-# MIN_POS = -SEARCH_SPACE            # Minimum value of the position for both X and Y throughout the whole simulation
-# DIMENSION = 2                        # Number of dimensions used for the benchmark function
-
-# -- Viz
-# grid_granularity = 200
-# precision = 9

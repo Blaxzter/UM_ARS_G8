@@ -3,24 +3,6 @@ from typing import List
 from src.simulator.Line import Line
 from src.utils.Constants import *
 
-
-class Room:
-    """
-    Author Guillaume Franzoni Darnois
-    """
-    def __init__(self, room: int):
-        self.map: List[Line] = rooms[room][0]
-        self.initial_random_pos: np.ndarray = rooms[room][1]
-        self.dust: np.ndarray = self.generate_dust()
-
-    @staticmethod
-    def generate_dust() -> np.ndarray:
-        n = int(MAP_WIDTH * MAP_HEIGHT / ROBOT_RADIUS)
-        xy_min = ORIGIN
-        xy_max = [MAP_WIDTH, MAP_HEIGHT]
-        return np.random.uniform(low=xy_min, high=xy_max, size=(n, 2))
-
-
 default_boundaries = [
     Line(PADDING, PADDING_TOP, WIDTH - PADDING, PADDING_TOP),
     Line(WIDTH - PADDING, PADDING_TOP, WIDTH - PADDING, HEIGHT - PADDING),
@@ -28,12 +10,13 @@ default_boundaries = [
     Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
 ]
 
+
 def box(origin, width, height):
     return [
-        Line(origin[0],         origin[1],          origin[0],         origin[1] + height),
-        Line(origin[0],         origin[1] + height, origin[0] + width, origin[1] + height),
-        Line(origin[0] + width, origin[1] + height, origin[0] + width, origin[1]         ),
-        Line(origin[0] + width, origin[1],          origin[0],         origin[1]         ),
+        Line(origin[0], origin[1], origin[0], origin[1] + height),
+        Line(origin[0], origin[1] + height, origin[0] + width, origin[1] + height),
+        Line(origin[0] + width, origin[1] + height, origin[0] + width, origin[1]),
+        Line(origin[0] + width, origin[1], origin[0], origin[1]),
     ]
 
 rooms = [
@@ -54,7 +37,17 @@ rooms = [
 
     # Room 3 - Box with robot inside
     (
-        default_boundaries + box([ORIGIN[0]+MAP_WIDTH* 2/5, ORIGIN[1]+MAP_HEIGHT*2/5], 150, 100),  # Map
-        np.array([ORIGIN[0] + MAP_WIDTH/2, ORIGIN[1] + MAP_HEIGHT/2]).reshape(2, 1)  # Initial Position
+        default_boundaries + box([ORIGIN[0] + MAP_WIDTH * 2 / 5, ORIGIN[1] + MAP_HEIGHT * 2 / 5], 150, 100),  # Map
+        np.array([ORIGIN[0] + MAP_WIDTH / 2, ORIGIN[1] + MAP_HEIGHT / 2]).reshape(2, 1)  # Initial Position
     )
 ]
+
+
+class Room:
+    """
+    Author Guillaume Franzoni Darnois
+    """
+
+    def __init__(self, room: int):
+        self.map: List[Line] = rooms[room][0]
+        self.initial_random_pos: np.ndarray = rooms[room][1]

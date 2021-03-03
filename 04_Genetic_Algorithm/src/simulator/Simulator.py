@@ -7,7 +7,7 @@ import numpy as np
 
 
 from src.simulator.Robot import Robot
-from src.utils.Constants import WIDTH, HEIGHT, LIFE_STEPS, FPS, COLORS, DRAW
+from src.utils.Constants import *
 from src.simulator.Environment import Environment
 from src.genetic.Population import Population
 
@@ -36,7 +36,7 @@ class Simulator:
             icon = pygame.image.load('images/robot.png')                         # Window icon
             pygame.display.set_icon(icon)
             self.keys: List[Dict[pygame.key, Callable, bool]] = [  # Action keys with relative callback
-                dict(key_code=[pygame.K_r], callback=self.reinit_robots, hold=False, pressed=False),
+                # dict(key_code=[pygame.K_r], callback=self.reinit_robots, hold=False, pressed=False),
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
         else:
@@ -44,26 +44,17 @@ class Simulator:
 
         self.environment: Environment = Environment()                               # Environment where the robot is placed
         self.done: bool = False                                                     # Window closed ?
-        self.robots: List[Robot] = []
+        self.robots: List[Robot] = [
+            Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(N_INDIVIDUALS)
+        ]
         self.simulation_time = simulation_time
         self.time_left = simulation_time
 
-    def reinit_robots(self):
-        robo_amount = len(self.robots)
-        self.robots.clear()
-        for individual in range(robo_amount):
-            self.robots.append(
-                Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low=0, high=360), genome = None)
-            )
-
     def set_population(self, population: Population):
         self.time_left = self.simulation_time
-        self.robots.clear()
         self.done = False
-        for individual in population.individuals:
-            self.robots.append(
-                Robot(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low=0, high=360), genome = individual)
-            )
+        for i, individual in enumerate(population.individuals):
+            self.robots[i].reset(init_pos = self.environment.environment.initial_random_pos, init_rotation = np.random.randint(low=0, high=360), genome = individual)
 
     def start(self) -> None:
 
@@ -76,6 +67,8 @@ class Simulator:
                 self.update()
                 self.draw()
                 self.clock.tick(FPS)
+            for robi in self.robots:
+                robi.calc_fitness()
         else:
             futures = []
             environment = self.environment
@@ -95,6 +88,7 @@ class Simulator:
 
         for i in range(generations):
             robot.update(environment)
+        robot.calc_fitness()
         return robot.genome.fitness
 
     def update(self) -> None:

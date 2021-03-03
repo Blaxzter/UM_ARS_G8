@@ -88,7 +88,7 @@ def line_intersection(line1: np.ndarray, line2: np.ndarray) -> np.ndarray:
     return np.array([x[0], y[0]]).reshape((2, 1))
 
 
-def line_seg_intersection(a1: float, a2: float, b1: float, b2: float) -> np.ndarray:
+def line_seg_intersection(a1: np.ndarray, a2: np.ndarray, b1: np.ndarray, b2: np.ndarray) -> np.ndarray:
     line1 = LineString([a1, a2])
     line2 = LineString([b1, b2])
     intersection = line1.intersection(line2)
