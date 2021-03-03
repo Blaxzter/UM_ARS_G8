@@ -47,6 +47,7 @@ def run(done, iteration, line_dict):
         # print(done.value)
         if old_value < iteration.value:
             # print(old_value, iteration.value)
+            ax.cla()
             for i, key in enumerate(line_dict.keys()):
 
                 data[key].append(line_dict[key])
@@ -57,8 +58,8 @@ def run(done, iteration, line_dict):
                     y = data[key][-GRAPH_WINDOW:]
                     x = x[-GRAPH_WINDOW:]
 
-                print(key, x)
-                print(key, y)
+                # print(key, x)
+                # print(key, y)
                 ax.plot(x, y, color = colors[i], label = f'{key}')
 
             old_value = iteration.value

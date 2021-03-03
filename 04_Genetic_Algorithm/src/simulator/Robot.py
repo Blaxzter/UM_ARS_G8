@@ -80,7 +80,7 @@ class Robot:
 
     def calc_fitness(self):
         # TODO do correct fitness calculation for roombot (for week 2)
-        self.genome.set_fitness(self.dust_collected)
+        self.genome.set_fitness(self.dust_collected + (1 / (1 + self.number_of_total_collisions))
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
