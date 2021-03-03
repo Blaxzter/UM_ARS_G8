@@ -12,6 +12,8 @@ from src.genetic.Selection import ranked_based_selection
 from src.simulator.Simulator import Simulator
 from src.utils.Constants import *
 from src.utils.DataVisualizer import DataManager
+import src.utils.Constants as Consts
+from types import ModuleType
 
 
 class GeneticAlgorithm:
@@ -19,20 +21,29 @@ class GeneticAlgorithm:
     Author Frederic Abraham
     """
 
-    def __init__(self):
+    def __init__(self, load=None, generation=None):
+        seed = None
+        if load:
+            f = open(load, )
+            sim_data = json.load(f)
+            seed = sim_data['seed']
+            self.load_constants(sim_data['constants'])
+
         self.emergency_break = False
         self.display_data = dict(
-            avg_fitness = dict(display_name = 'avg fitness',  value = 0, graph = True),
-            best_fitness = dict(display_name = 'best fitness',  value = 0, graph = True),
-            diversity = dict(display_name = 'diversity',  value = 0, graph = True),
-            generation = dict(display_name = 'generation',  value = 0, graph = False),
+            avg_fitness=dict(display_name='avg fitness', value=0, graph=True),
+            best_fitness=dict(display_name='best fitness', value=0, graph=True),
+            diversity=dict(display_name='diversity', value=0, graph=True),
+            generation=dict(display_name='generation', value=0, graph=False),
         )
 
-        self.data_manager: DataManager = DataManager(data_names = [
-            display_name['display_name'] for display_name in list(filter(lambda ele: ele['graph'], self.display_data.values()))
-        ], parallel = True, visualize=True)
+        self.data_manager: DataManager = DataManager(data_names=[
+            display_name['display_name'] for display_name in
+            list(filter(lambda ele: ele['graph'], self.display_data.values()))
+        ], parallel=False, visualize=False)
 
-        self.sim = Simulator(display_data = self.display_data, simulation_time = LIFE_STEPS, gui_enabled = DRAW, stop_callback = self.stop)
+        self.sim = Simulator(display_data=self.display_data, simulation_time=LIFE_STEPS, gui_enabled=DRAW,
+                             stop_callback=self.stop, seed=seed)
 
         self.populations: List[Population] = []
         self.history = {i: [] for i in range(0, N_GENERATION)}
@@ -66,12 +77,16 @@ class GeneticAlgorithm:
 
     def store_date(self):
         data = dict(
-            seed = self.sim.seed,
-            genomes = {
+            seed=self.sim.seed,
+            # Store constants to set simulator accordingly with the current setting in the future
+            constants=[
+                dict(name=name, value=value) if not isinstance(value, ModuleType) else None for name, value in vars(Consts).items() if not name.startswith('_')
+            ],
+            genomes={
                 i: [
                     dict(
-                        fitness = individual.fitness,
-                        genes = list(individual.genes)
+                        fitness=individual.fitness,
+                        genes=list(individual.genes)
                     ) for individual in population.individuals
                 ] for i, population in enumerate(self.populations)
             }
@@ -82,14 +97,14 @@ class GeneticAlgorithm:
     def evaluation(self, population: Population):
         self.robot_evaluation(population)
 
-
     def robot_evaluation(self, population):
         self.sim.set_population(population)
         self.sim.start()
 
     def selection(self) -> List[Genome]:
         next_population = []
-        ordered_by_fitness = list(sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
+        ordered_by_fitness = list(
+            sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
 
         # Select first n as elite
         for i in range(1, int(N_INDIVIDUALS * ELITISM_PERCENTAGE) + 1):
@@ -135,3 +150,7 @@ class GeneticAlgorithm:
 
         self.data_manager.update()
 
+    def load_constants(self, constants):
+        for const in constants:
+            if const is not None:
+                c_name, c_value = const['name'], const['value']

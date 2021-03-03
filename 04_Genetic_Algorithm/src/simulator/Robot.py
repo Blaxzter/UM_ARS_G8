@@ -245,8 +245,8 @@ class Robot:
 
     @staticmethod
     def generate_dust() -> List:
-        y_amount = int(MAP_HEIGHT / ROBOT_RADIUS)
-        x_amount = int(MAP_WIDTH / ROBOT_RADIUS)
+        y_amount = int(MAP_HEIGHT / DUST_HORIZONTAL)
+        x_amount = int(MAP_WIDTH / DUST_VERTICAL)
         X, Y = np.meshgrid(np.linspace(ORIGIN[0] + 20, ORIGIN[0] + MAP_WIDTH - 20, x_amount), np.linspace(ORIGIN[1] + 20, ORIGIN[1] + MAP_HEIGHT - 20, y_amount))
         return list(map(lambda x: np.reshape(x, (2, 1)), np.column_stack([X.ravel(), Y.ravel()])))
         # n = int(MAP_WIDTH * MAP_HEIGHT / ROBOT_RADIUS)

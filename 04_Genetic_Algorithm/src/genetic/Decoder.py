@@ -23,7 +23,3 @@ def robot_decoder(genome: Genome, sensors: Sensors, prev_hidden: np.ndarray) -> 
     velocity = output_nn.reshape(2, 1)
 
     return velocity, hidden_nn.reshape(HIDDEN_SIZE, 1)
-
-
-def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
