@@ -30,7 +30,7 @@ class GeneticAlgorithm:
 
         self.data_manager: DataManager = DataManager(data_names = [
             display_name['display_name'] for display_name in list(filter(lambda ele: ele['graph'], self.display_data.values()))
-        ], parallel = False, visualize=False)
+        ], parallel = True, visualize=True)
 
         self.sim = Simulator(display_data = self.display_data, simulation_time = LIFE_STEPS, gui_enabled = DRAW, stop_callback = self.stop)
 
