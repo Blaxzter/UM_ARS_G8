@@ -21,12 +21,14 @@ class GeneticAlgorithm:
     """
 
     def __init__(self, load=None, generation=None):
+        self.loaded = False
         seed = None
         if load:
+            self.loaded = True
             f = open(load, )
-            sim_data = json.load(f)
-            seed = sim_data['seed']
-            self.load_constants(sim_data['constants'])
+            self.sim_data = json.load(f)
+            seed = self.sim_data['seed']
+            self.load_constants()
 
         self.emergency_break = False
         self.display_data = dict(
@@ -53,26 +55,33 @@ class GeneticAlgorithm:
 
     def run(self):
 
-        population = Population()
+        if self.loaded:
+            genes = [Genome(genes=g['genes']) for g in self.sim_data['genomes'][str(self.generation)]]
+            population = Population(genes)
+        else:
+            population = Population()
         for generation in range(1, Const.N_GENERATION + 1):
             if self.emergency_break:
                 break
 
             self.generation = generation
-
             self.populations.append(population)
-
             self.evaluation(population)
             self.update_data(generation, population)
 
-            next_population = self.selection()
-            self.crossover_mutation(next_population)
-            self.generate_new(next_population)
-
-            population = Population(next_population)
+            if self.loaded:
+                population = Population([Genome(genes=g['genes']) for g in self.sim_data['genomes'][str(generation)]])
+                if generation + 1 > len(self.sim_data['genomes']) - 1:
+                    break
+            else:
+                next_population = self.selection()
+                self.crossover_mutation(next_population)
+                self.generate_new(next_population)
+                population = Population(next_population)
 
         self.data_manager.stop()
-        self.store_date()
+        if not self.loaded:
+            self.store_date()
 
     def store_date(self):
         data = dict(
@@ -154,8 +163,8 @@ class GeneticAlgorithm:
 
         self.data_manager.update()
 
-    def load_constants(self, constants):
-        for const in constants:
+    def load_constants(self):
+        for const in self.sim_data['constants']:
             if const is not None:
                 c_name, c_value = const['name'], const['value']
 
