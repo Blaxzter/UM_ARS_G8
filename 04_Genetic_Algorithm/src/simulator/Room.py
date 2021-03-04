@@ -28,11 +28,11 @@ rooms = [
         default_boundaries,  # Map
         [
             [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10,                     Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],                     # Top left corner
-            # [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,   Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],                     # top right
-            # [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,   Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
-            # [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10,                     Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
-            #
-            # [Const.ORIGIN[0] + Const.MAP_WIDTH / 2,                         Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]                         # Middle
+            [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,   Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],                     # top right
+            [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,   Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
+            [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10,                     Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
+
+            [Const.ORIGIN[0] + Const.MAP_WIDTH / 2,                         Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]                         # Middle
         ]
     ),
 

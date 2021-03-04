@@ -1,5 +1,6 @@
 from typing import List
 import numpy as np
+import random
 
 import src.utils.Constants as Const
 
@@ -22,3 +23,13 @@ def ranked_based_selection(individuals: List[Genome], next_population: List):
     for i in range(int(Const.N_INDIVIDUALS * Const.SELECT_PERCENTAGE)):
         choice = np.random.choice(individuals, p = weights)
         next_population.append(choice)  # Sample
+
+
+def tournament_selection(individuals: List[Genome], next_population: List):
+    """
+    Author Villen doctor evil
+    """
+    for i in range(int(Const.N_INDIVIDUALS * Const.SELECT_PERCENTAGE)):
+        tournament = random.sample(individuals, 3)
+        best: Genome = max(tournament, key = lambda item: item.fitness)
+        next_population.append(best)

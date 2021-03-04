@@ -8,7 +8,7 @@ import numpy as np
 from src.genetic import Crossover, Mutations
 from src.genetic.Genome import Genome
 from src.genetic.Population import Population
-from src.genetic.Selection import ranked_based_selection
+from src.genetic.Selection import ranked_based_selection, tournament_selection
 from src.simulator.Simulator import Simulator
 import src.utils.Constants as Const
 from src.utils.DataVisualizer import DataManager
@@ -20,15 +20,17 @@ class GeneticAlgorithm:
     Author Frederic Abraham
     """
 
-    def __init__(self, load=None, generation=None):
+    def __init__(self, load=None, generation = None, show_best = None):
         self.loaded = False
+        self.show_best = show_best
 
         if load:
             self.loaded = True
             f = open(load, )
             self.sim_data = json.load(f)
             self.load_constants()
-            Const.DRAW = True
+            if show_best is not None:
+                Const.N_INDIVIDUALS = show_best
 
         self.c_seed = 0
         self.emergency_break = False
@@ -69,6 +71,8 @@ class GeneticAlgorithm:
             loaded_data = self.sim_data['population'][str(self.start_generation)]
             genes = [Genome(genes=g['genes']) for g in loaded_data['individuals']]
             population = Population(genes)
+            if self.show_best is not None:
+                population.get_top(self.show_best)
             self.c_seed = loaded_data['seed']
         else:
             self.c_seed = np.random.randint(2147483647)
@@ -90,6 +94,8 @@ class GeneticAlgorithm:
 
                 loaded_data = self.sim_data['population'][str(generation)]
                 population = Population([Genome(genes=g['genes']) for g in loaded_data['individuals']])
+                if self.show_best is not None:
+                    population.get_top(self.show_best)
                 self.c_seed = loaded_data['seed']
             else:
                 next_population = self.selection()
@@ -138,7 +144,7 @@ class GeneticAlgorithm:
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 
-        ranked_based_selection(ordered_by_fitness, next_population)
+        tournament_selection(ordered_by_fitness, next_population)
 
         return next_population
 

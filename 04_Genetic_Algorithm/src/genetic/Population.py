@@ -14,3 +14,7 @@ class Population:
             self.individuals: List[Genome] = [Genome() for _ in range(Const.N_INDIVIDUALS)]
         else:
             self.individuals: List[Genome] = individuals
+
+    def get_top(self, show_best):
+        self.individuals = list(sorted(self.individuals, key = lambda genome: genome.fitness, reverse = True))[:show_best]
+        pass
