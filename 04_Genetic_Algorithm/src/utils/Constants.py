@@ -27,7 +27,7 @@ MAP_HEIGHT = HEIGHT - PADDING_TOP - PADDING
 START_X = 300  # Start X
 START_Y = 250  # Start y
 START_ROT = 0  # Starting rotation wrt to x-axis
-START_POS = np.array([START_X, START_Y], dtype=float).reshape((2, 1))  # Starting position of Robot
+START_POS = [START_X, START_Y]  # Starting position of Robot
 NUMBER_OF_SENSORS = 12  # Number of sensor for Robot
 ROBOT_RADIUS = 30  # Radius of the robot
 ROBOT_VELOCITY_STEPS = 0.1  # Maximum increment of velocity per wheel
@@ -46,7 +46,7 @@ COLORS = dict(  # Colors usable in application
 FPS = 144
 
 # Decoder NN
-HIDDEN_SIZE = 6
+HIDDEN_SIZE = 4
 INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE
 OUTPUT_SIZE = 2
 INPUT_WEIGHTS_SIZE = INPUT_SIZE * HIDDEN_SIZE
@@ -70,4 +70,4 @@ GENOME_BOUNDS = 10
 INIT_SIZE = 0.1
 N_GENERATION = 100
 GRAPH_WINDOW = -1
-DRAW = True
+DRAW = False

@@ -36,6 +36,7 @@ class Robot:
         self.previous_hidden = np.zeros(shape=(Const.HIDDEN_SIZE, 1))
         self.dust: List = self.generate_dust()
         self.dust_collected = 0
+        self.life = 0
 
     def reset(self, init_pos: np.ndarray, init_rotation: float, genome: Genome):
         self.v_l = 0
@@ -50,26 +51,31 @@ class Robot:
         self.number_of_total_collisions = 0
         self.dist_covered = 0
         self.dust_collected = 0
+        self.life = 0
 
     def update(self, environment):
-        # Update sensors and collision counter
-        self.sensors.update(environment, self.theta, self.pos)
 
-        # Get decoded value from NN and update previous_hidden
-        new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden)
+        # If the bot collided with a wall we stop updating it
+        if not self.number_of_total_collisions > 0:
+            self.life += 1
+            # Update sensors and collision counter
+            self.sensors.update(environment, self.theta, self.pos)
 
-        # Assign newly calculated velocity
-        self.v_r, self.v_l = new_vel[0, 0], new_vel[1, 0]
+            # Get decoded value from NN and update previous_hidden
+            new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden)
 
-        self.prev_pos = self.pos
+            # Assign newly calculated velocity
+            self.v_r, self.v_l = new_vel[0, 0], new_vel[1, 0]
 
-        # Update position
-        if not (self.v_r == 0 and self.v_l == 0):
-            self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
+            self.prev_pos = self.pos
 
-        self.dist_covered = np.linalg.norm(self.pos - self.prev_pos)
+            # Update position
+            if not (self.v_r == 0 and self.v_l == 0):
+                self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
-        self.check_dust_particles(self.pos)
+            self.dist_covered = np.linalg.norm(self.pos - self.prev_pos)
+
+            self.check_dust_particles(self.pos)
 
     def check_dust_particles(self, robot_current_center: np.ndarray):
         for i in range(len(self.dust) - 1, -1, -1):
@@ -80,7 +86,7 @@ class Robot:
 
     def calc_fitness(self):
         # TODO do correct fitness calculation for roombot (for week 2)
-        self.genome.set_fitness(self.dust_collected + (1 / (1 + self.number_of_total_collisions)))
+        self.genome.set_fitness(self.life + self.dust_collected)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
