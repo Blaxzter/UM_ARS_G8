@@ -67,11 +67,12 @@ class Simulator:
                 self.clock.tick(Const.FPS)
             for robi in self.robots:
                 robi.calc_fitness()
+            self.environment.change_room()
         else:
             futures = []
-            environment = self.environment
+            environments = [Environment() for _ in range(self.time_left)]
             for robot in self.robots:
-                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environment)
+                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environments)
                 futures.append(dict(future=future, robot=robot))
 
             for future in futures:
@@ -80,10 +81,10 @@ class Simulator:
             # print("Future Done")
 
     @staticmethod
-    def run_robot_evaluation(generations, robot, environment):
+    def run_robot_evaluation(generations, robot, environments):
         # print("Run robot evaluation: " + str(robot.genome.genes))
         for i in range(generations):
-            robot.update(environment)
+            robot.update(environments[i])
         robot.calc_fitness()
         return robot.genome.fitness
 
