@@ -22,6 +22,16 @@ def box(origin, width, height):
     ]
 
 
+def trapezoid(origin, width, height):
+    return [
+        Line(origin[0] + 5 / 100 * Const.MAP_WIDTH, origin[1], origin[0], origin[1] + height),
+        Line(origin[0], origin[1] + height, origin[0] + width, origin[1] + height),
+        Line(origin[0] + width, origin[1] + height, origin[0] + width - 5 / 100 * Const.MAP_WIDTH, origin[1]),
+        Line(origin[0] + width - 5 / 100 * Const.MAP_WIDTH, origin[1], origin[0] + 5 / 100 * Const.MAP_WIDTH,
+             origin[1]),
+    ]
+
+
 class Room:
     """
     Author Guillaume Franzoni Darnois
@@ -61,6 +71,16 @@ class Room:
         (
             default_boundaries + box(
                 [Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 5, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 5], 150, 100),
+            # Map
+            [
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+            ]
+        ),
+
+        # Room 4 - Trapezoid with trapezoid inside
+        (
+            trapezoid([Const.ORIGIN[0], Const.ORIGIN[1]], Const.MAP_WIDTH, Const.MAP_HEIGHT) +
+            trapezoid([Const.ORIGIN[0] + Const.MAP_WIDTH/4, Const.ORIGIN[1] + Const.MAP_HEIGHT/4], Const.MAP_WIDTH/2, Const.MAP_HEIGHT/2),
             # Map
             [
                 [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
