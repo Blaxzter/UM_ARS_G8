@@ -18,15 +18,7 @@ class Simulator:
 
     test = 0
 
-    def __init__(self, display_data: Dict, simulation_time = Const.LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None, seed = None):
-
-        if seed is None:
-            self.seed = np.random.randint(2147483647)
-            np.random.seed(self.seed)
-        else:
-            self.seed = seed
-            np.random.seed(seed)
-
+    def __init__(self, display_data: Dict, simulation_time = Const.LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None):
         print(Simulator.test)
         Simulator.test += 1
 
@@ -37,10 +29,10 @@ class Simulator:
         if gui_enabled:
             # initialize pygame
             pygame.init()
-            self.clock: pygame.time.Clock = pygame.time.Clock()                     # PyGame Clock to set frame rate
+            self.clock: pygame.time.Clock = pygame.time.Clock()                                 # PyGame Clock to set frame rate
             self.screen: pygame.screen = pygame.display.set_mode((Const.WIDTH, Const.HEIGHT))   # Window where simulation is played
-            pygame.display.set_caption("ARS_Robot_Simulation")                      # Window title
-            icon = pygame.image.load('images/robot.png')                         # Window icon
+            pygame.display.set_caption("ARS_Robot_Simulation")                                  # Window title
+            icon = pygame.image.load('images/robot.png')                                        # Window icon
             pygame.display.set_icon(icon)
             self.keys: List[Dict[pygame.key, Callable, bool]] = [  # Action keys with relative callback
                 # dict(key_code=[pygame.K_r], callback=self.reinit_robots, hold=False, pressed=False),
@@ -52,22 +44,21 @@ class Simulator:
         self.environment: Environment = Environment()                               # Environment where the robot is placed
         self.done: bool = False                                                     # Window closed ?
         self.robots: List[Robot] = [
-            Robot(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(Const.N_INDIVIDUALS)
+            Robot(init_pos = None, init_rotation = np.random.randint(low = 0, high = 360), genome = None) for _ in range(Const.N_INDIVIDUALS)
         ]
         self.simulation_time = simulation_time
         self.time_left = simulation_time
 
-    def set_population(self, population: Population):
+    def set_population(self, population: Population, seed: float):
+        np.random.seed(seed)
         self.time_left = self.simulation_time
         self.done = False
         for i, individual in enumerate(population.individuals):
             self.robots[i].reset(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low=0, high=360), genome = individual)
 
     def start(self) -> None:
-
         if self.gui_enabled:
             while not self.done:
-
                 self.get_key_update()
                 self.pygame_defaults()
 
@@ -91,7 +82,6 @@ class Simulator:
     @staticmethod
     def run_robot_evaluation(generations, robot, environment):
         # print("Run robot evaluation: " + str(robot.genome.genes))
-
         for i in range(generations):
             robot.update(environment)
         robot.calc_fitness()

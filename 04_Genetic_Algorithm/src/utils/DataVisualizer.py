@@ -20,7 +20,7 @@ def animate(x, data, colors):
             viz_x = x[-Const.GRAPH_WINDOW:]
 
         plt.plot(viz_x, y, color = colors[i], label = f'{key}')
-    plt.pause(0.00001)
+    plt.pause(0.001)
 
     plt.legend(loc='upper left')
     plt.tight_layout()
@@ -78,7 +78,14 @@ class DataManager:
     @author Frederic Abraham
     """
 
-    def __init__(self, data_names: List, parallel: bool = False, visualize: bool = True):
+    def __init__(self, display_data: dict, parallel: bool = False, visualize: bool = True):
+
+        self.display_data = display_data
+
+        data_names = [
+            display_name['display_name'] for display_name in
+            list(filter(lambda ele: ele['graph'], display_data.values()))
+        ]
 
         self.parallel = parallel
         self.visualize = visualize
@@ -91,35 +98,33 @@ class DataManager:
 
                 self.p = Process(target = run, args = (self.done, self.time_step, self.line_dict,))
                 self.p.start()
-        else:
-            if self.visualize:
+            else:
                 plt.tight_layout()
                 plt.ion()
                 plt.show()
-            self.time_steps = []
-            self.data = {data_name: [] for data_name in data_names}
-            self.colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(self.data)))
+
+        self.time_steps = []
+        self.data = {data_name: [] for data_name in display_data.keys()}
+        self.colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(self.data)))
 
     def update_time_step(self, new_time_step):
+        self.time_steps.append(new_time_step)
         if self.visualize:
             if self.parallel:
                 self.time_step.value = new_time_step
-        else:
-            self.time_steps.append(new_time_step)
 
     def update_value(self, key, value):
+        self.data[key].append(value)
         if self.visualize:
             if self.parallel:
                 self.line_dict[key] = value
-        else:
-            self.data[key].append(value)
 
     def get_data(self, key):
         return self.data[key]
 
     def update(self):
         if not self.parallel and self.visualize:
-            animate(self.time_steps, self.data, self.colors)
+            animate(self.time_steps, dict(filter(lambda ele: self.display_data[ele[0]]['graph'], self.data.items())), self.colors)
 
     def stop(self):
         if self.visualize and self.parallel:

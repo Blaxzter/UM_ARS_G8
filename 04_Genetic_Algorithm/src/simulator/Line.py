@@ -34,9 +34,8 @@ class Line:
         self.length = np.linalg.norm(self.vec)
         self.angle = self.compute_slope()
 
-        if Const.DRAW:
-            self.pyStart = pygame.Vector2(self.start[0], self.start[1])
-            self.pyEnd = pygame.Vector2(self.end[0], self.end[1])
+        self.pyStart = pygame.Vector2(self.start[0], self.start[1])
+        self.pyEnd = pygame.Vector2(self.end[0], self.end[1])
 
     def is_on(self, point):
         crossproduct = (point[1].item() - self.col_start_y) * (self.col_end_x - self.col_start_x) - (
