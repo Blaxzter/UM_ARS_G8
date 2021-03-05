@@ -132,7 +132,7 @@ class GeneticAlgorithm:
 
     def evaluation(self, population: Population):
         self.sim.set_population(population, self.c_seed)
-        self.sim.start()
+        self.sim.start() # start simulation for current population
 
     def selection(self) -> List[Genome]:
         next_population = []
@@ -140,7 +140,9 @@ class GeneticAlgorithm:
             sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
 
         # Select first n as elite
-        for i in range(1, int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1):
+        # It was : range(1, int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1): and it was not selecting the [0]th element
+        # which is the best individual after sorting
+        for i in range(0, int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1):
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 
