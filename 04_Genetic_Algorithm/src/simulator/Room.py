@@ -86,7 +86,7 @@ class Room:
             ]
         ),
 
-        # Room 5 - Small Maze
+        # Room 5 - Maze Map 1
         (
             default_boundaries + [
                 Line(200, 400, 200, 200), Line(700, 200, 200, 200), Line(30, 200, 200, 200), Line(600, 400, 600, 200)
