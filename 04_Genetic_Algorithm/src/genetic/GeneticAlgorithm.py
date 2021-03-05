@@ -140,7 +140,7 @@ class GeneticAlgorithm:
             sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
 
         # Select first n as elite
-        for i in range(int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1):
+        for i in range(round(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE + Const.EPSILON)):
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 

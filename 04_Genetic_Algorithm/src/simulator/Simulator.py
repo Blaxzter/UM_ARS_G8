@@ -41,8 +41,8 @@ class Simulator:
         else:
             self.pool = ProcessPoolExecutor(os.cpu_count())
 
-        self.environment: Environment = Environment()                               # Environment where the robot is placed
-        self.done: bool = False                                                     # Window closed ?
+        self.environment: Environment = Environment()                            # Environment where the robot is placed
+        self.done: bool = False                                                  # Window closed ?
         self.robots: List[Robot] = []
         for i in range(Const.N_INDIVIDUALS):
             self.robots.append(Robot(init_pos = None, init_rotation = np.random.randint(low = 0, high = 360), genome = None))
