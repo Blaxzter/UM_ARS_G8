@@ -140,9 +140,7 @@ class GeneticAlgorithm:
             sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
 
         # Select first n as elite
-        # It was : range(1, int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1): and it was not selecting the [0]th element
-        # which is the best individual after sorting
-        for i in range(0, int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1):
+        for i in range(int(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE) + 1):
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 
@@ -183,7 +181,7 @@ class GeneticAlgorithm:
         best_fitness = np.max(individual_fitness)
         self.data_manager.update_value('best_fitness', best_fitness)
 
-        diversity = np.mean(np.abs(np.diff(individual_fitness)))
+        diversity = population.compute_diversity()
         self.data_manager.update_value('diversity', diversity)
 
         self.data_manager.update_value('seed', self.c_seed)
