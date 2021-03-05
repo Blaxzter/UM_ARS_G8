@@ -183,7 +183,7 @@ class GeneticAlgorithm:
         best_fitness = np.max(individual_fitness)
         self.data_manager.update_value('best_fitness', best_fitness)
 
-        diversity = np.mean(np.abs(np.diff(individual_fitness)))
+        diversity = np.mean(np.abs(np.diff(np.array(np.meshgrid(individual_fitness, individual_fitness)).T.reshape(-1, 2))))
         self.data_manager.update_value('diversity', diversity)
 
         self.data_manager.update_value('seed', self.c_seed)
