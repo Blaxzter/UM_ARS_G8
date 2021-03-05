@@ -8,9 +8,9 @@ Author Guillaume Franzoni Darnois & Frederic Abraham
 """
 
 
-def robot_decoder(genome: Genome, sensors: Sensors, prev_hidden: np.ndarray) -> (float, float):
+def robot_decoder(genome: Genome, sensors: Sensors, prev_hidden: np.ndarray, prev_rotation: float) -> (float, float):
 
-    input_nn = np.array([sensor.length for sensor in sensors.sensors] + [value[0] for value in prev_hidden] + [1]).reshape(1, Const.INPUT_SIZE)
+    input_nn = np.array([sensor.length for sensor in sensors.sensors] + [value[0] for value in prev_hidden] + [prev_rotation] + [1]).reshape(1, Const.INPUT_SIZE)
 
     # Input -> Hidden
     weights_input = np.array([genome.genes[i] for i in range(Const.INPUT_WEIGHTS_SIZE)]).reshape(Const.HIDDEN_SIZE, Const.INPUT_SIZE)
