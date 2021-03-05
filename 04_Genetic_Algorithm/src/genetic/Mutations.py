@@ -6,7 +6,7 @@ from src.genetic import Genome
 import src.utils.Constants as Const
 
 """
-Author Guillaume Franzoni Darnois
+Author Guillaume Franzoni Darnois & Theodoros Giannilias
 """
 
 
@@ -16,6 +16,22 @@ def mutation(genome: Genome):
             genome.genes[i] = np.random.uniform(low=-Const.GENOME_BOUNDS, high=Const.GENOME_BOUNDS)
     return genome
 
+# Flip values mutation operation
+def bit_flip_mutation(genome: Genome):
+    for i in range(len(genome.genes)):
+        if np.random.uniform(low=0, high=1) < Const.MUTATION_PROBABILITY:
+            genome.genes[i] = -1 * genome.genes[i]
+    return genome
+
+# Swap randomly mutation operation
+def swap_mutation(genome: Genome):
+    for i in range(len(genome.genes)):
+        if np.random.uniform(low=0, high=1) < Const.MUTATION_PROBABILITY:
+            temp = genome.genes[i]
+            index = np.random.randint(low=0, high=len(genome.genes))
+            genome.genes[i] = genome.genes[index]
+            genome.genes[index] = temp
+    return genome
 
 def mutationInt(genome: Genome):
     for i in range(len(genome.genes)):

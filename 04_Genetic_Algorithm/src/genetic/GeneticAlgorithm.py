@@ -154,7 +154,7 @@ class GeneticAlgorithm:
             parent2 = random.sample(next_population, 1)[0]
             child = Crossover.two_point_crossover(parent1, parent2)
 
-            child = Mutations.gaussian(child)
+            child = Mutations.bit_flip_mutation(child)
 
             next_population.append(child)
 

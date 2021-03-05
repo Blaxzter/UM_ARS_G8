@@ -5,6 +5,7 @@ import numpy as np
 from src.simulator.Line import Line
 import src.utils.Constants as Const
 
+
 default_boundaries = [
     Line(Const.PADDING, Const.PADDING_TOP, Const.WIDTH - Const.PADDING, Const.PADDING_TOP),
     Line(Const.WIDTH - Const.PADDING, Const.PADDING_TOP, Const.WIDTH - Const.PADDING, Const.HEIGHT - Const.PADDING),
@@ -34,7 +35,7 @@ def trapezoid(origin, width, height):
 
 class Room:
     """
-    Author Guillaume Franzoni Darnois
+    Author Guillaume Franzoni Darnois & Theodoros Giannilias
     """
 
     rooms = [
