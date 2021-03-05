@@ -91,7 +91,7 @@ class Robot:
 
     def calc_fitness(self):
         # TODO do correct fitness calculation for roombot (for week 2)
-        self.genome.set_fitness(self.life/Const.LIFE_STEPS * self.dust_collected/len(self.dust) * 100)
+        self.genome.set_fitness(self.life/Const.LIFE_STEPS * self.dust_collected/Const.N_PARTICLES * 100)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
@@ -256,11 +256,9 @@ class Robot:
 
     @staticmethod
     def generate_dust() -> List:
-        y_amount = int(Const.MAP_HEIGHT / Const.DENSITY)
-        x_amount = int(Const.MAP_WIDTH / Const.DENSITY)
         X, Y = np.meshgrid(
-            np.linspace(Const.ORIGIN[0] + 20, Const.ORIGIN[0] + Const.MAP_WIDTH - 20, x_amount),
-            np.linspace(Const.ORIGIN[1] + 20, Const.ORIGIN[1] + Const.MAP_HEIGHT - 20, y_amount)
+            np.linspace(Const.ORIGIN[0] + 20, Const.ORIGIN[0] + Const.MAP_WIDTH - 20, Const.DUST_X_AMOUNT),
+            np.linspace(Const.ORIGIN[1] + 20, Const.ORIGIN[1] + Const.MAP_HEIGHT - 20, Const.DUST_Y_AMOUNT)
         )
         return list(map(lambda x: np.reshape(x, (2, 1)), np.column_stack([X.ravel(), Y.ravel()])))
         # n = int(MAP_WIDTH * MAP_HEIGHT / ROBOT_RADIUS)
