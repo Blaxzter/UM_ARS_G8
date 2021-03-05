@@ -11,6 +11,7 @@ Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
 ENVIRONMENT_SPEED = 0.1  # Frederic fill this please
 PADDING = 20  # Right, Left and Bottom padding
 PADDING_TOP = 100  # Top padding to make space for data
+MAX_SPEED = 30  # Radius of the robot, each update can push the robot further than its radius, no holes in the middle
 # WIDTH = 1920  # Width of window
 # HEIGHT = 1080  # Height of window
 
@@ -46,16 +47,20 @@ COLORS = dict(  # Colors usable in application
 FPS = 144
 
 # Decoder NN
-HIDDEN_SIZE = 4 + 1
-INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE + 1
+HIDDEN_SIZE = 4 + 1  # Size + Bias
+INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE + 1 + 1  # N. sensors + Size Hidden layer + Prev rotation + Bias
 OUTPUT_SIZE = 2
 INPUT_WEIGHTS_SIZE = INPUT_SIZE * HIDDEN_SIZE
 HIDDEN_WEIGHTS_SIZE = HIDDEN_SIZE * OUTPUT_SIZE
 
+# Room constants
 DENSITY = 20
+DUST_X_AMOUNT = int(MAP_WIDTH / DENSITY)
+DUST_Y_AMOUNT = int(MAP_HEIGHT / DENSITY)
+N_PARTICLES = DUST_X_AMOUNT * DUST_Y_AMOUNT
 
 # EVOLUTIONARY ALGORITHM
-LIFE_STEPS = 100
+LIFE_STEPS = 200
 LIFE_UPDATE = 1
 
 N_INDIVIDUALS = 25
@@ -65,9 +70,11 @@ ELITISM_PERCENTAGE = 0.1
 
 MUTATION_PROBABILITY = 0.08
 
+RANDOM_ROOM = False
+
 GENOME_LENGTH = INPUT_WEIGHTS_SIZE + HIDDEN_WEIGHTS_SIZE  # Number of sensors * Number of components of the velocity
 GENOME_BOUNDS = 10
 INIT_SIZE = 0.1
-N_GENERATION = 500
+N_GENERATION = 150
 GRAPH_WINDOW = -1
 DRAW = True

@@ -28,8 +28,9 @@ class Environment:
     def __init__(self):
         self.environment: Room = Room(np.random.randint(0, len(Room.rooms)))
 
-    def change_room(self):
-        self.environment = Room(np.random.randint(0, len(Room.rooms)))
+    def change_room(self) -> None:
+        if Const.RANDOM_ROOM:
+            self.environment = Room(np.random.randint(0, len(Room.rooms)))
 
     def draw(self, screen: pygame.display) -> None:
         for line in self.environment.map:
