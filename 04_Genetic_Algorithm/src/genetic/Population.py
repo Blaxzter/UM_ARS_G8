@@ -1,13 +1,9 @@
 from typing import List
 
+import numpy as np
+
 import src.utils.Constants as Const
 from src.genetic.Genome import Genome
-
-
-def distance(individual_1, individual_2):
-    return sum([abs(individual_1.genes[i] - individual_2.genes[i])/abs(Const.GENOME_BOUNDS * 2) for i in range(Const.GENOME_LENGTH)])/Const.GENOME_LENGTH
-
-
 
 class Population:
     """
@@ -30,7 +26,10 @@ class Population:
         for i in range(len(self.individuals)):
             for j in range(len(self.individuals)):
                 if i != j:
-                    diversity += distance(self.individuals[i], self.individuals[j])
+                    gene1 = np.array(self.individuals[i].genes)
+                    gene2 = np.array(self.individuals[j].genes)
+
+                    diversity += np.linalg.norm(gene1 - gene2)
                     comparisons += 1
         return 100 * diversity/comparisons
 
