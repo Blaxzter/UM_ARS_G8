@@ -66,8 +66,19 @@ class Room:
                 [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]
             ]
         ),
+        # Room 3 random maze (from slides)
+        (
+            default_boundaries + box(
+                [Const.ORIGIN[0] + Const.MAP_WIDTH * 0.01, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 3], 375, 40) +
+                box([Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 3, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 7], 100, 120) +
+                box([Const.ORIGIN[0] + Const.MAP_WIDTH * 0.1, Const.ORIGIN[1] + Const.MAP_HEIGHT * 0.01], 100, 120),
+            # Map
+            [
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+            ]
+        ),
 
-        # Room 3 - Box with robot inside
+        # Room 4 - Box with robot inside
         (
             default_boundaries + box(
                 [Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 5, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 5], 150, 100),
@@ -77,7 +88,17 @@ class Room:
             ]
         ),
 
-        # Room 4 - Trapezoid with trapezoid inside
+        # Room 5 - Double Rectangle
+        (
+            default_boundaries + box(
+                [Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 7, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 6.5], 325, 150),
+            # Map
+            [
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 20, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 150]
+            ]
+        ),
+
+        # Room 6 - Trapezoid with trapezoid inside
         (
             trapezoid([Const.ORIGIN[0], Const.ORIGIN[1]], Const.MAP_WIDTH, Const.MAP_HEIGHT) +
             trapezoid([Const.ORIGIN[0] + Const.MAP_WIDTH/4, Const.ORIGIN[1] + Const.MAP_HEIGHT/4], Const.MAP_WIDTH/2, Const.MAP_HEIGHT/2),
@@ -87,7 +108,7 @@ class Room:
             ]
         ),
 
-        # Room 5 - Maze Map 1
+        # Room 7 - Maze Map 1
         (
             default_boundaries + [
                 Line(200, 400, 200, 200), Line(700, 200, 200, 200), Line(30, 200, 200, 200), Line(600, 400, 600, 200)
@@ -102,7 +123,7 @@ class Room:
             ]
         ),
 
-        # Room 6 Propeller
+        # Room 8 Propeller
         (
             default_boundaries + [
                 Line(Const.ORIGIN[0], Const.ORIGIN[1] , (Const.ORIGIN[0] + Const.MAP_WIDTH) / 2, (Const.ORIGIN[1] + Const.MAP_HEIGHT) / 1.8),
@@ -123,7 +144,19 @@ class Room:
                 # Inside the 2 borders
                 [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 3]
             ]
-        )
+        ),
+        # Room 9 Slide Trapezoid
+        (
+            default_boundaries + [
+                 Line(20, 100, 780, 230), Line(20,480,780,350)
+            ],
+            # Map
+            [
+                # Center
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 6, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+            ]
+        ),
+
     ]
 
     def __init__(self, room: int):
