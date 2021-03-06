@@ -21,6 +21,8 @@ class Population:
         pass
 
     def compute_diversity(self):
+        if len(self.individuals) < 2:
+            return 0
         diversity = 0
         comparisons = 0
         for i in range(len(self.individuals)):

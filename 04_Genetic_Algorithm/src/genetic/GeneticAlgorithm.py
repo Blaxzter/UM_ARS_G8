@@ -38,7 +38,7 @@ class GeneticAlgorithm:
             dict(
                 avg_fitness=dict(display_name='avg fitness', value=0, graph=True),
                 best_fitness=dict(display_name='best fitness', value=0, graph=True),
-                diversity=dict(display_name='diversity', value=0, graph=True),
+                diversity=dict(display_name='diversity', value=0, graph=False),
                 generation=dict(display_name='generation', value=0, graph=False),
                 seed=dict(display_name='seed', value=0, graph=False),
             ), parallel=False, visualize=True)
@@ -152,9 +152,9 @@ class GeneticAlgorithm:
         for i in range(int(Const.N_INDIVIDUALS * Const.CROSSOVER_MUTATION_PERCENTAGE)):
             parent1 = random.sample(next_population, 1)[0]
             parent2 = random.sample(next_population, 1)[0]
-            child = Crossover.two_point_crossover(parent1, parent2)
+            child = Crossover.arithmetic_crossover(parent1, parent2)
 
-            child = Mutations.bit_flip_mutation(child)
+            child = Mutations.gaussian(child)
 
             next_population.append(child)
 

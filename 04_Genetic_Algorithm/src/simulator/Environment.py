@@ -26,7 +26,10 @@ class Collision:
 
 class Environment:
     def __init__(self):
-        self.environment: Room = Room(np.random.randint(0, len(Room.rooms)))
+        if Const.RANDOM_ROOM:
+            self.environment: Room = Room(np.random.randint(0, len(Room.rooms)))
+        else:
+            self.environment: Room = Room(4)
 
     def change_room(self) -> None:
         if Const.RANDOM_ROOM:
