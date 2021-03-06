@@ -18,7 +18,7 @@ class Simulator:
 
     test = 0
 
-    def __init__(self, display_data: Dict, simulation_time = Const.LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None):
+    def __init__(self, display_data: Dict, simulation_time = Const.LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None, room: int = None):
         print(Simulator.test)
         Simulator.test += 1
 
@@ -39,9 +39,9 @@ class Simulator:
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
         else:
-            self.pool = ProcessPoolExecutor(os.cpu_count())
+            self.pool = ProcessPoolExecutor(int(os.cpu_count() / 2))
 
-        self.environment: Environment = Environment()                            # Environment where the robot is placed
+        self.environment: Environment = Environment(room = room)                        # Environment where the robot is placed
         self.done: bool = False                                                  # Window closed ?
         self.robots: List[Robot] = []
         for i in range(Const.N_INDIVIDUALS):
@@ -71,8 +71,8 @@ class Simulator:
         else:
             futures = []
             environments = [Environment() for _ in range(self.time_left)]
-            for robot in self.robots:
-                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environments)
+            for i, robot in enumerate(self.robots):
+                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environments[i])
                 futures.append(dict(future=future, robot=robot))
 
             for future in futures:
@@ -81,20 +81,30 @@ class Simulator:
             # print("Future Done")
 
     @staticmethod
-    def run_robot_evaluation(generations, robot, environments):
+    def run_robot_evaluation(generations, robot, environment):
         # print("Run robot evaluation: " + str(robot.genome.genes))
-        for i in range(generations):
-            robot.update(environments[i])
+        try:
+            for i in range(generations):
+                robot.update(environment)
+        except:
+            return 0
+
         robot.calc_fitness()
         return robot.genome.fitness
 
     def update(self) -> None:
         for robot in self.robots:
-            robot.update(self.environment)
+            try:
+                robot.update(self.environment)
+            except Exception as e:
+                robot.stop_update()
 
         self.time_left -= 1
         if self.time_left <= 0:
             self.done = True
+
+    def set_room(self, room_idx):
+        self.environment.set_room(room_idx)
 
     def draw(self):
         self.screen.fill((0, 0, 0))

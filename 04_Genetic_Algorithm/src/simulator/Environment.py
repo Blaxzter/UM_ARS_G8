@@ -25,15 +25,18 @@ class Collision:
 
 
 class Environment:
-    def __init__(self):
-        if Const.RANDOM_ROOM:
+    def __init__(self, room: int = None):
+        if room is None:
             self.environment: Room = Room(np.random.randint(0, len(Room.rooms)))
         else:
-            self.environment: Room = Room(4)
+            self.environment: Room = Room(room)
 
     def change_room(self) -> None:
         if Const.RANDOM_ROOM:
             self.environment = Room(np.random.randint(0, len(Room.rooms)))
+
+    def set_room(self, room_idx):
+        self.environment = Room(room_idx)
 
     def draw(self, screen: pygame.display) -> None:
         for line in self.environment.map:

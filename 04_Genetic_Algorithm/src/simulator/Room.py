@@ -44,14 +44,10 @@ class Room:
         (
             default_boundaries,  # Map
             [
-                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],
-                # Top left corner
-                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,
-                 Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # top right
-                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10,
-                 Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
-                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10,
-                 Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10], # Top left corner
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # top right
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
 
                 [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]  # Middle
             ]
@@ -63,7 +59,8 @@ class Room:
                 Line(Const.ORIGIN[0], Const.ORIGIN[1], Const.ORIGIN[0] + Const.MAP_WIDTH, Const.ORIGIN[1] + Const.MAP_HEIGHT)
             ],  # Map
             [
-                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10]
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
             ]
         ),
         # Room 3 random maze (from slides)
@@ -74,27 +71,37 @@ class Room:
                 box([Const.ORIGIN[0] + Const.MAP_WIDTH * 0.1, Const.ORIGIN[1] + Const.MAP_HEIGHT * 0.01], 100, 120),
             # Map
             [
-                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2],
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # top right
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 20, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 150],  # right center
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # Top left corner
             ]
         ),
 
-        # Room 4 - Box with robot inside
+        # Room 4 - Small Box in the center
         (
             default_boundaries + box(
                 [Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 5, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 5], 150, 100),
             # Map
             [
-                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # Top left corner
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # top right
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
             ]
         ),
 
         # Room 5 - Double Rectangle
         (
-            default_boundaries + box(
-                [Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 7, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 6.5], 325, 150),
+            default_boundaries + box([Const.ORIGIN[0] + Const.MAP_WIDTH * 2 / 7, Const.ORIGIN[1] + Const.MAP_HEIGHT * 2 / 6.5], 325, 150),
             # Map
             [
-                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 20, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 150]
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 20, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 150],                      # Top left corner
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],                       # top right
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],    # Bottom right
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],                      # Bottom Left
             ]
         ),
 
@@ -104,7 +111,14 @@ class Room:
             trapezoid([Const.ORIGIN[0] + Const.MAP_WIDTH/4, Const.ORIGIN[1] + Const.MAP_HEIGHT/4], Const.MAP_WIDTH/2, Const.MAP_HEIGHT/2),
             # Map
             [
-                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10 + 40, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # Top left corner
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10 - 40, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # top right
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10 - 20, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom right
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10 + 20, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
+
+
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT - Const.ROBOT_RADIUS - 10],  # Bottom Left
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],  # Bottom Left
             ]
         ),
 
@@ -115,18 +129,17 @@ class Room:
             ],
             # Map
             [
-                # Top right corner
-                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 6],
-                # Center
-                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
-
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 6],                # Top right corner
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 2, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2],                # Center
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2],            # left Center
+                [Const.ORIGIN[0] + Const.ROBOT_RADIUS + 10, Const.ORIGIN[1] + Const.ROBOT_RADIUS + 10],         # Top left corner
             ]
         ),
 
         # Room 8 Propeller
         (
             default_boundaries + [
-                Line(Const.ORIGIN[0], Const.ORIGIN[1] , (Const.ORIGIN[0] + Const.MAP_WIDTH) / 2, (Const.ORIGIN[1] + Const.MAP_HEIGHT) / 1.8),
+                Line(Const.ORIGIN[0], Const.ORIGIN[1], (Const.ORIGIN[0] + Const.MAP_WIDTH) / 2, (Const.ORIGIN[1] + Const.MAP_HEIGHT) / 1.8),
                 Line(Const.ORIGIN[0] + Const.MAP_WIDTH, Const.ORIGIN[1], Const.ORIGIN[0]+370, (Const.ORIGIN[1] + Const.MAP_HEIGHT) / 1.8),
                 Line(Const.MAP_WIDTH / 1.95, Const.ORIGIN[1] * 2.7, Const.MAP_WIDTH / 1.95,  Const.ORIGIN[1] + Const.MAP_HEIGHT)
 
@@ -153,7 +166,8 @@ class Room:
             # Map
             [
                 # Center
-                [Const.ORIGIN[0] + Const.MAP_WIDTH / 6, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2]
+                [Const.ORIGIN[0] + Const.MAP_WIDTH / 6, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2],
+                [Const.ORIGIN[0] + Const.MAP_WIDTH - Const.ROBOT_RADIUS - 10, Const.ORIGIN[1] + Const.MAP_HEIGHT / 2],
             ]
         ),
 

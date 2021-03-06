@@ -11,7 +11,7 @@ Author Frederic Abraham, Guillaume Franzoni Darnois & Theodoros Giannilias
 ENVIRONMENT_SPEED = 0.1  # Frederic fill this please
 PADDING = 20  # Right, Left and Bottom padding
 PADDING_TOP = 100  # Top padding to make space for data
-MAX_SPEED = 30  # Radius of the robot, each update can push the robot further than its radius, no holes in the middle
+MAX_SPEED = 15  # Radius of the robot, each update can push the robot further than its radius, no holes in the middle
 # WIDTH = 1920  # Width of window
 # HEIGHT = 1080  # Height of window
 
@@ -60,7 +60,7 @@ DUST_Y_AMOUNT = int(MAP_HEIGHT / DENSITY)
 N_PARTICLES = DUST_X_AMOUNT * DUST_Y_AMOUNT
 
 # EVOLUTIONARY ALGORITHM
-LIFE_STEPS = 300
+LIFE_STEPS = 1000
 LIFE_UPDATE = 1
 
 N_INDIVIDUALS = 50
@@ -70,11 +70,11 @@ ELITISM_PERCENTAGE = 0.1
 
 MUTATION_PROBABILITY = 0.08
 
-RANDOM_ROOM = False
+RANDOM_ROOM = True
 
 GENOME_LENGTH = INPUT_WEIGHTS_SIZE + HIDDEN_WEIGHTS_SIZE  # Number of sensors * Number of components of the velocity
 GENOME_BOUNDS = 10
 INIT_SIZE = 0.1
 N_GENERATION = 1000
 GRAPH_WINDOW = -1
-DRAW = True
+DRAW = False

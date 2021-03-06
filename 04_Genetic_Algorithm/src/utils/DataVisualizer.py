@@ -1,5 +1,4 @@
 from multiprocessing import Manager, Process
-from typing import List
 
 import numpy as np
 import time
@@ -46,7 +45,7 @@ def run(done, iteration, line_dict):
     while done.value:
         # print(done.value)
         if old_value < iteration.value:
-            # print(old_value, iteration.value)
+            print(old_value, iteration.value)
             ax.cla()
             for i, key in enumerate(line_dict.keys()):
 
@@ -67,7 +66,7 @@ def run(done, iteration, line_dict):
             fig.canvas.draw()
             # plt.legend()
             # plt.cla()
-            time.sleep(0.001)
+            plt.pause(0.5)
 
     plt.close(fig)
 
@@ -109,15 +108,17 @@ class DataManager:
 
     def update_time_step(self, new_time_step):
         self.time_steps.append(new_time_step)
+        self.display_data['generation']['value'] = new_time_step
         if self.visualize:
             if self.parallel:
                 self.time_step.value = new_time_step
 
     def update_value(self, key, value):
         self.data[key].append(value)
+        self.display_data[key]['value'] = value
         if self.visualize:
-            if self.parallel:
-                self.line_dict[key] = value
+            if self.parallel and self.display_data[key]['graph']:
+                self.line_dict[self.display_data[key]['display_name']] = value
 
     def get_data(self, key):
         return self.data[key]
