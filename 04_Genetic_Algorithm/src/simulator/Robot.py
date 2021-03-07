@@ -95,7 +95,7 @@ class Robot:
 
     def calc_fitness(self):
         # TODO do correct fitness calculation for roombot (for week 2)
-        self.genome.set_fitness((self.life / Const.LIFE_STEPS + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3)
+        # self.genome.set_fitness((self.life / Const.LIFE_STEPS + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3)
         self.genome.set_fitness(((1 / (1 + self.number_of_total_collisions)) + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3)
         # self.genome.set_fitness(self.dust_collected/Const.N_PARTICLES * 100)
 
