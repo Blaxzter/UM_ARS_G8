@@ -59,15 +59,19 @@ class GeneticAlgorithm:
 
         self.c_seed = 0
         self.emergency_break = False
+        value_dict = dict(
+            avg_fitness = dict(display_name = 'avg fitness', value = 0, graph = True, disp = True),
+            best_fitness = dict(display_name = 'best fitness', value = 0, graph = True, disp = True),
+            diversity = dict(display_name = 'diversity', value = 0, graph = False, disp = True),
+            generation = dict(display_name = 'generation', value = 0, graph = False, disp = True),
+            seed = dict(display_name = 'seed', value = 0, graph = False, disp = True),
+            room = dict(display_name = 'room', value = 0, graph = False, disp = False),
+        )
+        for room_name in Room.room_names:
+            value_dict[room_name] = dict(display_name = f'room: {room_name}', value = 0, graph = True, disp = False)
+
         self.data_manager: DataManager = DataManager(
-            dict(
-                avg_fitness = dict(display_name = 'avg fitness', value = 0, graph = True),
-                best_fitness = dict(display_name = 'best fitness', value = 0, graph = True),
-                diversity = dict(display_name = 'diversity', value = 0, graph = False),
-                generation = dict(display_name = 'generation', value = 0, graph = False),
-                seed = dict(display_name = 'seed', value = 0, graph = False),
-                room = dict(display_name = 'room', value = 0, graph = False),
-            ), parallel = True, visualize = True)
+            value_dict, parallel = True, visualize = True)
 
         self.sim = Simulator(
             display_data = self.data_manager.display_data,
@@ -87,23 +91,50 @@ class GeneticAlgorithm:
         self.name = f"data/chromosome_{datetime.now().strftime('%Y%m%d-%H%M%S')}_data.json"
 
     def run(self):
-
         if self.loaded:
-            loaded_data = self.sim_data['population'][str(self.start_generation)]
-            genes = [Genome(genes = g['genes'], fitness = g['fitness']) for g in loaded_data['individuals']]
-            population = Population(genes)
-            if self.show_best is not None:
-                population.get_top(self.show_best)
-            self.c_seed = loaded_data['seed']
+            self.viz_loaded_data()
         else:
-            self.c_seed = np.random.randint(2147483647)
-            population = Population()
+            self.train_genetic_algorithm()
+
+    def viz_loaded_data(self):
+        population = self.load_generation(self.start_generation)
 
         while self.generation < Const.N_GENERATION + 1:
+            if self.emergency_break:
+                break
 
-            if self.generation >= 200:
-                Const.TOURNAMENT_SELECTION = 20
+            self.evaluation(population)
+            self.update_data(self.generation, population)
 
+            if self.display_mode:
+                if self.room_idx >= len(self.room) - 1:
+                    break
+                self.generation -= 1
+                self.room_idx += 1
+                self.sim.set_room(self.room[self.room_idx])
+            else:
+                if self.generation > len(self.sim_data['population']) - 1:
+                    break
+                population = self.load_generation(self.generation)
+
+        self.data_manager.stop()
+        if not self.loaded:
+            self.store_date()
+
+    def load_generation(self, generation):
+        loaded_data = self.sim_data['population'][str(generation)]
+        genes = [Genome(genes = g['genes'], fitness = g['fitness']) for g in loaded_data['individuals']]
+        population = Population(genes)
+        if self.show_best is not None:
+            population.get_top(self.show_best)
+        self.c_seed = loaded_data['seed']
+        return population
+
+    def train_genetic_algorithm(self):
+        self.c_seed = np.random.randint(2147483647)
+        population = Population()
+
+        while self.generation < Const.N_GENERATION + 1:
             if self.emergency_break:
                 break
 
@@ -111,38 +142,19 @@ class GeneticAlgorithm:
             self.evaluation(population)
             self.update_data(self.generation, population)
 
+            next_population = self.selection()
+            self.crossover_mutation(next_population)
+            self.generate_new(next_population)
+            population = Population(next_population)
+
+            if not self.loaded:
+                self.store_date()
+
+            # Next seed for next simulation
+            self.c_seed = np.random.randint(2147483647)
+
+            # Counter for the next generation
             self.generation += 1
-            if self.loaded:
-                if self.display_mode:
-                    if self.room_idx >= len(self.room) - 1:
-                        break
-                    self.generation -= 1
-                    self.room_idx += 1
-                    self.sim.set_room(self.room[self.room_idx])
-                else:
-                    if self.generation > len(self.sim_data['population']) - 1:
-                        break
-
-                    loaded_data = self.sim_data['population'][str(self.generation)]
-                    population = Population([Genome(genes = g['genes'], fitness=g['fitness']) for g in loaded_data['individuals']])
-                    if self.show_best is not None:
-                        population.get_top(self.show_best)
-                    self.c_seed = loaded_data['seed']
-            else:
-                next_population = self.selection()
-                self.crossover_mutation(next_population)
-                self.generate_new(next_population)
-                population = Population(next_population)
-
-                if not self.loaded:
-                    self.store_date()
-
-                # Next seed for next simulation
-                self.c_seed = np.random.randint(2147483647)
-
-        self.data_manager.stop()
-        if not self.loaded:
-            self.store_date()
 
     def store_date(self):
         data = dict(
@@ -152,7 +164,6 @@ class GeneticAlgorithm:
             population = {
                 i: dict(
                     seed = self.data_manager.get_data('seed')[i],
-                    room = self.data_manager.get_data('room')[i],
                     individuals = [
                         dict(
                             fitness = individual.fitness,
@@ -167,20 +178,21 @@ class GeneticAlgorithm:
             json.dump(data, write_file)
 
     def evaluation(self, population: Population):
-        self.sim.set_population(population, self.c_seed, self.show_best is not None)
-        self.sim.start()  # start simulation for current population
+        for room in range(len(Room.rooms)):
+            self.sim.set_population(population, self.c_seed, self.show_best is not None, room)
+            self.sim.start()  # start simulation for current population
 
     def selection(self) -> List[Genome]:
         next_population = []
         ordered_by_fitness = list(
-            sorted(self.populations[-1].individuals, key = lambda genome: genome.fitness, reverse = True))
+            sorted(self.populations[-1].individuals, key = lambda genome: genome.get_fitness(), reverse = True))
 
         # Select first n as elite
         for i in range(round(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE + Const.EPSILON)):
             best_genome = ordered_by_fitness[i]
             next_population.append(best_genome)
 
-        tournament_selection(ordered_by_fitness, next_population)
+        ranked_based_selection(ordered_by_fitness, next_population)
 
         return next_population
 
@@ -188,7 +200,7 @@ class GeneticAlgorithm:
         for i in range(int(Const.N_INDIVIDUALS * Const.CROSSOVER_MUTATION_PERCENTAGE)):
             parent1 = random.sample(next_population, 1)[0]
             parent2 = random.sample(next_population, 1)[0]
-            child = Crossover.arithmetic_crossover(parent1, parent2)
+            child = Crossover.two_point_crossover(parent1, parent2)
 
             child = Mutations.mutation(child)
 
@@ -205,7 +217,7 @@ class GeneticAlgorithm:
     def update_data(self, generation, population):
         individuals = population.individuals
 
-        individual_fitness = [x.fitness for x in individuals]
+        individual_fitness = [x.get_fitness() for x in individuals]
 
         self.data_manager.update_time_step(generation)
 
@@ -222,6 +234,11 @@ class GeneticAlgorithm:
 
         self.data_manager.update_value('seed', self.c_seed)
         self.data_manager.update_value('room', self.sim.environment.room_idx)
+
+        for i, room_name in enumerate(Room.room_names):
+            # value_dict[room_name] = dict(display_name = 'room', value = 0, graph = False, disp = False),
+            room_fitness = np.mean([x.get_fitness_by_key(i) for x in individuals])
+            self.data_manager.update_value(room_name, room_fitness)
 
         print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity} on room {self.sim.environment.room_idx}')
 

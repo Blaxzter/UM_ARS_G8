@@ -2,11 +2,10 @@ from typing import List
 
 import numpy as np
 
-from  simulator.Line import Line
-import  utils.Constants as Const
+from simulator.Line import Line
+import utils.Constants as Const
 
 import random
-
 
 default_boundaries = [
     Line(Const.PADDING, Const.PADDING_TOP, Const.WIDTH - Const.PADDING, Const.PADDING_TOP),
@@ -39,6 +38,8 @@ class Room:
     """
     Author Guillaume Franzoni Darnois & Theodoros Giannilias
     """
+
+    room_names = ['Empty', 'Triangle', 'Room', 'Small Box', 'Bigger Box', 'Trapezoid', 'Labyrinth', 'Propeller', 'Slope']
 
     rooms = [
 

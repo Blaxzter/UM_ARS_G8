@@ -4,6 +4,7 @@ import numpy as np
 from typing import List
 
 import utils.Constants as Const
+from simulator.Room import Room
 
 
 class Genome:
@@ -16,14 +17,17 @@ class Genome:
             self.genes: np.ndarray = self.init_genome()
         else:
             self.genes = genes
-        self.fitness: float = fitness
+        self.fitness = {i: 0 for i in range(len(Room.rooms))}
 
-    def set_fitness(self, fitness):
-        self.fitness = fitness
+    def set_fitness(self, fitness, room):
+        self.fitness[room] = fitness
 
     @staticmethod
     def init_genome():
         return np.random.rand(Const.GENOME_LENGTH) * Const.INIT_SIZE - (Const.INIT_SIZE / 2)
 
     def get_fitness(self):
-        return self.fitness
+        return np.mean(list(self.fitness.values()))
+
+    def get_fitness_by_key(self, key):
+        return self.fitness[key]

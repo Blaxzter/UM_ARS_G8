@@ -57,4 +57,4 @@ def load_file_and_show_graph(file_name):
     plt.show()
 
 if __name__ == '__main__':
-    load_file_and_show_graph('../data/chromosome_20210307-163218_data.json')
+    load_file_and_show_graph('../data/chromosome_20210307-201516_data.json')

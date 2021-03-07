@@ -31,5 +31,5 @@ def tournament_selection(individuals: List[Genome], next_population: List):
     """
     for i in range(int(Const.N_INDIVIDUALS * Const.SELECT_PERCENTAGE)):
         tournament = random.sample(individuals, Const.TOURNAMENT_SELECTION)
-        best: Genome = max(tournament, key = lambda item: item.fitness)
+        best: Genome = max(tournament, key = lambda item: item.get_fitness())
         next_population.append(best)

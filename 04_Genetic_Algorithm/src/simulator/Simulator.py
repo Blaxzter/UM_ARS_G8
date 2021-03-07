@@ -49,9 +49,9 @@ class Simulator:
         self.simulation_time = simulation_time
         self.time_left = simulation_time
 
-    def set_population(self, population: Population, seed: float, show_best):
+    def set_population(self, population: Population, seed: float, show_best, room):
         np.random.seed(seed)
-        self.environment.change_room()
+        self.environment.set_room(room)
         self.time_left = self.simulation_time
         self.done = False
         for i, individual in enumerate(population.individuals):
@@ -67,7 +67,7 @@ class Simulator:
                 self.draw()
                 self.clock.tick(Const.FPS)
             for robi in self.robots:
-                robi.calc_fitness()
+                robi.calc_fitness(self.environment)
         else:
             futures = []
             for i, robot in enumerate(self.robots):
@@ -76,7 +76,7 @@ class Simulator:
 
             for future in futures:
                 future["future"].done()
-                future["robot"].genome.fitness = future["future"].result()
+                future["robot"].genome.set_fitness(future["future"].result(), self.environment.room_idx)
             # print("Future Done")
 
     @staticmethod
@@ -88,7 +88,7 @@ class Simulator:
         except:
             return 0
 
-        robot.calc_fitness()
+        robot.calc_fitness(environment)
         return robot.genome.fitness
 
     def update(self) -> None:
@@ -140,7 +140,8 @@ class Simulator:
     def draw_information(self, screen):
         self.display_data['frames_left'] = dict(
             display_name = 'Frames Left',
-            value = self.time_left
+            value = self.time_left,
+            disp = True,
         )
 
         column_start = 20
@@ -152,6 +153,10 @@ class Simulator:
         column = 0
 
         for key, data in self.display_data.items():
+
+            if not data['disp']:
+                continue
+
             display_name = data['display_name']
             value = data['value']
 
