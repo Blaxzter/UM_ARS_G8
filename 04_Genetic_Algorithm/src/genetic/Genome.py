@@ -11,12 +11,12 @@ class Genome:
     Author Frederic Abraham & Guillaume Franzoni Darnois
     """
 
-    def __init__(self, genes: List = None):
+    def __init__(self, genes: List = None, fitness=math.nan):
         if genes is None:
             self.genes: np.ndarray = self.init_genome()
         else:
             self.genes = genes
-        self.fitness: float = math.nan
+        self.fitness: float = fitness
 
     def set_fitness(self, fitness):
         self.fitness = fitness

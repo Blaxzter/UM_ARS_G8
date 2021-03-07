@@ -67,7 +67,7 @@ class GeneticAlgorithm:
                 generation = dict(display_name = 'generation', value = 0, graph = False),
                 seed = dict(display_name = 'seed', value = 0, graph = False),
                 room = dict(display_name = 'room', value = 0, graph = False),
-            ), parallel = True, visualize = False)
+            ), parallel = True, visualize = True)
 
         self.sim = Simulator(
             display_data = self.data_manager.display_data,
@@ -124,7 +124,7 @@ class GeneticAlgorithm:
                         break
 
                     loaded_data = self.sim_data['population'][str(self.generation)]
-                    population = Population([Genome(genes = g['genes']) for g in loaded_data['individuals']])
+                    population = Population([Genome(genes = g['genes'], fitness=g['fitness']) for g in loaded_data['individuals']])
                     if self.show_best is not None:
                         population.get_top(self.show_best)
                     self.c_seed = loaded_data['seed']
