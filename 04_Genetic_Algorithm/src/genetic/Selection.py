@@ -30,6 +30,6 @@ def tournament_selection(individuals: List[Genome], next_population: List):
     Author Villen doctor evil aka frederic abraham
     """
     for i in range(int(Const.N_INDIVIDUALS * Const.SELECT_PERCENTAGE)):
-        tournament = random.sample(individuals, 5)
+        tournament = random.sample(individuals, Const.TOURNAMENT_SELECTION)
         best: Genome = max(tournament, key = lambda item: item.fitness)
         next_population.append(best)

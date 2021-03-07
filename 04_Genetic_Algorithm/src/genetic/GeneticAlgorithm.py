@@ -66,6 +66,7 @@ class GeneticAlgorithm:
                 diversity = dict(display_name = 'diversity', value = 0, graph = False),
                 generation = dict(display_name = 'generation', value = 0, graph = False),
                 seed = dict(display_name = 'seed', value = 0, graph = False),
+                room = dict(display_name = 'room', value = 0, graph = False),
             ), parallel = True, visualize = False)
 
         self.sim = Simulator(
@@ -99,6 +100,10 @@ class GeneticAlgorithm:
             population = Population()
 
         while self.generation < Const.N_GENERATION + 1:
+
+            if self.generation >= 200:
+                Const.TOURNAMENT_SELECTION = 20
+
             if self.emergency_break:
                 break
 
@@ -147,7 +152,7 @@ class GeneticAlgorithm:
             population = {
                 i: dict(
                     seed = self.data_manager.get_data('seed')[i],
-                    room = self.sim.environment.room_idx,
+                    room = self.data_manager.get_data('room')[i],
                     individuals = [
                         dict(
                             fitness = individual.fitness,
@@ -216,6 +221,7 @@ class GeneticAlgorithm:
         self.data_manager.update_value('diversity', diversity)
 
         self.data_manager.update_value('seed', self.c_seed)
+        self.data_manager.update_value('room', self.sim.environment.room_idx)
 
         print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity}')
 
