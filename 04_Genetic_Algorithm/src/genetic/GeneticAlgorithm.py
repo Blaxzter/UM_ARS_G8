@@ -223,7 +223,7 @@ class GeneticAlgorithm:
         self.data_manager.update_value('seed', self.c_seed)
         self.data_manager.update_value('room', self.sim.environment.room_idx)
 
-        print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity}')
+        print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity} on room {self.sim.environment.room_idx}')
 
         self.data_manager.update()
 
