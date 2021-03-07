@@ -66,7 +66,7 @@ class GeneticAlgorithm:
                 diversity=dict(display_name='diversity', value=0, graph=False),
                 generation=dict(display_name='generation', value=0, graph=False),
                 seed=dict(display_name='seed', value=0, graph=False),
-            ), parallel=True, visualize=True)
+            ), parallel=True, visualize=False)
 
         self.sim = Simulator(
             display_data=self.data_manager.display_data,

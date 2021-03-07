@@ -39,7 +39,7 @@ class Simulator:
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
         else:
-            self.pool = ProcessPoolExecutor(int(os.cpu_count() / 2))
+            self.pool = ProcessPoolExecutor(int(os.cpu_count() * (2/3)))
 
         self.environment: Environment = Environment(room = room)                        # Environment where the robot is placed
         self.done: bool = False                                                  # Window closed ?

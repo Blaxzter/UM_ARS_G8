@@ -48,7 +48,6 @@ class Robot:
 
         self.dust: List = self.generate_dust()
         self.prev_pos = None
-        self.prev_rotation = 0
         self.previous_hidden = np.zeros(shape = (Const.HIDDEN_SIZE, 1))
         self.genome = genome
         self.number_of_total_collisions = 0
@@ -72,7 +71,7 @@ class Robot:
         self.sensors.update(environment, self.theta, self.pos)
 
         # Get decoded value from NN and update previous_hidden
-        new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden, self.prev_rotation)
+        new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden)
 
         # Assign newly calculated velocity
         self.v_r, self.v_l = new_vel[0, 0], new_vel[1, 0]
@@ -86,8 +85,6 @@ class Robot:
         self.dist_covered = np.linalg.norm(self.pos - self.prev_pos)
 
         self.check_dust_particles(self.pos)
-
-        self.prev_rotation = self.theta - prev_theta
 
     def check_dust_particles(self, robot_current_center: np.ndarray):
         for i in range(len(self.dust) - 1, -1, -1):

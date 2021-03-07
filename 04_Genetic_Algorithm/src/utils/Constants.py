@@ -48,7 +48,7 @@ FPS = 144
 
 # Decoder NN
 HIDDEN_SIZE = 4 + 1  # Size + Bias
-INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE + 1 + 1  # N. sensors + Size Hidden layer + Prev rotation + Bias
+INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE + 1  # N. sensors + Size Hidden layer + Prev rotation + Bias
 OUTPUT_SIZE = 2
 INPUT_WEIGHTS_SIZE = INPUT_SIZE * HIDDEN_SIZE
 HIDDEN_WEIGHTS_SIZE = HIDDEN_SIZE * OUTPUT_SIZE
