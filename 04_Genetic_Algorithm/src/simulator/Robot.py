@@ -1,12 +1,12 @@
 from typing import List
 
 from pygame import gfxdraw
-from src.genetic.Decoder import robot_decoder
-from src.simulator.Environment import Collision, Environment
-from src.genetic.Genome import Genome
-import src.utils.Constants as Const
-from src.utils.MathUtils import *
-from src.simulator.Sensors import Sensors
+from genetic.Decoder import robot_decoder
+from simulator.Environment import Collision, Environment
+from genetic.Genome import Genome
+import utils.Constants as Const
+from utils.MathUtils import *
+from simulator.Sensors import Sensors
 
 dt = 1
 
@@ -34,7 +34,7 @@ class Robot:
         self.dist_covered = 0
         self.prev_pos = None
         self.prev_rotation = 0
-        self.previous_hidden = np.zeros(shape=(Const.HIDDEN_SIZE, 1))
+        self.previous_hidden = np.zeros(shape = (Const.HIDDEN_SIZE, 1))
         self.dust: List = self.generate_dust()
         self.dust_collected = 0
         self.life = 0

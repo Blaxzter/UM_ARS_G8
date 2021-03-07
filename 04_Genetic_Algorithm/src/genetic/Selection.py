@@ -2,9 +2,9 @@ from typing import List
 import numpy as np
 import random
 
-import src.utils.Constants as Const
+import utils.Constants as Const
 
-from src.genetic.Genome import Genome
+from genetic.Genome import Genome
 
 
 def roulette_wheel_selection(individuals: List[Genome], next_population: List):
@@ -27,9 +27,9 @@ def ranked_based_selection(individuals: List[Genome], next_population: List):
 
 def tournament_selection(individuals: List[Genome], next_population: List):
     """
-    Author Villen doctor evil
+    Author Villen doctor evil aka frederic abraham
     """
     for i in range(int(Const.N_INDIVIDUALS * Const.SELECT_PERCENTAGE)):
-        tournament = random.sample(individuals, round(Const.N_INDIVIDUALS*0.1 + Const.EPSILON))
+        tournament = random.sample(individuals, 5)
         best: Genome = max(tournament, key = lambda item: item.fitness)
         next_population.append(best)

@@ -2,8 +2,8 @@ import math
 
 import numpy as np
 from shapely.geometry import LineString
-import src.utils.Constants as Const
-from src.simulator.Line import Line
+import utils.Constants as Const
+from simulator.Line import Line
 
 # Some of the code inside here is taken from somewhere else (Stack overflow...)
 # But because it is just math stuff and sometimes we forgot to add where we took it from
@@ -114,7 +114,7 @@ def distance_point_to_line_seg(p: np.ndarray, s: np.ndarray, e: np.ndarray) -> f
         return np.linalg.norm(p - s)
     if np.arccos(np.dot(((p - e) / np.linalg.norm(p - e)).T, (s - e) / np.linalg.norm(s - e))).item() > np.pi / 2:
         return np.linalg.norm(p - e)
-    return np.linalg.norm(np.cross(s - e, s - p, axis=0)) / np.linalg.norm(e - s)
+    return np.linalg.norm(np.cross(s - e, s - p, axis = 0)) / np.linalg.norm(e - s)
 
 
 # from: https://gist.github.com/nim65s/5e9902cd67f094ce65b0

@@ -1,6 +1,6 @@
 import numpy as np
 
-import src.utils.Constants as Const
+import utils.Constants as Const
 
 import pygame
 
@@ -11,6 +11,7 @@ class Line:
     """
     Author Frederic Abraham
     """
+
     def __init__(self, start_x: float, start_y: float, end_x: float, end_y: float):
         self.start_x: float = start_x
         self.start_y: float = start_y

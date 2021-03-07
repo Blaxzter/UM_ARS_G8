@@ -2,8 +2,8 @@ from typing import List
 
 import numpy as np
 
-from src.simulator.Line import Line
-import src.utils.Constants as Const
+from  simulator.Line import Line
+import  utils.Constants as Const
 
 
 default_boundaries = [

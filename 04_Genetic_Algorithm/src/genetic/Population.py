@@ -2,8 +2,9 @@ from typing import List
 
 import numpy as np
 
-import src.utils.Constants as Const
-from src.genetic.Genome import Genome
+import utils.Constants as Const
+from genetic.Genome import Genome
+
 
 class Population:
     """
@@ -33,6 +34,4 @@ class Population:
 
                     diversity += np.linalg.norm(gene1 - gene2)
                     comparisons += 1
-        return 100 * diversity/comparisons
-
-
+        return 100 * diversity / comparisons

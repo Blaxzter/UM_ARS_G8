@@ -5,14 +5,14 @@ from datetime import datetime
 import json
 import numpy as np
 
-from src.genetic import Crossover, Mutations
-from src.genetic.Genome import Genome
-from src.genetic.Population import Population
-from src.genetic.Selection import ranked_based_selection, tournament_selection
-from src.simulator.Room import Room
-from src.simulator.Simulator import Simulator
-import src.utils.Constants as Const
-from src.utils.DataVisualizer import DataManager
+from genetic import Crossover, Mutations
+from genetic.Genome import Genome
+from genetic.Population import Population
+from genetic.Selection import ranked_based_selection, tournament_selection
+from simulator.Room import Room
+from simulator.Simulator import Simulator
+import utils.Constants as Const
+from utils.DataVisualizer import DataManager
 from types import ModuleType
 
 
@@ -61,19 +61,19 @@ class GeneticAlgorithm:
         self.emergency_break = False
         self.data_manager: DataManager = DataManager(
             dict(
-                avg_fitness=dict(display_name='avg fitness', value=0, graph=True),
-                best_fitness=dict(display_name='best fitness', value=0, graph=True),
-                diversity=dict(display_name='diversity', value=0, graph=False),
-                generation=dict(display_name='generation', value=0, graph=False),
-                seed=dict(display_name='seed', value=0, graph=False),
-            ), parallel=True, visualize=False)
+                avg_fitness = dict(display_name = 'avg fitness', value = 0, graph = True),
+                best_fitness = dict(display_name = 'best fitness', value = 0, graph = True),
+                diversity = dict(display_name = 'diversity', value = 0, graph = False),
+                generation = dict(display_name = 'generation', value = 0, graph = False),
+                seed = dict(display_name = 'seed', value = 0, graph = False),
+            ), parallel = True, visualize = False)
 
         self.sim = Simulator(
-            display_data=self.data_manager.display_data,
-            simulation_time=Const.LIFE_STEPS,
-            gui_enabled=Const.DRAW,
-            stop_callback=self.stop,
-            room=first_room,
+            display_data = self.data_manager.display_data,
+            simulation_time = Const.LIFE_STEPS,
+            gui_enabled = Const.DRAW,
+            stop_callback = self.stop,
+            room = first_room,
         )
 
         self.populations: List[Population] = []
@@ -89,7 +89,7 @@ class GeneticAlgorithm:
 
         if self.loaded:
             loaded_data = self.sim_data['population'][str(self.start_generation)]
-            genes = [Genome(genes=g['genes']) for g in loaded_data['individuals']]
+            genes = [Genome(genes = g['genes']) for g in loaded_data['individuals']]
             population = Population(genes)
             if self.show_best is not None:
                 population.get_top(self.show_best)
@@ -119,7 +119,7 @@ class GeneticAlgorithm:
                         break
 
                     loaded_data = self.sim_data['population'][str(self.generation)]
-                    population = Population([Genome(genes=g['genes']) for g in loaded_data['individuals']])
+                    population = Population([Genome(genes = g['genes']) for g in loaded_data['individuals']])
                     if self.show_best is not None:
                         population.get_top(self.show_best)
                     self.c_seed = loaded_data['seed']
@@ -139,19 +139,19 @@ class GeneticAlgorithm:
         if not self.loaded:
             self.store_date()
 
-
     def store_date(self):
         data = dict(
-            constants=[
-                dict(name=name, value=value) if not isinstance(value, ModuleType) else None for name, value in vars(Const).items() if not name.startswith('_')
+            constants = [
+                dict(name = name, value = value) if not isinstance(value, ModuleType) else None for name, value in vars(Const).items() if not name.startswith('_')
             ],
-            population= {
+            population = {
                 i: dict(
                     seed = self.data_manager.get_data('seed')[i],
+                    room = self.sim.environment.room_idx,
                     individuals = [
                         dict(
-                            fitness=individual.fitness,
-                            genes=list(individual.genes)
+                            fitness = individual.fitness,
+                            genes = list(individual.genes)
                         ) for individual in population.individuals
                     ]
                 ) for i, population in enumerate(self.populations)
@@ -163,12 +163,12 @@ class GeneticAlgorithm:
 
     def evaluation(self, population: Population):
         self.sim.set_population(population, self.c_seed)
-        self.sim.start() # start simulation for current population
+        self.sim.start()  # start simulation for current population
 
     def selection(self) -> List[Genome]:
         next_population = []
         ordered_by_fitness = list(
-            sorted(self.populations[-1].individuals, key=lambda genome: genome.fitness, reverse=True))
+            sorted(self.populations[-1].individuals, key = lambda genome: genome.fitness, reverse = True))
 
         # Select first n as elite
         for i in range(round(Const.N_INDIVIDUALS * Const.ELITISM_PERCENTAGE + Const.EPSILON)):
@@ -185,7 +185,7 @@ class GeneticAlgorithm:
             parent2 = random.sample(next_population, 1)[0]
             child = Crossover.arithmetic_crossover(parent1, parent2)
 
-            child = Mutations.gaussian(child)
+            child = Mutations.mutation(child)
 
             next_population.append(child)
 

@@ -36,19 +36,19 @@ SENSOR_MAX_LENGTH = 200  # The maximum length of the sensor reading
 
 # VISUALIZATION
 COLORS = dict(  # Colors usable in application
-    black=(0, 0, 0),
-    robot=(0, 128, 255),
-    green=(0, 255, 128),
-    white=(255, 255, 255),
-    yellow=(255, 255, 0),
-    pink=(255, 192, 203),
-    red=(255, 99, 71)
+    black = (0, 0, 0),
+    robot = (0, 128, 255),
+    green = (0, 255, 128),
+    white = (255, 255, 255),
+    yellow = (255, 255, 0),
+    pink = (255, 192, 203),
+    red = (255, 99, 71)
 )
 FPS = 144
 
 # Decoder NN
-HIDDEN_SIZE = 4 # Size + Bias
-INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE + 1  # N. sensors + Size Hidden layer + Prev rotation + Bias
+HIDDEN_SIZE = 4  # Size + Bias
+INPUT_SIZE = NUMBER_OF_SENSORS + HIDDEN_SIZE  # N. sensors + Size Hidden layer + Bias
 OUTPUT_SIZE = 2
 INPUT_WEIGHTS_SIZE = (INPUT_SIZE + 1) * HIDDEN_SIZE
 HIDDEN_WEIGHTS_SIZE = (HIDDEN_SIZE + 1) * OUTPUT_SIZE
@@ -60,10 +60,10 @@ DUST_Y_AMOUNT = int(MAP_HEIGHT / DENSITY)
 N_PARTICLES = DUST_X_AMOUNT * DUST_Y_AMOUNT
 
 # EVOLUTIONARY ALGORITHM
-LIFE_STEPS = 1000
+LIFE_STEPS = 100
 LIFE_UPDATE = 1
 
-N_INDIVIDUALS = 50
+N_INDIVIDUALS = 5
 CROSSOVER_MUTATION_PERCENTAGE = 0.5
 SELECT_PERCENTAGE = 0.4
 ELITISM_PERCENTAGE = 0.1
@@ -73,8 +73,8 @@ MUTATION_PROBABILITY = 0.08
 RANDOM_ROOM = True
 
 GENOME_LENGTH = INPUT_WEIGHTS_SIZE + HIDDEN_WEIGHTS_SIZE  # Number of sensors * Number of components of the velocity
-GENOME_BOUNDS = 10
-INIT_SIZE = 0.1
+GENOME_BOUNDS = 1
+INIT_SIZE = 0.01
 N_GENERATION = 1000
 GRAPH_WINDOW = -1
-DRAW = False
+DRAW = True

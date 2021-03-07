@@ -3,10 +3,11 @@ from typing import List
 import numpy as np
 import pygame
 
-from src.simulator.Line import Line
-from src.simulator.Room import Room
-import src.utils.Constants as Const
-from src.utils.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
+from simulator.Line import Line
+from simulator.Room import Room
+import utils.Constants as Const
+from utils.MathUtils import distance_point_to_point, distance_point_to_line_seg, line_seg_intersection, outside_of_line
+
 
 # This class was mostly created by Guillaume
 
@@ -15,27 +16,32 @@ class Collision:
     """
     Author Frederic Abraham & Guillaume Franzoni Darnois
     """
+
     def __init__(self, line: Line, outside_of_line: (np.ndarray, np.ndarray), true_intersection: np.ndarray, extend_intersection: np.ndarray, jumped_through: bool, distance_to_line: float):
-        self.line: Line = line                                              # Line that generated the collision
-        self.outside_of_line: (np.ndarray, np.ndarray) = outside_of_line    # (None, None) if inside of the line otherwise the end
-        self.extend_intersection: np.ndarray = extend_intersection          # Frederic fill this
-        self.true_intersection: np.ndarray = true_intersection              # Frederic fill this
-        self.jumped_through: bool = jumped_through                          # Robot jumped through the line
-        self.distance: float = distance_to_line                             # Distance from the collision
+        self.line: Line = line  # Line that generated the collision
+        self.outside_of_line: (np.ndarray, np.ndarray) = outside_of_line  # (None, None) if inside of the line otherwise the end
+        self.extend_intersection: np.ndarray = extend_intersection  # Frederic fill this
+        self.true_intersection: np.ndarray = true_intersection  # Frederic fill this
+        self.jumped_through: bool = jumped_through  # Robot jumped through the line
+        self.distance: float = distance_to_line  # Distance from the collision
 
 
 class Environment:
     def __init__(self, room: int = None):
+        self.room_idx = room
         if room is None:
-            self.environment: Room = Room(np.random.randint(0, len(Room.rooms)))
+            self.room_idx = np.random.randint(0, len(Room.rooms))
+            self.environment: Room = Room(self.room_idx)
         else:
             self.environment: Room = Room(room)
 
     def change_room(self) -> None:
         if Const.RANDOM_ROOM:
-            self.environment = Room(np.random.randint(0, len(Room.rooms)))
+            self.room_idx = np.random.randint(0, len(Room.rooms))
+            self.environment = Room(self.room_idx)
 
     def set_room(self, room_idx):
+        self.room_idx = room_idx
         self.environment = Room(room_idx)
 
     def draw(self, screen: pygame.display) -> None:

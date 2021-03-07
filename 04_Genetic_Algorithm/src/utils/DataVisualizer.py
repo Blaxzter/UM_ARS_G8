@@ -4,7 +4,7 @@ import numpy as np
 import time
 from matplotlib import pyplot as plt
 
-import src.utils.Constants as Const
+import utils.Constants as Const
 
 
 def animate(x, data, colors):
@@ -21,7 +21,7 @@ def animate(x, data, colors):
         plt.plot(viz_x, y, color = colors[i], label = f'{key}')
     plt.pause(0.001)
 
-    plt.legend(loc='upper left')
+    plt.legend(loc = 'upper left')
     plt.tight_layout()
 
 
@@ -37,7 +37,7 @@ def run(done, iteration, line_dict):
     colors = plt.get_cmap('plasma')(np.linspace(0, 0.8, len(line_dict)))
     data = {key: [] for key in line_dict.keys()}
     for i, key in enumerate(data):
-        ax.plot([], [], color=colors[i], label=f'{key}')
+        ax.plot([], [], color = colors[i], label = f'{key}')
     plt.legend()
     old_value = iteration.value
     x = []
@@ -135,10 +135,10 @@ class DataManager:
 
 
 if __name__ == '__main__':
-    data_manager = DataManager(data_names=[
+    data_manager = DataManager(data_names = [
         'avg fitness',
         'max fitness'
-    ], pull_rate=100)
+    ], pull_rate = 100)
 
     for i in range(0, 50):
         print(i)

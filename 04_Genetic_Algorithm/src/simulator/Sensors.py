@@ -3,15 +3,16 @@ from typing import List
 import pygame
 from pygame import gfxdraw
 
-from src.simulator.Environment import Environment
-from src.utils.MathUtils import *
-import src.utils.Constants as Const
+from simulator.Environment import Environment
+from utils.MathUtils import *
+import utils.Constants as Const
 
 
 class Sensors:
     """
     Author Theodoros Giannilias & Guillaume Franzoni Darnois
     """
+
     def __init__(self):
         self.sensors: List[LineString] = []  # Collection of all the sensor in a Robot
         if Const.DRAW:
@@ -78,7 +79,7 @@ class Sensors:
             )
             screen.blit(
                 self.font_sensors.render(
-                    f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals=1)}',
+                    f'{np.round(sensor.length if sensor.length > 0 else 0.0, decimals = 1)}',
                     True,
                     Const.COLORS["white"]
                 ),

@@ -5,11 +5,11 @@ import os
 import pygame
 import numpy as np
 
+from simulator.Robot import Robot
+import utils.Constants as Const
+from simulator.Environment import Environment
+from genetic.Population import Population
 
-from src.simulator.Robot import Robot
-import src.utils.Constants as Const
-from src.simulator.Environment import Environment
-from src.genetic.Population import Population
 
 class Simulator:
     """
@@ -29,20 +29,20 @@ class Simulator:
         if gui_enabled:
             # initialize pygame
             pygame.init()
-            self.clock: pygame.time.Clock = pygame.time.Clock()                                 # PyGame Clock to set frame rate
-            self.screen: pygame.screen = pygame.display.set_mode((Const.WIDTH, Const.HEIGHT))   # Window where simulation is played
-            pygame.display.set_caption("ARS_Robot_Simulation")                                  # Window title
-            icon = pygame.image.load('images/robot.png')                                        # Window icon
+            self.clock: pygame.time.Clock = pygame.time.Clock()  # PyGame Clock to set frame rate
+            self.screen: pygame.screen = pygame.display.set_mode((Const.WIDTH, Const.HEIGHT))  # Window where simulation is played
+            pygame.display.set_caption("ARS_Robot_Simulation")  # Window title
+            icon = pygame.image.load('images/robot.png')  # Window icon
             pygame.display.set_icon(icon)
             self.keys: List[Dict[pygame.key, Callable, bool]] = [  # Action keys with relative callback
                 # dict(key_code=[pygame.K_r], callback=self.reinit_robots, hold=False, pressed=False),
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
         else:
-            self.pool = ProcessPoolExecutor(int(os.cpu_count() * (2/3)))
+            self.pool = ProcessPoolExecutor(int(os.cpu_count() * (2 / 3)))
 
-        self.environment: Environment = Environment(room = room)                        # Environment where the robot is placed
-        self.done: bool = False                                                  # Window closed ?
+        self.environment: Environment = Environment(room = room)  # Environment where the robot is placed
+        self.done: bool = False  # Window closed ?
         self.robots: List[Robot] = []
         for i in range(Const.N_INDIVIDUALS):
             self.robots.append(Robot(init_pos = None, init_rotation = np.random.randint(low = 0, high = 360), genome = None))
@@ -51,10 +51,11 @@ class Simulator:
 
     def set_population(self, population: Population, seed: float):
         np.random.seed(seed)
+        self.environment.change_room()
         self.time_left = self.simulation_time
         self.done = False
         for i, individual in enumerate(population.individuals):
-            self.robots[i].reset(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low=0, high=360), genome = individual)
+            self.robots[i].reset(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low = 0, high = 360), genome = individual)
 
     def start(self) -> None:
         if self.gui_enabled:
@@ -67,13 +68,12 @@ class Simulator:
                 self.clock.tick(Const.FPS)
             for robi in self.robots:
                 robi.calc_fitness()
-            self.environment.change_room()
         else:
             futures = []
             environments = [Environment() for _ in range(self.time_left)]
             for i, robot in enumerate(self.robots):
                 future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environments[i])
-                futures.append(dict(future=future, robot=robot))
+                futures.append(dict(future = future, robot = robot))
 
             for future in futures:
                 future["future"].done()
@@ -97,7 +97,7 @@ class Simulator:
             try:
                 robot.update(self.environment)
             except Exception as e:
-                robot.stop_update()
+                robot.stop_update = True
 
         self.time_left -= 1
         if self.time_left <= 0:
