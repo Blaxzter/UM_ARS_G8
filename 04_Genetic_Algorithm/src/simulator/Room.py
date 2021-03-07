@@ -163,7 +163,7 @@ class Room:
         # Room 9 Slide Trapezoid
         (
             default_boundaries + [
-                 Line(20, 100, 780, 230), Line(20,480,780,350)
+                 Line(20, 100, 780, 230), Line(20, 480, 780, 350)
             ],
             # Map
             [
@@ -181,7 +181,7 @@ class Room:
 
     def get_initial_position(self, show_best):
         if show_best:
-            pos_index = random.randint(0, len(self.initial_random_positions))
+            pos_index = random.randint(0, len(self.initial_random_positions) - 1)
         else:
             pos_index = np.random.randint(len(self.initial_random_positions))
 

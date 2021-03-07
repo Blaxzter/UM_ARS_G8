@@ -25,7 +25,7 @@ def load_file_and_show_graph(file_name):
     room_data = {
         i: [] for i in range(len(Room.rooms))
     }
-    room_names = ['Empty']
+    room_names = ['Empty', 'Triangle', 'Room', 'Small Box', 'Bigger Box', 'Trapezoid', 'Labyrinth', 'Propeller', 'Slope']
 
     for generation in data['population']:
         c_data = data['population'][generation]
@@ -51,8 +51,9 @@ def load_file_and_show_graph(file_name):
     max_length = np.max([len(ro_data) for ro_data in room_data.values()])
 
     for key, ro_data in room_data.items():
-        ax2.plot(np.arange(len(ro_data)), ro_data, color = colors[key])
+        ax2.plot(np.arange(len(ro_data)), ro_data, color = colors[key], label=room_names[key])
 
+    plt.legend()
     plt.show()
 
 if __name__ == '__main__':
