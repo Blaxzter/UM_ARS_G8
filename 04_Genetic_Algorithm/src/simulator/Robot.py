@@ -93,8 +93,8 @@ class Robot:
                 del self.dust[i]
 
     def calc_fitness(self):
-        self.genome.set_fitness((self.life / Const.LIFE_STEPS * self.dust_collected / Const.N_PARTICLES) * 100)
-        # self.genome.set_fitness(((1 / (1 + self.number_of_total_collisions)) + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3)
+        # self.genome.set_fitness((self.life / Const.LIFE_STEPS * self.dust_collected / Const.N_PARTICLES) * 100)
+        self.genome.set_fitness(((1 / (1 + self.number_of_total_collisions)) + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3)
         # self.genome.set_fitness(self.dust_collected/Const.N_PARTICLES * 100)
 
     def get_position_update(self) -> np.ndarray:
@@ -128,7 +128,7 @@ class Robot:
         if len(collisions) == 0 or get_x_y(next_pos) == (0, 0):
             return next_pos
         else:
-            self.stop_update = True
+            # self.stop_update = True
             self.number_of_total_collisions += 1
             closest_line = self.closest_collision(collisions, current_pos)
             t_current_pos, t_next_pos = self.recalc_next_pos(current_pos, next_pos, closest_line)

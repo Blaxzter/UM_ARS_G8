@@ -5,6 +5,8 @@ import numpy as np
 from  simulator.Line import Line
 import  utils.Constants as Const
 
+import random
+
 
 default_boundaries = [
     Line(Const.PADDING, Const.PADDING_TOP, Const.WIDTH - Const.PADDING, Const.PADDING_TOP),
@@ -177,6 +179,10 @@ class Room:
         self.map: List[Line] = self.rooms[room][0]
         self.initial_random_positions = self.rooms[room][1]
 
-    def get_initial_position(self):
-        pos_index = np.random.randint(len(self.initial_random_positions))
+    def get_initial_position(self, show_best):
+        if show_best:
+            pos_index = random.randint(0, len(self.initial_random_positions))
+        else:
+            pos_index = np.random.randint(len(self.initial_random_positions))
+
         return np.array(self.initial_random_positions[pos_index]).reshape((2, 1))

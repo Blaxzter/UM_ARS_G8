@@ -49,13 +49,13 @@ class Simulator:
         self.simulation_time = simulation_time
         self.time_left = simulation_time
 
-    def set_population(self, population: Population, seed: float):
+    def set_population(self, population: Population, seed: float, show_best):
         np.random.seed(seed)
         self.environment.change_room()
         self.time_left = self.simulation_time
         self.done = False
         for i, individual in enumerate(population.individuals):
-            self.robots[i].reset(init_pos = self.environment.environment.get_initial_position(), init_rotation = np.random.randint(low = 0, high = 360), genome = individual)
+            self.robots[i].reset(init_pos = self.environment.environment.get_initial_position(show_best), init_rotation = np.random.randint(low = 0, high = 360), genome = individual)
 
     def start(self) -> None:
         if self.gui_enabled:
@@ -70,9 +70,8 @@ class Simulator:
                 robi.calc_fitness()
         else:
             futures = []
-            environments = [Environment() for _ in range(self.time_left)]
             for i, robot in enumerate(self.robots):
-                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, environments[i])
+                future = self.pool.submit(self.run_robot_evaluation, self.time_left, robot, self.environment)
                 futures.append(dict(future = future, robot = robot))
 
             for future in futures:

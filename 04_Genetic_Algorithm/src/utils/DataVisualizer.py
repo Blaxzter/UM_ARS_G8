@@ -133,7 +133,6 @@ class DataManager:
             self.p.join()
             self.p.close()
 
-
 if __name__ == '__main__':
     data_manager = DataManager(data_names = [
         'avg fitness',

@@ -90,7 +90,7 @@ class GeneticAlgorithm:
 
         if self.loaded:
             loaded_data = self.sim_data['population'][str(self.start_generation)]
-            genes = [Genome(genes = g['genes']) for g in loaded_data['individuals']]
+            genes = [Genome(genes = g['genes'], fitness = g['fitness']) for g in loaded_data['individuals']]
             population = Population(genes)
             if self.show_best is not None:
                 population.get_top(self.show_best)
@@ -107,11 +107,11 @@ class GeneticAlgorithm:
             if self.emergency_break:
                 break
 
-            self.generation += 1
             self.populations.append(population)
             self.evaluation(population)
             self.update_data(self.generation, population)
 
+            self.generation += 1
             if self.loaded:
                 if self.display_mode:
                     if self.room_idx >= len(self.room) - 1:
@@ -167,7 +167,7 @@ class GeneticAlgorithm:
             json.dump(data, write_file)
 
     def evaluation(self, population: Population):
-        self.sim.set_population(population, self.c_seed)
+        self.sim.set_population(population, self.c_seed, self.show_best is not None)
         self.sim.start()  # start simulation for current population
 
     def selection(self) -> List[Genome]:
