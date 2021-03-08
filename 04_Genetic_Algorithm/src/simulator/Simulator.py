@@ -16,12 +16,7 @@ class Simulator:
     Author Frederic Abraham
     """
 
-    test = 0
-
     def __init__(self, display_data: Dict, simulation_time = Const.LIFE_STEPS, gui_enabled = True, stop_callback: Callable = None, room: int = None):
-        print(Simulator.test)
-        Simulator.test += 1
-
         self.stop_callback = stop_callback
         self.display_data = display_data
         self.gui_enabled = gui_enabled
@@ -39,7 +34,7 @@ class Simulator:
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
         else:
-            self.pool = ProcessPoolExecutor(int(os.cpu_count() * (2 / 3)))
+            self.pool = ProcessPoolExecutor(int(os.cpu_count()))
 
         self.environment: Environment = Environment(room = room)  # Environment where the robot is placed
         self.done: bool = False  # Window closed ?

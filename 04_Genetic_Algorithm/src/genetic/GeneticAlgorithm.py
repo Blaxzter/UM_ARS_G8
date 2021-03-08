@@ -61,7 +61,7 @@ class GeneticAlgorithm:
             value_dict[room_name] = dict(display_name = f'room: {room_name}', value = 0, graph = True, disp = False)
 
         self.data_manager: DataManager = DataManager(
-            value_dict, parallel = True, visualize = True)
+            value_dict, parallel = True, visualize = False)
 
         self.sim = Simulator(
             display_data = self.data_manager.display_data,
@@ -165,6 +165,7 @@ class GeneticAlgorithm:
         for room in range(len(Room.rooms)):
             self.sim.set_population(population, self.c_seed, self.show_best is not None, room)
             self.sim.start()  # start simulation for current population
+            print(f'Done room: {room}')
 
     def visualize_population(self, population: Population):
         for room in self.room:
@@ -259,8 +260,8 @@ class GeneticAlgorithm:
                     Const.INPUT_WEIGHTS_SIZE = c_value
                 elif c_name == 'HIDDEN_WEIGHTS_SIZE':
                     Const.HIDDEN_WEIGHTS_SIZE = c_value
-                elif c_name == 'LIFE_STEPS':
-                    Const.LIFE_STEPS = c_value
+                # elif c_name == 'LIFE_STEPS':
+                #     Const.LIFE_STEPS = c_value
                 elif c_name == 'LIFE_UPDATE':
                     Const.LIFE_UPDATE = c_value
                 elif c_name == 'N_INDIVIDUALS':

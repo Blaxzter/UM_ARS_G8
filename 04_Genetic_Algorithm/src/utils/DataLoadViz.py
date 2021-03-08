@@ -33,20 +33,20 @@ def load_file_and_show_graph(file_name):
         population = Population(genes)
         individual_fitness = [g['fitness'] for g in c_data['individuals']]
 
-        room = c_data['room']
+        for room_idx in range(len(Room.rooms)):
+            room_data[room_idx].append(np.mean([individual_fitness[i][str(room_idx)] for i in range(len(individual_fitness))]))
 
+        generall_fitness = [np.mean(list(individual_fitness[i].values())) for i in range(len(individual_fitness))]
         diversity.append(population.compute_diversity())
-        best_fitness.append(np.max(individual_fitness))
-        avg_fitness.append(np.mean(individual_fitness))
-
-        room_data[room].append(np.mean(individual_fitness))
+        best_fitness.append(np.max(generall_fitness))
+        avg_fitness.append(np.mean(generall_fitness))
 
     fig, (ax1, ax2) = plt.subplots(1, 2)
     fig.suptitle('Horizontally stacked subplots')
 
     ax1.plot(x, avg_fitness, color="blue")
     ax1.plot(x, best_fitness, color="green")
-    ax1.plot(x, diversity, color="red")
+    # ax1.plot(x, diversity, color="red")
 
     max_length = np.max([len(ro_data) for ro_data in room_data.values()])
 
@@ -57,4 +57,4 @@ def load_file_and_show_graph(file_name):
     plt.show()
 
 if __name__ == '__main__':
-    load_file_and_show_graph('../data/chromosome_20210307-201516_data.json')
+    load_file_and_show_graph('../data/154_Avg_over_8_rooms.json')
