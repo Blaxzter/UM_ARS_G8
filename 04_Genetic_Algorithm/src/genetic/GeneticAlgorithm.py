@@ -21,19 +21,16 @@ class GeneticAlgorithm:
     Author Frederic Abraham
     """
 
-    def __init__(self, load = None, generation = None, show_best = None, room = None):
+    def __init__(self, load = None, generation = None, show_best = None, room: List = None, file_name = None):
         self.loaded = False
         self.show_best = show_best
+        self.file_name = file_name
 
         self.start_generation = 0
-
-        if room is not None:
-            Const.RANDOM_ROOM = False
 
         first_room = None
 
         if load:
-            self.display_mode = True if type(room) is list else False
             self.room = room
             self.room_idx = 0
 
@@ -49,13 +46,6 @@ class GeneticAlgorithm:
                     self.start_generation = len(self.sim_data['population']) - 1
                 else:
                     self.start_generation = generation
-
-            if room is not None:
-                first_room = room if type(room) is int else room[0]
-            else:
-                data = self.sim_data['population'][str(self.start_generation)]
-                np.random.seed(data['seed'])
-                first_room = np.random.randint(0, len(Room.rooms))
 
         self.c_seed = 0
         self.emergency_break = False
@@ -83,12 +73,14 @@ class GeneticAlgorithm:
 
         self.populations: List[Population] = []
 
-        self.history = {i: [] for i in range(0, Const.N_GENERATION)}
-
         self.generation = self.start_generation + 1
         self.avg_fitness = [-1]
         self.best_fitness = [-1]
-        self.name = f"data/chromosome_{datetime.now().strftime('%Y%m%d-%H%M%S')}_data.json"
+
+        if self.file_name is not None:
+            self.name = f'data/avg_run/{self.file_name}'
+        else:
+            self.name = f"data/chromosome_{datetime.now().strftime('%Y%m%d-%H%M%S')}_data.json"
 
     def run(self):
         if self.loaded:
@@ -103,23 +95,16 @@ class GeneticAlgorithm:
             if self.emergency_break:
                 break
 
-            self.evaluation(population)
+            self.visualize_population(population)
             self.update_data(self.generation, population)
 
-            if self.display_mode:
-                if self.room_idx >= len(self.room) - 1:
-                    break
-                self.generation -= 1
-                self.room_idx += 1
-                self.sim.set_room(self.room[self.room_idx])
-            else:
-                if self.generation > len(self.sim_data['population']) - 1:
-                    break
-                population = self.load_generation(self.generation)
+            if self.generation >= len(self.sim_data['population']) - 1:
+                break
+
+            self.generation += 1
+            population = self.load_generation(self.generation)
 
         self.data_manager.stop()
-        if not self.loaded:
-            self.store_date()
 
     def load_generation(self, generation):
         loaded_data = self.sim_data['population'][str(generation)]
@@ -147,8 +132,7 @@ class GeneticAlgorithm:
             self.generate_new(next_population)
             population = Population(next_population)
 
-            if not self.loaded:
-                self.store_date()
+            self.store_date()
 
             # Next seed for next simulation
             self.c_seed = np.random.randint(2147483647)
@@ -179,6 +163,11 @@ class GeneticAlgorithm:
 
     def evaluation(self, population: Population):
         for room in range(len(Room.rooms)):
+            self.sim.set_population(population, self.c_seed, self.show_best is not None, room)
+            self.sim.start()  # start simulation for current population
+
+    def visualize_population(self, population: Population):
+        for room in self.room:
             self.sim.set_population(population, self.c_seed, self.show_best is not None, room)
             self.sim.start()  # start simulation for current population
 
@@ -235,12 +224,15 @@ class GeneticAlgorithm:
         self.data_manager.update_value('seed', self.c_seed)
         self.data_manager.update_value('room', self.sim.environment.room_idx)
 
+        avg_room_fitness = dict()
+
         for i, room_name in enumerate(Room.room_names):
             # value_dict[room_name] = dict(display_name = 'room', value = 0, graph = False, disp = False),
             room_fitness = np.mean([x.get_fitness_by_key(i) for x in individuals])
             self.data_manager.update_value(room_name, room_fitness)
+            avg_room_fitness[room_name] = room_fitness
 
-        print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity} on room {self.sim.environment.room_idx}')
+        print(f'generation: {generation} avg_fitness: {avg_fitness} best_fitness: {best_fitness} diversity: {diversity} rooms: {avg_room_fitness}')
 
         self.data_manager.update()
 
@@ -257,8 +249,6 @@ class GeneticAlgorithm:
                     Const.MAP_WIDTH = c_value
                 elif c_name == 'MAP_HEIGHT':
                     Const.MAP_HEIGHT = c_value
-                elif c_name == 'FPS':
-                    Const.FPS = c_value
                 elif c_name == 'HIDDEN_SIZE':
                     Const.HIDDEN_SIZE = c_value
                 elif c_name == 'INPUT_SIZE':

@@ -18,7 +18,7 @@ class Population:
             self.individuals: List[Genome] = individuals
 
     def get_top(self, show_best):
-        self.individuals = list(sorted(self.individuals, key = lambda genome: genome.fitness, reverse = True))[:show_best]
+        self.individuals = list(sorted(self.individuals, key = lambda genome: genome.get_fitness(), reverse = True))[:show_best]
         pass
 
     def compute_diversity(self):
@@ -34,4 +34,4 @@ class Population:
 
                     diversity += np.linalg.norm(gene1 - gene2)
                     comparisons += 1
-        return 100 * diversity / comparisons
+        return diversity

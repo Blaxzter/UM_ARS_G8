@@ -93,9 +93,9 @@ class Robot:
                 del self.dust[i]
 
     def calc_fitness(self, environment):
-        # self.genome.set_fitness((self.life / Const.LIFE_STEPS * self.dust_collected / Const.N_PARTICLES) * 100)
-        # self.genome.set_fitness(((1 / (1 + self.number_of_total_collisions)) + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3)
-        self.genome.set_fitness(self.dust_collected/Const.N_PARTICLES * 100, environment.room_idx)
+        # self.genome.set_fitness((self.life / Const.LIFE_STEPS * self.dust_collected / Const.N_PARTICLES) * 100, environment.room_idx)
+        self.genome.set_fitness(((1 / (1 + self.number_of_total_collisions)) + 2 * self.dust_collected / Const.N_PARTICLES) * 100 / 3, environment.room_idx)
+        # self.genome.set_fitness(self.dust_collected/Const.N_PARTICLES * 100, environment.room_idx)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot

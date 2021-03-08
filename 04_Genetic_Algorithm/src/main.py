@@ -6,10 +6,12 @@ from genetic.GeneticAlgorithm import GeneticAlgorithm
 
 if __name__ == '__main__':
     # gen_alg = GeneticAlgorithm(
-    #     load='data/chromosome_20210307-201516_data.json',
-    #     generation=200,
+    #     load='data/chromosome_20210308-004004_data.json',
+    #     generation=0,
     #     show_best=1,
-    #     room = [0, 1, 2, 3, 4, 5, 6, 7, 8]
+    #     room = [0]
     # )
-    gen_alg = GeneticAlgorithm()
-    gen_alg.run()
+
+    for i in range(20):
+        gen_alg = GeneticAlgorithm(file_name = f'run_{i}.json')
+        gen_alg.run()

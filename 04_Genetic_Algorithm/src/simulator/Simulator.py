@@ -89,7 +89,7 @@ class Simulator:
             return 0
 
         robot.calc_fitness(environment)
-        return robot.genome.fitness
+        return robot.genome.get_fitness_by_key(environment.room_idx)
 
     def update(self) -> None:
         for robot in self.robots:

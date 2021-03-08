@@ -35,11 +35,6 @@ class Environment:
         else:
             self.environment: Room = Room(room)
 
-    def change_room(self) -> None:
-        if Const.RANDOM_ROOM:
-            self.room_idx = np.random.randint(0, len(Room.rooms))
-            self.environment = Room(self.room_idx)
-
     def set_room(self, room_idx):
         self.room_idx = room_idx
         self.environment = Room(room_idx)
