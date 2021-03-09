@@ -44,7 +44,7 @@ COLORS = dict(  # Colors usable in application
     pink = (255, 192, 203),
     red = (255, 99, 71)
 )
-FPS = 100000
+FPS = 144
 
 # Decoder NN
 HIDDEN_SIZE = 4  # Size + Bias
@@ -70,12 +70,10 @@ ELITISM_PERCENTAGE = 0.1
 
 MUTATION_PROBABILITY = 0.08
 
-RANDOM_ROOM = True
-
 GENOME_LENGTH = INPUT_WEIGHTS_SIZE + HIDDEN_WEIGHTS_SIZE  # Number of sensors * Number of components of the velocity
 GENOME_BOUNDS = 1
 INIT_SIZE = 0.01
-N_GENERATION = 200
+N_GENERATION = 100
 GRAPH_WINDOW = -1
 DRAW = True
 

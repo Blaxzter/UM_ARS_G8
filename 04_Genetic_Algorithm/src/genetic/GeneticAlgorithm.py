@@ -37,6 +37,9 @@ class GeneticAlgorithm:
             self.loaded = True
             f = open(load, )
             self.sim_data = json.load(f)
+
+            print(f"Loaded data with {len(self.sim_data['population'])} generations of chromosomes.")
+
             self.load_constants()
             if show_best is not None:
                 Const.N_INDIVIDUALS = show_best
@@ -61,7 +64,7 @@ class GeneticAlgorithm:
             value_dict[room_name] = dict(display_name = f'room: {room_name}', value = 0, graph = True, disp = False)
 
         self.data_manager: DataManager = DataManager(
-            value_dict, parallel = True, visualize = False)
+            value_dict, parallel = True, visualize = True)
 
         self.sim = Simulator(
             display_data = self.data_manager.display_data,

@@ -40,6 +40,8 @@ class Robot:
         self.life = 0
         self.stop_update = False
 
+        self.prev_rotation = 0
+
     def reset(self, init_pos: np.ndarray, init_rotation: float, genome: Genome):
         self.v_l = 0
         self.v_r = 0
@@ -56,10 +58,14 @@ class Robot:
         self.life = 0
         self.stop_update = False
 
+        self.prev_rotation = 0
+
     def update(self, environment):
 
         if self.stop_update:
             return
+
+        prev_theta = self.theta
 
         # If the bot collided with a wall we stop updating it
         # if self.number_of_total_collisions > 0:
@@ -70,7 +76,9 @@ class Robot:
         self.sensors.update(environment, self.theta, self.pos)
 
         # Get decoded value from NN and update previous_hidden
-        new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden)
+        # new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden)
+
+        new_vel, self.previous_hidden = robot_decoder(self.genome, self.sensors, self.previous_hidden, self.prev_rotation)
 
         # Assign newly calculated velocity
         self.v_r, self.v_l = new_vel[0, 0], new_vel[1, 0]
@@ -84,6 +92,8 @@ class Robot:
         self.dist_covered = np.linalg.norm(self.pos - self.prev_pos)
 
         self.check_dust_particles(self.pos)
+
+        self.prev_rotation = self.theta - prev_theta
 
     def check_dust_particles(self, robot_current_center: np.ndarray):
         for i in range(len(self.dust) - 1, -1, -1):

@@ -30,11 +30,12 @@ class Simulator:
             icon = pygame.image.load('images/robot.png')  # Window icon
             pygame.display.set_icon(icon)
             self.keys: List[Dict[pygame.key, Callable, bool]] = [  # Action keys with relative callback
-                # dict(key_code=[pygame.K_r], callback=self.reinit_robots, hold=False, pressed=False),
+                dict(key_code=[pygame.K_r], callback=self.stop_current_run, hold=False, pressed=False),
+                dict(key_code=[pygame.K_SPACE], callback=self.start_current_run, hold=False, pressed=False),
             ]
             self.FONT = pygame.font.SysFont(None, 28)  # Font used for data visualization on top
         else:
-            self.pool = ProcessPoolExecutor(int(os.cpu_count()))
+            self.pool = ProcessPoolExecutor(int(os.cpu_count() * (2/3)))
 
         self.environment: Environment = Environment(room = room)  # Environment where the robot is placed
         self.done: bool = False  # Window closed ?
@@ -44,8 +45,16 @@ class Simulator:
         self.simulation_time = simulation_time
         self.time_left = simulation_time
 
+        self.hold = True
+
+    def stop_current_run(self):
+        self.done = True
+
+    def start_current_run(self):
+        self.hold = False
+
     def set_population(self, population: Population, seed: float, show_best, room):
-        np.random.seed(seed)
+        # np.random.seed(seed)
         self.environment.set_room(room)
         self.time_left = self.simulation_time
         self.done = False
@@ -58,8 +67,12 @@ class Simulator:
                 self.get_key_update()
                 self.pygame_defaults()
 
+                if self.hold:
+                    continue
+
                 self.update()
                 self.draw()
+
                 self.clock.tick(Const.FPS)
             for robi in self.robots:
                 robi.calc_fitness(self.environment)
