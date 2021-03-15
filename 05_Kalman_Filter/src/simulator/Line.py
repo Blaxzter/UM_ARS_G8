@@ -4,8 +4,6 @@ import pygame
 import simulator.Constants as Const
 from simulator.Utils import get_pygame_point
 
-line_color = (0, 128, 255)
-
 # This class was mostly created by Frederic
 
 class Line:
@@ -78,7 +76,7 @@ class Line:
         return f'({self.start_x}, {self.start_y}) ({self.end_x}, {self.end_y})'
 
     def draw(self, screen):
-        pygame.draw.line(screen, line_color, self.pyStart, self.pyEnd, 2)
+        pygame.draw.line(screen, Const.COLORS.black, self.pyStart, self.pyEnd, 2)
 
     def compute_slope(self):
         return (self.start[1] - self.end[1]) / (self.start[0] - self.end[0]) if (self.start[0] - self.end[

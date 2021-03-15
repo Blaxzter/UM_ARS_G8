@@ -80,7 +80,7 @@ class Simulator:
             self.do_robot_update()
 
     def draw(self) -> None:
-        self.screen.fill((0, 0, 0))
+        self.screen.fill(Const.COLORS.light_light_grey)
         self.environment.draw(self.screen)
         self.robot.draw(self.screen)
         self.draw_information(self.screen)
@@ -92,17 +92,17 @@ class Simulator:
             viz_line.draw(self.screen)
 
         for relevant_landmark in self.relevant_landmarks:
-            viz = VisualLine(self.robot.pos, relevant_landmark, dotted = True, color = Const.COLORS.yellow)
+            viz = VisualLine(self.robot.pos, relevant_landmark, dotted = False, color = Const.COLORS.green)
             viz.draw(self.screen)
 
         for landmark in self.land_marks:
-            pygame.draw.circle(self.screen, Const.COLORS.yellow, get_pygame_point(landmark), 5)
+            pygame.draw.circle(self.screen, Const.COLORS.black, get_pygame_point(landmark), 5)
 
         for estimated_pos in self.estimation_positions:
             height = 50
             width = 100
             top_left = get_pygame_point(estimated_pos - np.array([width / 2, height / 2]).reshape((2, 1)))
-            pygame.draw.ellipse(self.screen, Const.COLORS.yellow, pygame.Rect(top_left, (width, height)), 1)
+            pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(top_left, (width, height)), 1)
 
         pygame.display.flip()
 
@@ -159,8 +159,8 @@ class Simulator:
         # Take the position after
         end_pos = self.robot.pos
 
-        self.update_history(end_pos, self.true_history, self.true_history_draw, dotted = False, color = Const.COLORS.red)
-        self.update_history(end_pos + np.array([np.random.randint(low = 5, high = 10), np.random.randint(low = 0, high = 10)]).reshape((2, 1)), self.estimated_history, self.estimated_history_draw, dotted = True, color = Const.COLORS.green)
+        self.update_history(end_pos, self.true_history, self.true_history_draw, dotted = False, color = Const.COLORS.black)
+        self.update_history(end_pos + np.array([np.random.randint(low = 5, high = 10), np.random.randint(low = 0, high = 10)]).reshape((2, 1)), self.estimated_history, self.estimated_history_draw, dotted = True, color = Const.COLORS.light_red)
 
         if time.time() - self.time > 5:
             print("New Pos")
@@ -175,7 +175,7 @@ class Simulator:
             draw_history.append(vis_line)
 
     def draw_information(self, screen: pygame.display) -> None:
-        font_color = Const.COLORS.white
+        font_color = Const.COLORS.black
         screen.blit(Const.FONT.render(f'theta: {np.round(np.rad2deg(self.robot.theta), decimals=3)}', True, font_color), (20, 20))
         screen.blit(Const.FONT.render(f'v_l: {self.robot.v_l}', True, font_color), (20, 40))
         screen.blit(Const.FONT.render(f'v_r: {self.robot.v_r}', True, font_color), (20, 60))

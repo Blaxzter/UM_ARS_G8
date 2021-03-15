@@ -161,8 +161,9 @@ class Robot:
             int(np.round(s_x)),
             int(np.round(s_y)),
             Const.ROBOT_RADIUS,
-            Const.COLORS.robot,
+            Const.COLORS.black,
         )
+
         # Draw orientation line ("front" of the robot)
         e_x, e_y = self.get_orientation_vector()
         gfxdraw.line(
@@ -171,7 +172,7 @@ class Robot:
             int(np.round(s_y)),
             int(np.round(e_x)),
             int(np.round(e_y)),
-            Const.COLORS.green
+            Const.COLORS.black
         )
 
     def get_orientation_vector(self, degree: float = None) -> (float, float):
