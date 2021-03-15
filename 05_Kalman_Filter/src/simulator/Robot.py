@@ -55,6 +55,8 @@ class Robot:
 
         self.mu, self.sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
 
+        print("POS:", self.mu[0, 0], self.mu[1, 0])
+
         # TODO: move LIDAR detecting landmarks inside robot
         # Update sensors | No need for sensors in this assignment
         # self.sensors.update(environment, self.theta, self.pos)
@@ -265,7 +267,7 @@ class Robot:
         features = []
         for landmark in landmarks:
             r = math.dist((landmark[0, 0], landmark[1, 0]), (self.mu[0, 0], self.mu[1, 0]))
-            fi = math.atan2((landmark[0, 0] - self.mu[0, 0]), (landmark[1, 0] - self.mu[1, 0])) - self.mu[2, 0]
+            fi = np.rad2deg(math.atan2((landmark[1, 0] - self.mu[1, 0]), (landmark[0, 0] - self.mu[0, 0]))) - self.mu[2, 0]
             features.append(dict(
                 r=r,
                 fi=fi
@@ -280,7 +282,7 @@ class Robot:
                 'ftol': 1e-5,  # Tolerance
                 'maxiter': 1e+7  # Maximum iterations
             })
-
+        np.seterr(all='raise')
         theta = sum([f['fi'] for f in features])
 
         return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.random.normal(scale=0.5) # Return observed state with noise
