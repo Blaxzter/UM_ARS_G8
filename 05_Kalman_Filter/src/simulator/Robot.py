@@ -4,6 +4,8 @@ from typing import List
 
 import scipy as scipy
 from pygame import gfxdraw
+from scipy.optimize import minimize
+
 from simulator.Environment import Collision, Environment
 from simulator.MathUtils import *
 from simulator.MathUtils import get_x_y
@@ -36,7 +38,7 @@ class Robot:
                 and Const.PADDING_TOP + Const.ROBOT_RADIUS < y < Const.HEIGHT - Const.PADDING - Const.ROBOT_RADIUS:
             self.pos = np.array([x, y], dtype=float).reshape(2, 1)
 
-    def update(self, environment: Environment) -> None:
+    def update(self, environment: Environment, landmarks) -> None:
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
@@ -246,34 +248,35 @@ class Robot:
                 closest = collision
         return closest
 
-    def compute_sensors_state(self, landmarks: List[Line]):
+    def compute_sensors_state(self, landmarks: List[np.ndarray]):
         features = []
         for landmark in landmarks:
-            r = math.dist((landmark.start_x, landmark.start_y), (self.mu[0, 0], self.mu[1, 0]))
-            fi = math.atan2((landmark.start_x - self.mu[0, 0]), (landmark.start_y - self.mu[1, 0])) - self.mu[2, 0]
+            r = math.dist((landmark[0, 0], landmark[1, 0]), (self.mu[0, 0], self.mu[1, 0]))
+            fi = math.atan2((landmark[0, 0] - self.mu[0, 0]), (landmark[1, 0] - self.mu[1, 0])) - self.mu[2, 0]
             features.append(dict(
                 r=r,
                 fi=fi
             ))
 
-        position = scipy.minimize(
-            self.mse,  # The error function
-            (self.mu[0, 0], self.mu[1, 0]),  # The initial guess
-            args=([(l.start_x, l.start_y) for l in landmarks], [f['r'] for f in features]),  # Additional parameters for mse
+        position = minimize(
+            self.mse_position,  # The error function
+            np.array([self.mu[0, 0], self.mu[1, 0]]),  # The initial guess
+            args=([(l[0, 0], l[1, 0]) for l in landmarks], [f['r'] for f in features]),  # Additional parameters for mse
             method='L-BFGS-B',  # The optimisation algorithm
             options={
                 'ftol': 1e-5,  # Tolerance
                 'maxiter': 1e+7  # Maximum iterations
             })
 
-        return np.array(position.x[0], position.x[1], # theta)
+        theta = sum([f['fi'] for f in features])
+
+        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.random.normal(scale=0.5) # Return observed state with noise
 
     # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
     @staticmethod
-    def mse(x, locations, metrics):
+    def mse_position(x, locations, distances):
         mse = 0.0
-        for location, metric in zip(locations, metrics):
-            metric_calculated = math.dist((x[0], x[1]), (location[0], location[1]))
-            mse += np.square(metric_calculated - metric)
-        return mse / len(metrics)
-
+        for location, distance in zip(locations, distances):
+            distance_calculated = math.dist((x[0], x[1]), (location[0], location[1]))
+            mse += np.square(distance_calculated - distance)
+        return mse / len(distances)
