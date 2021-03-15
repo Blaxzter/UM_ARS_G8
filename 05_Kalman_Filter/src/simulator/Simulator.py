@@ -154,7 +154,7 @@ class Simulator:
             if np.linalg.norm(self.robot.pos - land_mark) < Const.LANDMARK_DIST:
                 self.relevant_landmarks.append(land_mark)
 
-        self.robot.update(self.environment)
+        self.robot.update(self.environment, self.relevant_landmarks)
 
         # Take the position after
         end_pos = self.robot.pos

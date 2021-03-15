@@ -1,6 +1,8 @@
 import pygame
 
 from typing import List
+
+import scipy as scipy
 from pygame import gfxdraw
 from simulator.Environment import Collision, Environment
 from simulator.MathUtils import *
@@ -13,7 +15,7 @@ dt = 1
 
 
 class Robot:
-    def __init__(self, init_pos: np.ndarray):
+    def __init__(self, init_pos: np.ndarray, landmarks):
         self.v_l: float = 0  # Velocity of left wheel
         self.v_r: float = 0  # Velocity of right wheel
         self.l: int = Const.ROBOT_RADIUS * 2  # distance between the moters
@@ -24,8 +26,10 @@ class Robot:
         self.dragging = False
 
         # Localization variables
-        self.mu = np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1)  # Initial position when initializing, contains the state
-        self.sigma = np.identity(3) * np.square(np.random.normal(scale=0.5))    # Covariance matrix
+        self.mu = np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1)  # Initial position when initializing, contains the belief state
+        self.sigma = np.identity(3) * np.square(np.random.normal(scale=0.5))            # Covariance matrix
+        self.u = np.array([0, 0]).reshape(2, 1)                                         # Linear Combined Velocity, Rotation of motion
+        self.z = self.compute_sensors_state(landmarks)                                  # Sensor observed state
 
     def drag(self, x, y):
         if Const.PADDING + Const.ROBOT_RADIUS < x < Const.WIDTH - Const.PADDING - Const.ROBOT_RADIUS \
@@ -241,3 +245,35 @@ class Robot:
                 minimum = dist
                 closest = collision
         return closest
+
+    def compute_sensors_state(self, landmarks: List[Line]):
+        features = []
+        for landmark in landmarks:
+            r = math.dist((landmark.start_x, landmark.start_y), (self.mu[0, 0], self.mu[1, 0]))
+            fi = math.atan2((landmark.start_x - self.mu[0, 0]), (landmark.start_y - self.mu[1, 0])) - self.mu[2, 0]
+            features.append(dict(
+                r=r,
+                fi=fi
+            ))
+
+        position = scipy.minimize(
+            self.mse,  # The error function
+            (self.mu[0, 0], self.mu[1, 0]),  # The initial guess
+            args=([(l.start_x, l.start_y) for l in landmarks], [f['r'] for f in features]),  # Additional parameters for mse
+            method='L-BFGS-B',  # The optimisation algorithm
+            options={
+                'ftol': 1e-5,  # Tolerance
+                'maxiter': 1e+7  # Maximum iterations
+            })
+
+        return np.array(position.x[0], position.x[1], # theta)
+
+    # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
+    @staticmethod
+    def mse(x, locations, metrics):
+        mse = 0.0
+        for location, metric in zip(locations, metrics):
+            metric_calculated = math.dist((x[0], x[1]), (location[0], location[1]))
+            mse += np.square(metric_calculated - metric)
+        return mse / len(metrics)
+
