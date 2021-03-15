@@ -156,8 +156,12 @@ class Simulator:
 
         self.update_history(end_pos, self.true_history, self.true_history_draw, dotted=False, color=Const.COLORS.black)
         self.update_history(
-            end_pos + np.array([np.random.randint(low=5, high=10), np.random.randint(low=0, high=10)]).reshape((2, 1)),
-            self.estimated_history, self.estimated_history_draw, dotted=True, color=Const.COLORS.light_red)
+            np.array([self.robot.mu[0, 0], self.robot.mu[1, 0]]).reshape(2, 1),
+            self.estimated_history,
+            self.estimated_history_draw,
+            dotted=True,
+            color=Const.COLORS.light_red
+        )
 
         if time.time() - self.time > 5:
             print("New Pos")

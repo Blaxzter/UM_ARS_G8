@@ -4,12 +4,12 @@ import numpy as np
 class KalmanFilter:
 
     def __init__(self, d_t, theta):
-        # TODO figure out the correct initializations from the slide
+        # TODO check if all initialization are correct
 
         self.A = np.identity(3)
-        self.B = np.array([d_t, np.cos(theta), 0,
-                           d_t, np.sin(theta), 0,
-                           0, 0, d_t]).reshape(3, 3)
+        self.B = np.array([d_t * np.cos(theta), 0,
+                           d_t * np.sin(theta), 0,
+                            0, d_t]).reshape(3, 2)
         self.C = np.identity(3)
 
         # Noise matrices

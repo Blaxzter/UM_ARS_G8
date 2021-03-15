@@ -6,6 +6,7 @@ import scipy as scipy
 from pygame import gfxdraw
 from scipy.optimize import minimize
 
+from kalman.KalmanFilter import KalmanFilter
 from simulator.Environment import Collision, Environment
 from simulator.MathUtils import *
 from simulator.MathUtils import get_x_y
@@ -32,6 +33,7 @@ class Robot:
         self.sigma = np.identity(3) * np.square(np.random.normal(scale=0.5))            # Covariance matrix
         self.u = np.array([0, 0]).reshape(2, 1)                                         # Linear Combined Velocity, Rotation of motion
         self.z = self.compute_sensors_state(landmarks)                                  # Sensor observed state
+        self.localization_kf = KalmanFilter(1, self.theta)                              # Kalman Filter
 
     def drag(self, x, y):
         if Const.PADDING + Const.ROBOT_RADIUS < x < Const.WIDTH - Const.PADDING - Const.ROBOT_RADIUS \
@@ -39,12 +41,23 @@ class Robot:
             self.pos = np.array([x, y], dtype=float).reshape(2, 1)
 
     def update(self, environment: Environment, landmarks) -> None:
+        prev_theta = self.theta
+
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
-        # Update sensors
-        self.sensors.update(environment, self.theta, self.pos)
+        v = (self.v_r + self.v_l) / 2
+        w = self.theta - prev_theta
+        self.u = np.array([v, w]).reshape(2, 1)
+
+        self.z = self.compute_sensors_state(landmarks)
+
+        self.mu, self.sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
+
+        # TODO: move LIDAR detecting landmarks inside robot
+        # Update sensors | No need for sensors in this assignment
+        # self.sensors.update(environment, self.theta, self.pos)
 
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
