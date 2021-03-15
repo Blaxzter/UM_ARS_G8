@@ -23,6 +23,10 @@ class Robot:
         self.sensor_hidden: bool = False  # Show/Hide sensors
         self.dragging = False
 
+        # Localization variables
+        self.mu = np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1)  # Initial position when initializing, contains the state
+        self.sigma = np.identity(3) * np.square(np.random.normal(scale=0.5))    # Covariance matrix
+
     def drag(self, x, y):
         if Const.PADDING + Const.ROBOT_RADIUS < x < Const.WIDTH - Const.PADDING - Const.ROBOT_RADIUS \
                 and Const.PADDING_TOP + Const.ROBOT_RADIUS < y < Const.HEIGHT - Const.PADDING - Const.ROBOT_RADIUS:

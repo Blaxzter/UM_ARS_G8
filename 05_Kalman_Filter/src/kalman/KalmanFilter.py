@@ -1,5 +1,6 @@
 import numpy as np
 
+
 class KalmanFilter:
 
     def __init__(self, d_t, theta):
@@ -16,6 +17,8 @@ class KalmanFilter:
         self.Q = np.identity(3) * np.random.normal(scale=0.5)
 
     def kalman_filter(self, mu, sigma, u, z):
+        # NB: For the dot product the order doesn't count
+
         # Prediction
         new_mu = self.A.dot(mu) + self.B.dot(u)
         new_sigma = self.A.dot(sigma.dot(np.linalg.inv(self.A))) + self.R
@@ -31,4 +34,3 @@ class KalmanFilter:
         self.B = np.array([d_t, np.cos(theta), 0,
                            d_t, np.sin(theta), 0,
                            0, 0, d_t]).reshape(3, 3)
-
