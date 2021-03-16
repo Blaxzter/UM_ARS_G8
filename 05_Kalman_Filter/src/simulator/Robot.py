@@ -52,7 +52,7 @@ class Robot:
 
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
-            self.localization_kf.update_B(1, self.mu[2].item())
+            self.localization_kf.update_matrices(1, self.mu[2].item())
 
             v = (self.v_r + self.v_l) / 2  # AVG velocity of wheels
             w = (self.v_r - self.v_l) / self.l  # Rate of rotation
