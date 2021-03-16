@@ -293,7 +293,9 @@ class Robot:
 
         theta = self.theta  #sum([f['bearing'] for f in landmarks])/len([f['bearing'] for f in landmarks])
 
-        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.array([np.random.normal(scale=Const.GAUSSIAN_SCALE), np.random.normal(scale=Const.GAUSSIAN_SCALE), np.random.normal(scale=Const.GAUSSIAN_SCALE)]).reshape(3, 1) # Return observed state with noise
+        # noise = np.array([np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE)]).reshape(3, 1)
+        # noise *= 0
+        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) # + noise # Return observed state with noise
 
     # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
     @staticmethod

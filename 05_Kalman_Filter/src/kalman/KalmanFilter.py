@@ -17,7 +17,7 @@ class KalmanFilter:
             np.random.normal(scale=Const.GAUSSIAN_SCALE),
             np.random.normal(scale=Const.GAUSSIAN_SCALE),
             np.random.normal(scale=Const.GAUSSIAN_SCALE)]
-        ).reshape(3, 1)
+        ).reshape(3, 1) * 0.01
         self.Q = np.identity(3) * np.array([
             np.random.normal(scale=Const.GAUSSIAN_SCALE),
             np.random.normal(scale=Const.GAUSSIAN_SCALE),
@@ -32,7 +32,7 @@ class KalmanFilter:
         new_sigma = self.A.dot(sigma.dot(self.A.T)) + self.R
 
         # Correction
-        # K = new_sigma.dot(self.C.T.dot(np.linalg.inv(self.C.dot(new_sigma.dot(self.C.T)) + self.Q)))
+        # K = np.dot(new_sigma, self.C.T).dot(np.linalg.inv(self.C.dot(new_sigma.dot(self.C.T)) + self.Q))
         # corrected_new_mu = new_mu + K.dot(z - self.C.dot(new_mu))
         # corrected_new_sigma = (np.identity(3) - K.dot(self.C)).dot(new_sigma)
 

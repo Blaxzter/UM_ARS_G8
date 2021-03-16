@@ -32,7 +32,7 @@ class Environment:
             Line(WIDTH - PADDING, HEIGHT - PADDING, PADDING, HEIGHT - PADDING),
             Line(PADDING, HEIGHT - PADDING, PADDING, PADDING_TOP),
             # RIGHT ARROW
-            # Line(PADDING + 50, PADDING_TOP + 50, PADDING + 500, PADDING_TOP + 500),
+            Line(PADDING + 500, PADDING_TOP + 300, PADDING + 500, HEIGHT - PADDING),
             # Line(PADDING + 500, PADDING_TOP + 500, PADDING + 650, HEIGHT - PADDING)
         ]   # Group of boundaries that make up the environment in which the robot moves
 

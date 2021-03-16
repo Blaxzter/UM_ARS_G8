@@ -106,11 +106,25 @@ class Simulator:
         for landmark in self.land_marks:
             pygame.draw.circle(self.screen, Const.COLORS.black, get_pygame_point(landmark), 5)
 
+        center_pos = pygame.Vector2(self.robot.mu[0, 0], self.robot.mu[1, 0])
+        height = np.abs(self.robot.sigma[1, 1]) * 50000
+        width = np.abs(self.robot.sigma[0, 0]) * 50000
+        pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(center_pos, (width, height)), 1)
+
+        if time.time() - self.time > 5:
+            print("New Pos")
+            self.time = time.time()
+            self.estimation_positions.append({
+                'pos': center_pos,
+                'height': height,
+                'width': width
+            })
+
         for estimated_pos in self.estimation_positions:
-            height = 50
-            width = 100
-            top_left = get_pygame_point(estimated_pos - np.array([width / 2, height / 2]).reshape((2, 1)))
-            pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(top_left, (width, height)), 1)
+            pos = estimated_pos['pos']
+            c_height = estimated_pos['height']
+            c_width = estimated_pos['width']
+            pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(pos, (c_width, c_height)), 1)
 
         pygame.display.flip()
 
@@ -173,11 +187,6 @@ class Simulator:
             dotted=True,
             color=Const.COLORS.light_red
         )
-
-        if time.time() - self.time > 5:
-            print("New Pos")
-            self.time = time.time()
-            self.estimation_positions.append(end_pos)
 
     @staticmethod
     def update_history(end_pos, pos_history, draw_history, dotted: bool, color):
