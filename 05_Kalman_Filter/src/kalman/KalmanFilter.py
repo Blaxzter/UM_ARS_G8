@@ -9,12 +9,20 @@ class KalmanFilter:
         self.A = np.identity(3)
         self.B = np.array([d_t * np.cos(theta), 0,
                            d_t * np.sin(theta), 0,
-                            0, d_t]).reshape(3, 2)
-        self.C = np.identity(3) * np.array([np.random.normal(scale=0.5), np.random.normal(scale=0.5), np.random.normal(scale=0.5)]).reshape(3, 1)
+                           0, d_t]).reshape(3, 2)
+        self.C = np.identity(3)
 
         # Noise matrices
-        self.R = np.identity(3) * np.array([np.random.normal(scale=0.5), np.random.normal(scale=0.5), np.random.normal(scale=0.5)]).reshape(3, 1)
-        self.Q = np.identity(3) * np.array([np.random.normal(scale=0.5), np.random.normal(scale=0.5), np.random.normal(scale=0.5)]).reshape(3, 1)
+        self.R = np.identity(3) * np.array([
+            np.random.normal(),
+            np.random.normal(),
+            np.random.normal()]
+        ).reshape(3, 1)
+        self.Q = np.identity(3) * np.array([
+            np.random.normal(),
+            np.random.normal(),
+            np.random.normal()]
+        ).reshape(3, 1)
 
     def kalman_filter(self, mu, sigma, u, z):
         # NB: For the dot product the order doesn't count
@@ -31,6 +39,8 @@ class KalmanFilter:
         return corrected_new_mu, corrected_new_sigma
 
     def update_B(self, d_t, theta):
-        self.B = np.array([d_t * np.cos(theta), 0,
-                           d_t * np.sin(theta), 0,
-                           0, d_t]).reshape(3, 2)
+        self.B = np.array([
+            d_t * np.cos(theta), 0,
+            d_t * np.sin(theta), 0,
+            0,                   d_t
+        ]).reshape(3, 2)

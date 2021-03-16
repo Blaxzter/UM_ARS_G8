@@ -21,7 +21,7 @@ class Robot:
     def __init__(self, init_pos: np.ndarray, landmarks):
         self.v_l: float = 0  # Velocity of left wheel
         self.v_r: float = 0  # Velocity of right wheel
-        self.l: int = Const.ROBOT_RADIUS * 2  # distance between the moters
+        self.l: int = Const.ROBOT_RADIUS * 2  # distance between the motors
         self.pos: np.ndarray = init_pos  # Current position of the robot
         self.sensors: Sensors = Sensors()  # Sensor used by the robots
         self.theta: float = np.deg2rad(Const.START_ROT)  # Rotation of the robot (wrt the "front")
@@ -29,11 +29,19 @@ class Robot:
         self.dragging = False
 
         # Localization variables
-        self.mu = np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1)  # Initial position when initializing, contains the belief state
-        self.sigma = np.identity(3) * np.array([np.random.normal(scale=0.5), np.random.normal(scale=0.5), np.random.normal(scale=0.5)]).reshape(3, 1)            # Covariance matrix
-        self.u = None                                         # Linear Combined Velocity, Rotation of motion
-        self.z = None                                  # Sensor observed state
-        self.localization_kf = KalmanFilter(1, self.theta)                              # Kalman Filter
+        self.mu = np.array([
+            self.pos[0, 0] + np.random.normal(),
+            self.pos[1, 0] + np.random.normal(),
+            self.theta + np.random.normal()]
+        ).reshape(3, 1)  # Initial position when initializing, contains the belief state
+        self.sigma = np.identity(3) * np.array([
+            np.random.normal(),
+            np.random.normal(),
+            np.random.normal()]
+        ).reshape(3, 1)  # Covariance matrix
+        self.u = None    # Linear Combined Velocity, Rotation of motion
+        self.z = None    # Sensor observed state
+        self.localization_kf = KalmanFilter(1, self.theta)  # Kalman Filter
 
     def drag(self, x, y):
         if Const.PADDING + Const.ROBOT_RADIUS < x < Const.WIDTH - Const.PADDING - Const.ROBOT_RADIUS \
@@ -44,17 +52,17 @@ class Robot:
 
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
-            self.localization_kf.update_B(1, self.theta)
+            self.localization_kf.update_B(1, self.mu[2, 0])
 
-            self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
-
-            v = (self.v_r + self.v_l) / 2
-            w = (self.v_r - self.v_l) / self.l
+            v = (self.v_r + self.v_l) / 2  # AVG velocity of wheels
+            w = (self.v_r - self.v_l) / self.l  # Rate of rotation
             self.u = np.array([v, w]).reshape(2, 1)
 
             self.z = self.compute_sensors_state(landmarks)
 
             self.mu, self.sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
+
+            self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
         # TODO: move LIDAR detecting landmarks inside robot
         # Update sensors | No need for sensors in this assignment
@@ -279,12 +287,13 @@ class Robot:
             method='L-BFGS-B',  # The optimisation algorithm
             options={
                 'ftol': 1e-5,  # Tolerance
-                'maxiter': 1e+7  # Maximum iterations
+                'maxiter': 1e+9  # Maximum iterations
             })
         np.seterr(all='raise')
+
         theta = sum([f['fi'] for f in features])
 
-        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.random.normal(scale=0.5) # Return observed state with noise
+        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.array([np.random.normal(), np.random.normal(), np.random.normal()]).reshape(3, 1) # Return observed state with noise
 
     # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
     @staticmethod
