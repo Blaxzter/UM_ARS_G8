@@ -30,14 +30,14 @@ class Robot:
 
         # Localization variables
         self.mu = np.array([
-            self.pos[0, 0] + np.random.normal(),
-            self.pos[1, 0] + np.random.normal(),
-            self.theta + np.random.normal()]
+            self.pos[0, 0] + np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            self.pos[1, 0] + np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            self.theta + np.random.normal(scale=Const.GAUSSIAN_SCALE)]
         ).reshape(3, 1)  # Initial position when initializing, contains the belief state
         self.sigma = np.identity(3) * np.array([
-            np.random.normal(),
-            np.random.normal(),
-            np.random.normal()]
+            np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
         ).reshape(3, 1)  # Covariance matrix
         self.u = None    # Linear Combined Velocity, Rotation of motion
         self.z = None    # Sensor observed state
@@ -279,13 +279,13 @@ class Robot:
             method='L-BFGS-B',  # The optimisation algorithm
             options={
                 'ftol': 1e-5,  # Tolerance
-                'maxiter': 1e+9  # Maximum iterations
+                'maxiter': 1e+10  # Maximum iterations
             })
         np.seterr(all='raise')
 
-        theta = sum([f['bearing'] for f in landmarks])
+        theta = self.theta  #sum([f['bearing'] for f in landmarks])/len([f['bearing'] for f in landmarks])
 
-        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.array([np.random.normal(), np.random.normal(), np.random.normal()]).reshape(3, 1) # Return observed state with noise
+        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.array([np.random.normal(scale=Const.GAUSSIAN_SCALE), np.random.normal(scale=Const.GAUSSIAN_SCALE), np.random.normal(scale=Const.GAUSSIAN_SCALE)]).reshape(3, 1) # Return observed state with noise
 
     # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
     @staticmethod

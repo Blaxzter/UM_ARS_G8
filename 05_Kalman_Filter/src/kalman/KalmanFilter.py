@@ -1,5 +1,5 @@
 import numpy as np
-
+import simulator.Constants as Const
 
 class KalmanFilter:
 
@@ -14,14 +14,14 @@ class KalmanFilter:
 
         # Noise matrices
         self.R = np.identity(3) * np.array([
-            np.random.normal(),
-            np.random.normal(),
-            np.random.normal()]
+            np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
         ).reshape(3, 1)
         self.Q = np.identity(3) * np.array([
-            np.random.normal(),
-            np.random.normal(),
-            np.random.normal()]
+            np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
         ).reshape(3, 1)
 
     def kalman_filter(self, mu, sigma, u, z):
