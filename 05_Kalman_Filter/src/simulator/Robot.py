@@ -18,7 +18,7 @@ dt = 1
 
 
 class Robot:
-    def __init__(self, init_pos: np.ndarray, landmarks):
+    def __init__(self, init_pos: np.ndarray):
         self.v_l: float = 0  # Velocity of left wheel
         self.v_r: float = 0  # Velocity of right wheel
         self.l: int = Const.ROBOT_RADIUS * 2  # distance between the motors
@@ -271,19 +271,11 @@ class Robot:
         return closest
 
     def compute_sensors_state(self, landmarks: List[np.ndarray]):
-        features = []
-        for landmark in landmarks:
-            r = math.dist((landmark[0, 0], landmark[1, 0]), (self.mu[0, 0], self.mu[1, 0]))
-            fi = math.atan2((landmark[1, 0] - self.mu[1, 0]), (landmark[0, 0] - self.mu[0, 0])) - self.mu[2, 0]
-            features.append(dict(
-                r=r,
-                fi=fi
-            ))
 
         position = minimize(
             self.mse_position,  # The error function
             np.array([self.mu[0, 0], self.mu[1, 0]]),  # The initial guess
-            args=([(l[0, 0], l[1, 0]) for l in landmarks], [f['r'] for f in features]),  # Additional parameters for mse
+            args=([(l['pos'][0, 0], l['pos'][1, 0]) for l in landmarks], [f['dist'] for f in landmarks]),  # Additional parameters for mse
             method='L-BFGS-B',  # The optimisation algorithm
             options={
                 'ftol': 1e-5,  # Tolerance
@@ -291,7 +283,7 @@ class Robot:
             })
         np.seterr(all='raise')
 
-        theta = sum([f['fi'] for f in features])
+        theta = sum([f['bearing'] for f in landmarks])
 
         return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) + np.array([np.random.normal(), np.random.normal(), np.random.normal()]).reshape(3, 1) # Return observed state with noise
 

@@ -1,3 +1,4 @@
+import math
 from typing import List, Dict, Callable
 
 import numpy as np
@@ -33,10 +34,10 @@ class Simulator:
             self.land_marks.append(line.start)
             self.land_marks.append(line.end)
 
-        self.compute_relevant_landmarks(Const.START_POS)
-        self.robot: Robot = Robot(Const.START_POS, self.relevant_landmarks)  # Robot
-        self.estimation_positions = []  # The Z's with the uncertenties
+        self.robot: Robot = Robot(Const.START_POS)  # Robot
+        self.compute_relevant_landmarks(self.robot.mu)
 
+        self.estimation_positions = []  # The Z's with the uncertenties
         self.time = time.time()
         self.true_history = [self.robot.pos]
         self.true_history_draw: List[VisualLine] = []
@@ -89,7 +90,7 @@ class Simulator:
             viz_line.draw(self.screen)
 
         for relevant_landmark in self.relevant_landmarks:
-            viz = VisualLine(self.robot.pos, relevant_landmark, dotted=False, color=Const.COLORS.green)
+            viz = VisualLine(self.robot.pos, relevant_landmark['pos'], dotted=False, color=Const.COLORS.green)
             viz.draw(self.screen)
 
         for landmark in self.land_marks:
@@ -147,7 +148,7 @@ class Simulator:
     def do_robot_update(self) -> None:
 
         # Go over each landmark and check if its relevant
-        self.compute_relevant_landmarks(self.robot.pos)
+        self.compute_relevant_landmarks(self.robot.mu)
 
         self.robot.update(self.environment, self.relevant_landmarks)
 
@@ -186,8 +187,13 @@ class Simulator:
         screen.blit(Const.FONT.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, font_color),
                     (180, 40))
 
-    def compute_relevant_landmarks(self, pos):
+    def compute_relevant_landmarks(self, state):
         self.relevant_landmarks = []
         for land_mark in self.land_marks:
-            if np.linalg.norm(pos - land_mark) < Const.LANDMARK_DIST:
-                self.relevant_landmarks.append(land_mark)
+            distance = np.linalg.norm(self.robot.pos - land_mark)
+            if distance < Const.LANDMARK_DIST:
+                self.relevant_landmarks.append(dict(
+                    pos=land_mark,
+                    dist=distance,
+                    bearing=math.atan2((land_mark[1, 0] - state[1, 0]), (land_mark[0, 0] - state[0, 0])) - state[2, 0]
+                ))

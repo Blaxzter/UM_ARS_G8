@@ -29,7 +29,7 @@ class KalmanFilter:
 
         # Prediction
         new_mu = self.A.dot(mu) + self.B.dot(u)
-        new_sigma = self.A.dot(sigma.dot(np.linalg.inv(self.A))) + self.R
+        new_sigma = self.A.dot(sigma.dot(self.A.T)) + self.R
 
         # Correction
         K = new_sigma.dot(self.C.T.dot(np.linalg.inv(self.C.dot(new_sigma.dot(self.C.T)) + self.Q)))
