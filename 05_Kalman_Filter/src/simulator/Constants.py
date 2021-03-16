@@ -49,5 +49,5 @@ class COLORS:
     blue = (0, 0, 255)
 
 
-GAUSSIAN_SCALE = 0.0001
+GAUSSIAN_SCALE = 0.001
 

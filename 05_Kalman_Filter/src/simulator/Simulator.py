@@ -107,8 +107,8 @@ class Simulator:
             pygame.draw.circle(self.screen, Const.COLORS.black, get_pygame_point(landmark), 5)
 
         center_pos = pygame.Vector2(self.robot.mu[0, 0], self.robot.mu[1, 0])
-        height = np.abs(self.robot.sigma[1, 1]) * 50000
-        width = np.abs(self.robot.sigma[0, 0]) * 50000
+        height = np.abs(self.robot.sigma[1, 1])
+        width = np.abs(self.robot.sigma[0, 0])
         pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(center_pos, (width, height)), 1)
 
         if time.time() - self.time > 5:
