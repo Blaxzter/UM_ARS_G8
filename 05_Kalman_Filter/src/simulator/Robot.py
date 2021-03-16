@@ -52,11 +52,11 @@ class Robot:
 
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
-            self.localization_kf.update_B(1, self.mu[2, 0])
+            self.localization_kf.update_B(1, self.mu[2].item())
 
             v = (self.v_r + self.v_l) / 2  # AVG velocity of wheels
             w = (self.v_r - self.v_l) / self.l  # Rate of rotation
-            self.u = np.array([v, w]).reshape(2, 1)
+            self.u = np.array([v, -w]).reshape(2, 1)
 
             self.z = self.compute_sensors_state(landmarks)
 
@@ -230,12 +230,20 @@ class Robot:
         self.v_r = np.round(self.v_r, decimals=3)
 
     def rotate_left(self) -> None:
-        self.theta += np.deg2rad(1)
-        self.theta = self.theta % (2 * np.pi)
+        # self.theta += np.deg2rad(1)
+        # self.theta = self.theta % (2 * np.pi)
+        self.v_l -= Const.ROBOT_VELOCITY_STEPS
+        self.v_l = np.round(self.v_l, decimals=3)
+        self.v_r += Const.ROBOT_VELOCITY_STEPS
+        self.v_r = np.round(self.v_r, decimals=3)
 
     def rotate_right(self) -> None:
-        self.theta -= np.deg2rad(1)
-        self.theta = self.theta % (2 * np.pi)
+        # self.theta -= np.deg2rad(1)
+        # self.theta = self.theta % (2 * np.pi)
+        self.v_l += Const.ROBOT_VELOCITY_STEPS
+        self.v_l = np.round(self.v_l, decimals=3)
+        self.v_r -= Const.ROBOT_VELOCITY_STEPS
+        self.v_r = np.round(self.v_r, decimals=3)
 
     def increase_left(self) -> None:
         self.v_l += Const.ROBOT_VELOCITY_STEPS

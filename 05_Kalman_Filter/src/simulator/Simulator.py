@@ -4,7 +4,7 @@ from typing import List, Dict, Callable
 import numpy as np
 import pygame
 
-from simulator.Constants import WIDTH, HEIGHT
+from simulator.Constants import WIDTH, HEIGHT, EPSILON
 from simulator.Environment import Environment
 from simulator.Line import VisualLine
 from simulator.Robot import Robot
@@ -29,10 +29,20 @@ class Simulator:
         pygame.display.set_icon(icon)
         self.test_mode = False  # For stoping the update for the robot (testing and explaining)
 
+        self.relevant_landmarks = []
         self.land_marks = []
         for line in self.environment.environment:
-            self.land_marks.append(line.start)
-            self.land_marks.append(line.end)
+
+            for point in [line.start, line.end]:
+
+                closest = math.inf
+                for added_landmark in self.land_marks:
+                    dist = np.linalg.norm(point - added_landmark)
+                    if dist < closest:
+                        closest = dist
+
+                if closest > EPSILON:
+                    self.land_marks.append(point)
 
         self.robot: Robot = Robot(Const.START_POS)  # Robot
         self.compute_relevant_landmarks()
@@ -54,8 +64,8 @@ class Simulator:
             dict(key_code=[pygame.K_w], callback=self.robot.increase_both, hold=True, pressed=False),
             dict(key_code=[pygame.K_s], callback=self.robot.decrease_both, hold=True, pressed=False),
             dict(key_code=[pygame.K_x, pygame.K_r], callback=self.robot.stop, hold=False, pressed=False),
-            dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, hold=True, pressed=False),
-            dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, hold=True, pressed=False),
+            dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, hold=False, pressed=False),
+            dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, hold=False, pressed=False),
             dict(key_code=[pygame.K_KP_MULTIPLY], callback=self.robot.toggle_sensor, hold=False, pressed=False),
             dict(key_code=[pygame.K_m], callback=self.toggle_test_mode, hold=False, pressed=False),
             dict(key_code=[pygame.K_n], callback=self.do_robot_update, hold=False, pressed=False)
@@ -127,20 +137,20 @@ class Simulator:
             if event.type == pygame.QUIT:
                 self.done = True
                 return
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                if event.button == 1:
-                    self.robot.dragging = True
-                    mouse_x, mouse_y = event.pos
-                    self.robot.drag(mouse_x, mouse_y)
-
-            elif event.type == pygame.MOUSEBUTTONUP:
-                if event.button == 1:
-                    self.robot.dragging = False
-
-            elif event.type == pygame.MOUSEMOTION:
-                if self.robot.dragging:
-                    mouse_x, mouse_y = event.pos
-                    self.robot.drag(mouse_x, mouse_y)
+            # if event.type == pygame.MOUSEBUTTONDOWN:
+            #     if event.button == 1:
+            #         self.robot.dragging = True
+            #         mouse_x, mouse_y = event.pos
+            #         self.robot.drag(mouse_x, mouse_y)
+            #
+            # elif event.type == pygame.MOUSEBUTTONUP:
+            #     if event.button == 1:
+            #         self.robot.dragging = False
+            #
+            # elif event.type == pygame.MOUSEMOTION:
+            #     if self.robot.dragging:
+            #         mouse_x, mouse_y = event.pos
+            #         self.robot.drag(mouse_x, mouse_y)
 
     def toggle_test_mode(self):
         self.test_mode = not self.test_mode
@@ -188,7 +198,7 @@ class Simulator:
                     (180, 40))
 
     def compute_relevant_landmarks(self):
-        self.relevant_landmarks = []
+        self.relevant_landmarks.clear()
         for land_mark in self.land_marks:
             distance = np.linalg.norm(self.robot.pos - land_mark)
             if distance < Const.LANDMARK_DIST:
