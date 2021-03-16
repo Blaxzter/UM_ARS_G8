@@ -30,9 +30,9 @@ class Robot:
 
         # Localization variables
         self.mu = np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1)  # Initial position when initializing, contains the belief state
-        self.sigma = np.identity(3) * np.square(np.random.normal(scale=0.5))            # Covariance matrix
-        self.u = np.array([0, 0]).reshape(2, 1)                                         # Linear Combined Velocity, Rotation of motion
-        self.z = self.compute_sensors_state(landmarks)                                  # Sensor observed state
+        self.sigma = np.identity(3) * np.array([np.random.normal(scale=0.5), np.random.normal(scale=0.5), np.random.normal(scale=0.5)]).reshape(3, 1)            # Covariance matrix
+        self.u = None                                         # Linear Combined Velocity, Rotation of motion
+        self.z = None                                  # Sensor observed state
         self.localization_kf = KalmanFilter(1, self.theta)                              # Kalman Filter
 
     def drag(self, x, y):
@@ -41,21 +41,20 @@ class Robot:
             self.pos = np.array([x, y], dtype=float).reshape(2, 1)
 
     def update(self, environment: Environment, landmarks) -> None:
-        prev_theta = self.theta
 
         # Update position
         if not (self.v_r == 0 and self.v_l == 0):
+            self.localization_kf.update_B(1, self.theta)
+
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
-        v = (self.v_r + self.v_l) / 2
-        w = self.theta - prev_theta
-        self.u = np.array([v, w]).reshape(2, 1)
+            v = (self.v_r + self.v_l) / 2
+            w = (self.v_r - self.v_l) / self.l
+            self.u = np.array([v, w]).reshape(2, 1)
 
-        self.z = self.compute_sensors_state(landmarks)
+            self.z = self.compute_sensors_state(landmarks)
 
-        self.mu, self.sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
-
-        print("POS:", self.mu[0, 0], self.mu[1, 0])
+            self.mu, self.sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
 
         # TODO: move LIDAR detecting landmarks inside robot
         # Update sensors | No need for sensors in this assignment
@@ -267,7 +266,7 @@ class Robot:
         features = []
         for landmark in landmarks:
             r = math.dist((landmark[0, 0], landmark[1, 0]), (self.mu[0, 0], self.mu[1, 0]))
-            fi = np.rad2deg(math.atan2((landmark[1, 0] - self.mu[1, 0]), (landmark[0, 0] - self.mu[0, 0]))) - self.mu[2, 0]
+            fi = math.atan2((landmark[1, 0] - self.mu[1, 0]), (landmark[0, 0] - self.mu[0, 0])) - self.mu[2, 0]
             features.append(dict(
                 r=r,
                 fi=fi
