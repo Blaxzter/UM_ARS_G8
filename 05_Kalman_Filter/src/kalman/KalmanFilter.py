@@ -1,5 +1,7 @@
 import numpy as np
 import simulator.Constants as Const
+from simulator.MathUtils import covariance_matrix
+
 
 class KalmanFilter:
 
@@ -12,16 +14,8 @@ class KalmanFilter:
         self.C = np.identity(3)
 
         # Noise matrices
-        self.R = np.identity(3) * np.array([
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
-        ).reshape(3, 1)
-        self.Q = np.identity(3) * np.array([
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
-        ).reshape(3, 1)
+        self.R = covariance_matrix()
+        self.Q = covariance_matrix()
 
     def kalman_filter(self, mu, sigma, u, z):
         # NB: For the dot product the order doesn't count
@@ -45,13 +39,7 @@ class KalmanFilter:
         ]).reshape(3, 2)
 
         # Noise matrices
-        self.R = np.identity(3) * np.array([
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
-        ).reshape(3, 1)
-        self.Q = np.identity(3) * np.array([
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
-        ).reshape(3, 1)
+        self.R = covariance_matrix()
+        self.Q = covariance_matrix()
+
+

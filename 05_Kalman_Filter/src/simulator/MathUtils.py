@@ -12,6 +12,13 @@ from simulator.Line import Line
 x_axes = np.array([1, 0]).reshape((2, 1))
 
 
+def covariance_matrix():
+    return np.identity(3) * np.array([
+        np.random.normal(scale=Const.GAUSSIAN_SCALE),
+        np.random.normal(scale=Const.GAUSSIAN_SCALE),
+        np.random.normal(scale=Const.GAUSSIAN_SCALE)
+    ]).reshape(3, 1)
+
 def rotate(vec: np.ndarray, rad: float) -> np.ndarray:
     rotation_matrix = np.matrix([[np.cos(rad), np.sin(rad)],
                                  [-np.sin(rad), np.cos(rad)]])

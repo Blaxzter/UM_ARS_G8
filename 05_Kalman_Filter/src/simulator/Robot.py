@@ -61,7 +61,9 @@ class Robot:
 
             self.z = self.compute_sensors_state(landmarks)
 
-            self.mu, self.sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
+            new_mu, new_sigma = self.localization_kf.kalman_filter(self.mu, self.sigma, self.u, self.z)
+
+            self.mu, self.sigma = new_mu, new_sigma
 
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
