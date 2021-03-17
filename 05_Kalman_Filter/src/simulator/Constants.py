@@ -29,7 +29,7 @@ FONT_SENSORS = pygame.font.SysFont(None, 28)                            # Font t
 
 # Kalman stuff
 
-LANDMARK_DIST = 600
+LANDMARK_DIST = 400
 
 UPDATE_DISTANCE = 20
 dotted_line = 8
@@ -49,5 +49,5 @@ class COLORS:
     blue = (0, 0, 255)
 
 
-GAUSSIAN_SCALE = 1
+GAUSSIAN_MEAN = 1
 

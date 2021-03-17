@@ -31,14 +31,14 @@ class Robot:
 
         # Localization variables
         self.mu = np.array([
-            self.pos[0, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            self.pos[1, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            self.theta + np.random.normal(scale=Const.GAUSSIAN_SCALE)]
+            self.pos[0, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_MEAN),
+            self.pos[1, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_MEAN),
+            self.theta + np.random.normal(scale=Const.GAUSSIAN_MEAN)]
         ).reshape(3, 1)  # Initial position when initializing, contains the belief state
         self.sigma = np.identity(3) * np.array([
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            np.random.normal(scale=Const.GAUSSIAN_SCALE)]
+            np.random.normal(scale=Const.GAUSSIAN_MEAN),
+            np.random.normal(scale=Const.GAUSSIAN_MEAN),
+            np.random.normal(scale=Const.GAUSSIAN_MEAN)]
         ).reshape(3, 1)  # Covariance matrix
         self.u = None    # Linear Combined Velocity, Rotation of motion
         self.z = None    # Sensor observed state
@@ -281,16 +281,6 @@ class Robot:
 
         if len(landmarks) <= 1:
             return None
-
-        # P = lx.Project(mode='2D', solver='LSE')
-        # for index, landmark_pos in zip(range(len(landmarks)), [l['pos'] for l in landmarks]):
-        #     P.add_anchor('anchor_{}'.format(index), (landmark_pos[0], landmark_pos[1]))
-        # t, label = P.add_target()
-        #
-        # for index, dist in zip(range(len(landmarks)), [l['dist'] for l in landmarks]):
-        #     t.add_measure('anchor_{}'.format(index), dist)
-        #
-        # P.solve()
 
         position = minimize(
             self.mse_position,  # The error function

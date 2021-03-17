@@ -26,8 +26,6 @@ class KalmanFilter:
             0, -1.09, 0,
             0, 0, -0.89
         ]).reshape(3, 3)
-        print(self.R)
-        print(self.Q)
 
     def kalman_filter(self, mu, sigma, u, z):
         # NB: For the dot product the order doesn't count

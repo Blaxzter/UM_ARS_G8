@@ -14,9 +14,9 @@ x_axes = np.array([1, 0]).reshape((2, 1))
 
 def covariance_matrix():
     return np.identity(3) * np.array([
-        np.random.normal(scale=Const.GAUSSIAN_SCALE),
-        np.random.normal(scale=Const.GAUSSIAN_SCALE),
-        np.random.normal(scale=Const.GAUSSIAN_SCALE)
+        np.random.normal(scale=Const.GAUSSIAN_MEAN),
+        np.random.normal(scale=Const.GAUSSIAN_MEAN),
+        np.random.normal(scale=Const.GAUSSIAN_MEAN)
     ]).reshape(3, 1)
 
 def rotate(vec: np.ndarray, rad: float) -> np.ndarray:
