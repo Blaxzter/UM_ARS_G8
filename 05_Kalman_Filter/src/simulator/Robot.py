@@ -31,8 +31,8 @@ class Robot:
 
         # Localization variables
         self.mu = np.array([
-            self.pos[0, 0] + np.random.normal(scale=Const.GAUSSIAN_SCALE),
-            self.pos[1, 0] + np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            self.pos[0, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_SCALE),
+            self.pos[1, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_SCALE),
             self.theta + np.random.normal(scale=Const.GAUSSIAN_SCALE)]
         ).reshape(3, 1)  # Initial position when initializing, contains the belief state
         self.sigma = np.identity(3) * np.array([
@@ -90,7 +90,7 @@ class Robot:
 
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
-        return d_position + np.array([self.localization_kf.R[0, 0], self.localization_kf.R[1, 1]]).reshape(2, 1) # Added noise to position computed to simulate realistic application
+        return d_position + np.random.normal(scale=0.1, size=(2, 1)) # Added noise to position computed to simulate realistic application
 
     def check_collisions(self, environment: Environment, current_pos: np.ndarray, next_pos: np.ndarray,
                          prev_collision: List[Collision]) -> np.ndarray:
@@ -279,6 +279,9 @@ class Robot:
 
     def compute_sensors_state(self, landmarks: List[np.ndarray]):
 
+        if len(landmarks) <= 1:
+            return None
+
         # P = lx.Project(mode='2D', solver='LSE')
         # for index, landmark_pos in zip(range(len(landmarks)), [l['pos'] for l in landmarks]):
         #     P.add_anchor('anchor_{}'.format(index), (landmark_pos[0], landmark_pos[1]))
@@ -304,7 +307,8 @@ class Robot:
 
         # noise = np.array([np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE)]).reshape(3, 1)
         # noise *= 0
-        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1) # + noise # Return observed state with noise
+        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1)
+        # return np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1) # Perfect information to see if the calculation are working
 
     # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
     @staticmethod
