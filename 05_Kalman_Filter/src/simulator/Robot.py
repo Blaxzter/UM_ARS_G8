@@ -11,6 +11,7 @@ from simulator.Environment import Collision, Environment
 from simulator.MathUtils import *
 from simulator.MathUtils import get_x_y
 from simulator.Sensors import Sensors
+import localization as lx
 
 # Mostly done by frederic
 
@@ -64,10 +65,6 @@ class Robot:
 
             self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
 
-        # TODO: move LIDAR detecting landmarks inside robot
-        # Update sensors | No need for sensors in this assignment
-        # self.sensors.update(environment, self.theta, self.pos)
-
     def get_position_update(self) -> np.ndarray:
         # Rotate on the spot
         if self.v_r - self.v_l == 0:
@@ -91,7 +88,7 @@ class Robot:
 
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
-        return d_position
+        return d_position + np.array([self.localization_kf.R[0, 0], self.localization_kf.R[1, 1]]).reshape(2, 1) # Added noise to position computed to simulate realistic application
 
     def check_collisions(self, environment: Environment, current_pos: np.ndarray, next_pos: np.ndarray,
                          prev_collision: List[Collision]) -> np.ndarray:
@@ -280,6 +277,16 @@ class Robot:
 
     def compute_sensors_state(self, landmarks: List[np.ndarray]):
 
+        # P = lx.Project(mode='2D', solver='LSE')
+        # for index, landmark_pos in zip(range(len(landmarks)), [l['pos'] for l in landmarks]):
+        #     P.add_anchor('anchor_{}'.format(index), (landmark_pos[0], landmark_pos[1]))
+        # t, label = P.add_target()
+        #
+        # for index, dist in zip(range(len(landmarks)), [l['dist'] for l in landmarks]):
+        #     t.add_measure('anchor_{}'.format(index), dist)
+        #
+        # P.solve()
+
         position = minimize(
             self.mse_position,  # The error function
             np.array([self.mu[0, 0], self.mu[1, 0]]),  # The initial guess
@@ -291,7 +298,7 @@ class Robot:
             })
         np.seterr(all='raise')
 
-        theta = self.theta  #sum([f['bearing'] for f in landmarks])/len([f['bearing'] for f in landmarks])
+        theta = sum([(f['pos'][1,0] - self.pos[1, 0])/(f['pos'][0,0] - self.pos[0, 0]) - f['bearing'] for f in landmarks])/len([f['bearing'] for f in landmarks])
 
         # noise = np.array([np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE)]).reshape(3, 1)
         # noise *= 0

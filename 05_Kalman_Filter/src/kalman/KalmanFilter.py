@@ -4,7 +4,6 @@ import simulator.Constants as Const
 class KalmanFilter:
 
     def __init__(self, d_t, theta):
-        # TODO check if all initialization are correct
 
         self.A = np.identity(3)
         self.B = np.array([d_t * np.cos(theta), 0,

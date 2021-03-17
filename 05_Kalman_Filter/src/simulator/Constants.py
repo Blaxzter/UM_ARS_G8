@@ -9,7 +9,7 @@ ENVIRONMENT_SPEED = 0.1                                                 # Freder
 PADDING = 20                                                            # Right, Left and Bottom padding
 PADDING_TOP = 100                                                       # Top padding to make space for data
 WIDTH = 1920                                                            # Width of window
-HEIGHT = 1080                                                            # Height of window
+HEIGHT = 1080                                                           # Height of window
 EPSILON = 0.00001                                                       # Workaround for floats with weird values
 
 # ROBOT
@@ -49,5 +49,5 @@ class COLORS:
     blue = (0, 0, 255)
 
 
-GAUSSIAN_SCALE = 0.001
+GAUSSIAN_SCALE = 0.5
 

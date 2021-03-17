@@ -64,8 +64,8 @@ class Simulator:
             dict(key_code=[pygame.K_w], callback=self.robot.increase_both, hold=True, pressed=False),
             dict(key_code=[pygame.K_s], callback=self.robot.decrease_both, hold=True, pressed=False),
             dict(key_code=[pygame.K_x, pygame.K_r], callback=self.robot.stop, hold=False, pressed=False),
-            dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, hold=False, pressed=False),
-            dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, hold=False, pressed=False),
+            dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, hold=True, pressed=False),
+            dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, hold=True, pressed=False),
             dict(key_code=[pygame.K_KP_MULTIPLY], callback=self.robot.toggle_sensor, hold=False, pressed=False),
             dict(key_code=[pygame.K_m], callback=self.toggle_test_mode, hold=False, pressed=False),
             dict(key_code=[pygame.K_n], callback=self.do_robot_update, hold=False, pressed=False)
