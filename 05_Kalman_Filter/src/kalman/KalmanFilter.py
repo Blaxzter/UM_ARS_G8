@@ -8,8 +8,8 @@ class KalmanFilter:
     def __init__(self, d_t, theta):
 
         self.A = np.identity(3)
-        self.B = np.array([d_t * np.cos(theta), 0,
-                           d_t * np.sin(theta), 0,
+        self.B = np.array([d_t * -np.cos(theta), 0,
+                           d_t * -np.sin(theta), 0,
                            0, d_t]).reshape(3, 2)
         self.C = np.identity(3)
 
@@ -35,17 +35,17 @@ class KalmanFilter:
         new_sigma = self.A.dot(sigma.dot(self.A.T)) + self.R
 
         # Correction
-        if z is not None:
-            K = np.dot(new_sigma, self.C.T).dot(np.linalg.inv(self.C.dot(new_sigma.dot(self.C.T)) + self.Q))
-            new_mu = new_mu + K.dot(z - self.C.dot(new_mu))
-            new_sigma = (np.identity(3) - K.dot(self.C)).dot(new_sigma)
+        # if z is not None:
+        #     K = np.dot(new_sigma, self.C.T).dot(np.linalg.inv(self.C.dot(new_sigma.dot(self.C.T)) + self.Q))
+        #     new_mu = new_mu + K.dot(z - self.C.dot(new_mu))
+        #     new_sigma = (np.identity(3) - K.dot(self.C)).dot(new_sigma)
 
         return new_mu, new_sigma
 
     def update_matrices(self, d_t, theta):
         self.B = np.array([
-            d_t * np.cos(theta), 0,
-            d_t * np.sin(theta), 0,
+            d_t * -np.cos(theta), 0,
+            d_t * -np.sin(theta), 0,
             0,                   d_t
         ]).reshape(3, 2)
 

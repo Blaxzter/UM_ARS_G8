@@ -31,17 +31,17 @@ class Robot:
 
         # Localization variables
         self.mu = np.array([
-            self.pos[0, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_MEAN),
-            self.pos[1, 0] + 10 + np.random.normal(scale=Const.GAUSSIAN_MEAN),
-            self.theta + np.random.normal(scale=Const.GAUSSIAN_MEAN)]
+            self.pos[0, 0],
+            self.pos[1, 0],
+            self.theta]
         ).reshape(3, 1)  # Initial position when initializing, contains the belief state
         self.sigma = np.identity(3) * np.array([
             np.random.normal(scale=Const.GAUSSIAN_MEAN),
             np.random.normal(scale=Const.GAUSSIAN_MEAN),
             np.random.normal(scale=Const.GAUSSIAN_MEAN)]
         ).reshape(3, 1)  # Covariance matrix
-        self.u = None    # Linear Combined Velocity, Rotation of motion
-        self.z = None    # Sensor observed state
+        self.u = None  # Linear Combined Velocity, Rotation of motion
+        self.z = None  # Sensor observed state
         self.localization_kf = KalmanFilter(1, self.theta)  # Kalman Filter
 
     def drag(self, x, y):
@@ -65,18 +65,22 @@ class Robot:
 
             self.mu, self.sigma = new_mu, new_sigma
 
-            self.pos = self.check_collisions(environment, self.pos, self.get_position_update(), [])
+            updated_pos = self.get_position_update(
+                self.v_r + np.random.normal(scale=0.01),
+                self.v_l + np.random.normal(scale=0.01)
+            )
+            self.pos = self.check_collisions(environment, self.pos, updated_pos, [])
 
-    def get_position_update(self) -> np.ndarray:
+    def get_position_update(self, v_r, v_l) -> np.ndarray:
         # Rotate on the spot
-        if self.v_r - self.v_l == 0:
-            default_vec = np.array([self.v_r, 0]).reshape((2, 1))
+        if v_r - v_l == 0:
+            default_vec = np.array([v_r, 0]).reshape((2, 1))
             rotated = rotate(default_vec, self.theta)
             d_position = self.pos + rotated
         # Move
         else:
-            R = (self.l / 2) * ((self.v_l + self.v_r) / (self.v_r - self.v_l))
-            w = (self.v_r - self.v_l) / self.l
+            R = (self.l / 2) * ((v_l + v_r) / (v_r - v_l))
+            w = (v_r - v_l) / self.l
 
             icc = self.pos - R * np.array([np.sin(self.theta), np.cos(self.theta)]).reshape((2, 1))
 
@@ -90,7 +94,7 @@ class Robot:
 
             d_position = next_pos[:2]
             self.theta = next_pos[2, 0] % (2 * np.pi)
-        return d_position + np.random.normal(scale=0.1, size=(2, 1)) # Added noise to position computed to simulate realistic application
+        return d_position  # Added noise to position computed to simulate realistic application
 
     def check_collisions(self, environment: Environment, current_pos: np.ndarray, next_pos: np.ndarray,
                          prev_collision: List[Collision]) -> np.ndarray:
@@ -279,13 +283,14 @@ class Robot:
 
     def compute_sensors_state(self, landmarks: List[np.ndarray]):
 
-        if len(landmarks) <= 1:
+        if len(landmarks) <= 2:
             return None
 
         position = minimize(
             self.mse_position,  # The error function
             np.array([self.mu[0, 0], self.mu[1, 0]]),  # The initial guess
-            args=([(l['pos'][0, 0], l['pos'][1, 0]) for l in landmarks], [f['dist'] for f in landmarks]),  # Additional parameters for mse
+            args=([(l['pos'][0, 0], l['pos'][1, 0]) for l in landmarks], [f['dist'] for f in landmarks]),
+            # Additional parameters for mse
             method='L-BFGS-B',  # The optimisation algorithm
             options={
                 'ftol': 1e-5,  # Tolerance
@@ -293,10 +298,8 @@ class Robot:
             })
         np.seterr(all='raise')
 
-        theta = sum([(f['pos'][1,0] - self.pos[1, 0])/(f['pos'][0,0] - self.pos[0, 0]) - f['bearing'] for f in landmarks])/len([f['bearing'] for f in landmarks])
+        theta = self.theta #sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
 
-        # noise = np.array([np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE), np.random.normal(scale = Const.GAUSSIAN_SCALE)]).reshape(3, 1)
-        # noise *= 0
         return np.array([position.x[0], position.x[1], theta]).reshape(3, 1)
         # return np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1) # Perfect information to see if the calculation are working
 
