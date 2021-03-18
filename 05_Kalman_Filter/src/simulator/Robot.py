@@ -20,8 +20,8 @@ dt = 1
 
 class Robot:
     def __init__(self, init_pos: np.ndarray):
-        self.v_l: float = 0  # Velocity of left wheel
-        self.v_r: float = 0  # Velocity of right wheel
+        self.v_l: float = 0.5  # Velocity of left wheel
+        self.v_r: float = 0.5  # Velocity of right wheel
         self.l: int = Const.ROBOT_RADIUS * 2  # distance between the motors
         self.pos: np.ndarray = init_pos  # Current position of the robot
         self.sensors: Sensors = Sensors()  # Sensor used by the robots
@@ -298,7 +298,7 @@ class Robot:
             })
         np.seterr(all='raise')
 
-        theta = self.theta #sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
+        theta = sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
 
         return np.array([position.x[0], position.x[1], theta]).reshape(3, 1)
         # return np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1) # Perfect information to see if the calculation are working

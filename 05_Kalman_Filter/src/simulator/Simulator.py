@@ -110,6 +110,7 @@ class Simulator:
         height = np.abs(self.robot.sigma[1, 1])
         width = np.abs(self.robot.sigma[0, 0])
         pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(center_pos, (width, height)), 1)
+        ratio = height/width
 
         if time.time() - self.time > 5:
             print("New Pos")
