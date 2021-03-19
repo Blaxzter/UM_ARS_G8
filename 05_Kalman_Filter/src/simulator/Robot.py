@@ -315,6 +315,7 @@ class Robot:
 # https://www.101computing.net/cell-phone-trilateration-algorithm/
     @staticmethod
     def triangulation(p1, p2, p3):
+        # p[0]: landmark_x, p[1]: landmark_y, p[2]: euclidean distance from robot
         A = 2 * p2[0] - 2 * p1[0]
         B = 2 * p2[1] - 2 * p1[1]
         C = p1[2]**2 - p2[2]**2 - p1[0]**2 + p2[0]**2 - p1[1]**2 + p2[1]**2
@@ -323,5 +324,5 @@ class Robot:
         F = p2[2]**2 - p3[2]**2 - p2[0]**2 + p3[0]**2 - p2[1]**2 + p3[1]**2
         x_ax = (C * E - F * B) / (E * A - B * D)
         y_ax = (C * D - A * F) / (B * D - A * E)
-        return x_ax,y_ax
+        return x_ax, y_ax
 

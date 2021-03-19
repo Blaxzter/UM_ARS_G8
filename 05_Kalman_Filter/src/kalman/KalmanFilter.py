@@ -34,6 +34,8 @@ class KalmanFilter:
 
         # Correction
         if z is not None:
+            # check if there are 3 landmarks inside the range
+            # triangulation()
             K = np.dot(new_sigma, self.C.T).dot(np.linalg.inv(self.C.dot(new_sigma.dot(self.C.T)) + self.Q))
             new_mu = new_mu + K.dot(z - self.C.dot(new_mu))
             new_sigma = (np.identity(3) - K.dot(self.C)).dot(new_sigma)
