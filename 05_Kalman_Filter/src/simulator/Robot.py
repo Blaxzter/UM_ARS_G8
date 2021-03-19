@@ -314,7 +314,8 @@ class Robot:
 
 # https://www.101computing.net/cell-phone-trilateration-algorithm/
     @staticmethod
-    def triangulation(p1, p2, p3):
+    def trilateration(p1, p2, p3):
+        # Trilateration as well can't find triangulation method
         # p[0]: landmark_x, p[1]: landmark_y, p[2]: euclidean distance from robot
         A = 2 * p2[0] - 2 * p1[0]
         B = 2 * p2[1] - 2 * p1[1]
