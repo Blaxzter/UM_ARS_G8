@@ -311,3 +311,17 @@ class Robot:
             distance_calculated = math.dist((x[0], x[1]), (location[0], location[1]))
             mse += np.square(distance_calculated - distance)
         return mse / len(distances)
+
+# https://www.101computing.net/cell-phone-trilateration-algorithm/
+    @staticmethod
+    def triangulation(p1, p2, p3):
+        A = 2 * p2[0] - 2 * p1[0]
+        B = 2 * p2[1] - 2 * p1[1]
+        C = p1[2]**2 - p2[2]**2 - p1[0]**2 + p2[0]**2 - p1[1]**2 + p2[1]**2
+        D = 2 * p3[0] - 2 * p2[0]
+        E = 2 * p3[1] - 2 * p2[1]
+        F = p2[2]**2 - p3[2]**2 - p2[0]**2 + p3[0]**2 - p2[1]**2 + p3[1]**2
+        x_ax = (C * E - F * B) / (E * A - B * D)
+        y_ax = (C * D - A * F) / (B * D - A * E)
+        return x_ax,y_ax
+
