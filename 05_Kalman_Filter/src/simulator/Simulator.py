@@ -7,7 +7,7 @@ import pygame
 from simulator.Constants import WIDTH, HEIGHT, EPSILON
 from simulator.Environment import Environment
 from simulator.Line import VisualLine
-from simulator.Robot import Robot
+from simulator.Robot import Robot, rotate
 
 from simulator import Constants as Const
 import time
@@ -67,9 +67,11 @@ class Simulator:
             dict(key_code=[pygame.K_a], callback=self.robot.rotate_left, hold=True, pressed=False),
             dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, hold=True, pressed=False),
             dict(key_code=[pygame.K_KP_MULTIPLY], callback=self.robot.toggle_sensor, hold=False, pressed=False),
-            dict(key_code=[pygame.K_m], callback=self.toggle_test_mode, hold=False, pressed=False),
+            dict(key_code=[pygame.K_SPACE], callback=self.toggle_test_mode, hold=False, pressed=False),
             dict(key_code=[pygame.K_n], callback=self.do_robot_update, hold=False, pressed=False)
         ]
+
+        self.updated = False
 
     def start(self) -> None:
         while not self.done:
@@ -82,9 +84,8 @@ class Simulator:
         self.get_key_update()
         self.get_drag_update()
 
-        self.relevant_landmarks.clear()
-
         if not self.test_mode:
+            self.relevant_landmarks.clear()
             self.do_robot_update()
 
     def draw(self) -> None:
@@ -100,8 +101,10 @@ class Simulator:
             viz_line.draw(self.screen)
 
         for relevant_landmark in self.relevant_landmarks:
-            viz = VisualLine(self.robot.pos, relevant_landmark['pos'], dotted=False, color=Const.COLORS.green)
+            pos_ = relevant_landmark['pos']
+            viz = VisualLine(self.robot.pos, pos_, dotted=False, color=Const.COLORS.green)
             viz.draw(self.screen)
+            self.screen.blit(Const.FONT.render(f'{np.round(np.rad2deg(relevant_landmark["bearing"].item()), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_ + 20))
 
         for landmark in self.land_marks:
             pygame.draw.circle(self.screen, Const.COLORS.black, get_pygame_point(landmark), 5)
@@ -180,13 +183,20 @@ class Simulator:
         # Take the position after
         end_pos = self.robot.pos
 
+        # Change colors for update drawing
+        if len(self.relevant_landmarks) >= 3:
+            self.updated += 1
+
+        if len(self.relevant_landmarks) < 3:
+            self.updated = 0
+
         self.update_history(end_pos, self.true_history, self.true_history_draw, dotted=False, color=Const.COLORS.black)
         self.update_history(
             np.array([self.robot.mu[0, 0], self.robot.mu[1, 0]]).reshape(2, 1),
             self.estimated_history,
             self.estimated_history_draw,
             dotted=True,
-            color=Const.COLORS.light_red
+            color=Const.COLORS.grey if self.updated == 1 else Const.COLORS.light_red
         )
 
     @staticmethod
@@ -209,16 +219,22 @@ class Simulator:
 
         screen.blit(Const.FONT.render(f'mu[3]: {np.round(self.robot.mu[2].item(), decimals=3)}', True, font_color),
                     (180, 60))
-        screen.blit(Const.FONT.render(f'c mu[3]: {np.round(self.robot.theta, decimals=3)}', True, font_color),
+        screen.blit(Const.FONT.render(f'theta: {np.round(self.robot.theta, decimals=3)}', True, font_color),
                     (340, 60))
+        screen.blit(Const.FONT.render(f'triag : {np.round(self.robot.detected_theta, decimals=3)}', True, font_color),
+                    (540, 60))
 
     def compute_relevant_landmarks(self):
         self.relevant_landmarks.clear()
         for land_mark in self.land_marks:
-            distance = np.linalg.norm(self.robot.pos - land_mark)
+            landmark_deg = land_mark - self.robot.pos
+            distance = np.linalg.norm(landmark_deg)
             if distance < Const.LANDMARK_DIST:
+                default_vec = np.array([1, 0]).reshape((2, 1))
+                robot_orient = rotate(default_vec, self.robot.theta)
+
                 self.relevant_landmarks.append(dict(
                     pos=land_mark,
                     dist=distance,
-                    bearing=math.atan2((land_mark[1, 0] - self.robot.pos[1, 0]), (land_mark[0, 0] - self.robot.pos[0, 0])) - self.robot.theta
+                    bearing = np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))) * (1 if np.dot(robot_orient.T, landmark_deg) > 0 else -1)
                 ))

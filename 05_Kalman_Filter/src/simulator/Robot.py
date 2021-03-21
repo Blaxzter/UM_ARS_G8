@@ -43,6 +43,8 @@ class Robot:
         self.z = None  # Sensor observed state
         self.localization_kf = KalmanFilter(1, self.theta)  # Kalman Filter
 
+        self.detected_theta = self.theta
+
     def drag(self, x, y):
         if Const.PADDING + Const.ROBOT_RADIUS < x < Const.WIDTH - Const.PADDING - Const.ROBOT_RADIUS \
                 and Const.PADDING_TOP + Const.ROBOT_RADIUS < y < Const.HEIGHT - Const.PADDING - Const.ROBOT_RADIUS:
@@ -65,10 +67,34 @@ class Robot:
             self.mu, self.sigma = new_mu, new_sigma
 
             updated_pos = self.get_position_update(
-                self.v_r + np.random.normal(scale=0.01),
+                self.v_r + (np.random.normal(scale=0.01) + 0.05),
                 self.v_l + np.random.normal(scale=0.01)
             )
             self.pos = self.check_collisions(environment, self.pos, updated_pos, [])
+
+    def compute_sensors_state(self, landmarks: List[np.ndarray]):
+
+        if len(landmarks) <= 2:
+            return None
+
+        position = minimize(
+            self.mse_position,  # The error function
+            np.array([self.mu[0, 0], self.mu[1, 0]]),  # The initial guess
+            args = ([(l['pos'][0, 0], l['pos'][1, 0]) for l in landmarks], [f['dist'] for f in landmarks]),
+            # Additional parameters for mse
+            method = 'L-BFGS-B',  # The optimisation algorithm
+            options = {
+                'ftol': 1e-5,  # Tolerance
+                'maxiter': 1e+10  # Maximum iterations
+            })
+        np.seterr(all = 'raise')
+
+        # theta = self.theta
+        self.detected_theta = self.theta  #  sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
+        theta = self.detected_theta
+
+        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1)
+        # return np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1) # Perfect information to see if the calculation are working
 
     def get_position_update(self, v_r, v_l) -> np.ndarray:
         # Rotate on the spot
@@ -92,7 +118,7 @@ class Robot:
                        + np.array([icc_x, icc_y, w * dt]).reshape((3, 1))
 
             d_position = next_pos[:2]
-            self.theta = next_pos[2, 0] % (2 * np.pi)
+            self.theta = next_pos[2, 0] # % (2 * np.pi)
         return d_position  # Added noise to position computed to simulate realistic application
 
     def check_collisions(self, environment: Environment, current_pos: np.ndarray, next_pos: np.ndarray,
@@ -279,28 +305,6 @@ class Robot:
                 minimum = dist
                 closest = collision
         return closest
-
-    def compute_sensors_state(self, landmarks: List[np.ndarray]):
-
-        if len(landmarks) <= 2:
-            return None
-
-        position = minimize(
-            self.mse_position,  # The error function
-            np.array([self.mu[0, 0], self.mu[1, 0]]),  # The initial guess
-            args=([(l['pos'][0, 0], l['pos'][1, 0]) for l in landmarks], [f['dist'] for f in landmarks]),
-            # Additional parameters for mse
-            method='L-BFGS-B',  # The optimisation algorithm
-            options={
-                'ftol': 1e-5,  # Tolerance
-                'maxiter': 1e+10  # Maximum iterations
-            })
-        np.seterr(all='raise')
-
-        theta = sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
-
-        return np.array([position.x[0], position.x[1], theta]).reshape(3, 1)
-        # return np.array([self.pos[0, 0], self.pos[1, 0], self.theta]).reshape(3, 1) # Perfect information to see if the calculation are working
 
     # https://www.alanzucconi.com/2017/03/13/positioning-and-trilateration/
     @staticmethod
