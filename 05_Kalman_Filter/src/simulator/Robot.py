@@ -67,7 +67,7 @@ class Robot:
             self.mu, self.sigma = new_mu, new_sigma
 
             updated_pos = self.get_position_update(
-                self.v_r + (np.random.normal(scale=0.01) + 0.05),
+                self.v_r + (np.random.normal(scale=0.01)),
                 self.v_l + np.random.normal(scale=0.01)
             )
             self.pos = self.check_collisions(environment, self.pos, updated_pos, [])
@@ -89,8 +89,12 @@ class Robot:
             })
         np.seterr(all = 'raise')
 
-        # theta = self.theta
-        self.detected_theta = self.theta  #  sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
+        self.detected_theta = np.deg2rad(sum([self.compute_orientation(position.x[0], position.x[1], l['pos'][0, 0], l['pos'][1, 0], l['bearing']) for l in landmarks])/len(landmarks))
+
+        # Tried to use atan2 by also implementing it but couldn't get the right values.
+        # Fixed by using the real orientation
+        # self.detected_theta = sum([(f['pos'][1, 0] - self.pos[1, 0]) / (f['pos'][0, 0] - self.pos[0, 0]) - f['bearing'] for f in landmarks]) / len([f['bearing'] for f in landmarks])
+
         theta = self.detected_theta
 
         return np.array([position.x[0], position.x[1], theta]).reshape(3, 1)
@@ -329,4 +333,16 @@ class Robot:
         x_ax = (C * E - F * B) / (E * A - B * D)
         y_ax = (C * D - A * F) / (B * D - A * E)
         return x_ax, y_ax
+
+    @staticmethod
+    def compute_orientation(x, y, mx, my, bearing):
+        h = mx - x
+        v = my - y
+
+        angle_x_axis_feature = np.rad2deg(np.arctan(v / h)) # Problem, the arctan returns one value but there are usually 2 solutions (theta and theta + 180)
+        alpha2 = 180 - angle_x_axis_feature
+        alpha1 = alpha2 - np.rad2deg(bearing)
+        theta_estimate = 180 - alpha1
+
+        return theta_estimate % 360
 

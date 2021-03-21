@@ -219,7 +219,7 @@ class Simulator:
 
         screen.blit(Const.FONT.render(f'mu[3]: {np.round(self.robot.mu[2].item(), decimals=3)}', True, font_color),
                     (180, 60))
-        screen.blit(Const.FONT.render(f'theta: {np.round(self.robot.theta, decimals=3)}', True, font_color),
+        screen.blit(Const.FONT.render(f'theta: {np.round(self.robot.theta%(2*np.pi), decimals=3)}', True, font_color),
                     (340, 60))
         screen.blit(Const.FONT.render(f'triag : {np.round(self.robot.detected_theta, decimals=3)}', True, font_color),
                     (540, 60))
@@ -236,5 +236,5 @@ class Simulator:
                 self.relevant_landmarks.append(dict(
                     pos=land_mark,
                     dist=distance,
-                    bearing = np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))) * (1 if np.dot(robot_orient.T, landmark_deg) > 0 else -1)
+                    bearing = math.atan2((land_mark[1, 0] - self.robot.pos[1, 0]), (land_mark[0, 0] - self.robot.pos[0, 0])) - self.robot.theta# np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))) * (1 if np.dot(robot_orient.T, landmark_deg) > 0 else -1)
                 ))

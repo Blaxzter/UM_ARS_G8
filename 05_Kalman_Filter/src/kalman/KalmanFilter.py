@@ -15,8 +15,8 @@ class KalmanFilter:
 
         # Noise matrices
         self.R = np.array([
-            0.010, 0, 0,
-            0, 0.010, 0,
+            0.050, 0, 0,
+            0, 0.050, 0,
             0, 0, 0.100
         ]).reshape(3, 3)
         self.Q = np.array([

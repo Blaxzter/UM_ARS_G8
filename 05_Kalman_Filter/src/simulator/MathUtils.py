@@ -19,6 +19,7 @@ def covariance_matrix():
         np.random.normal(scale=Const.GAUSSIAN_MEAN)
     ]).reshape(3, 1)
 
+
 def rotate(vec: np.ndarray, rad: float) -> np.ndarray:
     rotation_matrix = np.matrix([[np.cos(rad), np.sin(rad)],
                                  [-np.sin(rad), np.cos(rad)]])
@@ -178,3 +179,14 @@ def get_x_y(vec: np.ndarray) -> (float, float):
     if vec is None or vec[0] is None:
         print("test")
     return vec[0, 0], vec[1, 0]
+
+
+def atan2(y, x):
+    if x > 0:
+        return math.atan(y / x)
+    elif x < 0:
+        return (y / abs(y)) * (np.pi - math.atan(abs(y / x)))
+    elif x == y == 0:
+        return 0
+    elif x == 0 and y != 0:
+        return (y / abs(y)) * (np.pi / 2)
