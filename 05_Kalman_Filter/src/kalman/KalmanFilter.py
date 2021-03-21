@@ -8,9 +8,9 @@ class KalmanFilter:
     def __init__(self, d_t, theta):
 
         self.A = np.identity(3)
-        self.B = np.array([d_t * -np.cos(theta), 0,
+        self.B = np.array([d_t * np.cos(theta), 0,
                            d_t * -np.sin(theta), 0,
-                           0, d_t]).reshape(3, 2)
+                           0, -d_t]).reshape(3, 2)
         self.C = np.identity(3)
 
         # Noise matrices
@@ -44,9 +44,9 @@ class KalmanFilter:
 
     def update_matrices(self, d_t, theta):
         self.B = np.array([
-            d_t * -np.cos(theta), 0,
+            d_t * np.cos(theta), 0,
             d_t * -np.sin(theta), 0,
-            0,                   d_t
+            0,                   -d_t
         ]).reshape(3, 2)
 
 

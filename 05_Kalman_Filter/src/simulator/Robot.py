@@ -11,7 +11,6 @@ from simulator.Environment import Collision, Environment
 from simulator.MathUtils import *
 from simulator.MathUtils import get_x_y
 from simulator.Sensors import Sensors
-import localization as lx
 
 # Mostly done by frederic
 

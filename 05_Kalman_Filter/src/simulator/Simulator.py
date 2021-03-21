@@ -207,6 +207,11 @@ class Simulator:
         screen.blit(Const.FONT.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, font_color),
                     (180, 40))
 
+        screen.blit(Const.FONT.render(f'mu[3]: {np.round(self.robot.mu[2].item(), decimals=3)}', True, font_color),
+                    (180, 60))
+        screen.blit(Const.FONT.render(f'c mu[3]: {np.round(self.robot.theta, decimals=3)}', True, font_color),
+                    (340, 60))
+
     def compute_relevant_landmarks(self):
         self.relevant_landmarks.clear()
         for land_mark in self.land_marks:
