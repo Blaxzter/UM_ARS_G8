@@ -25,7 +25,8 @@ SENSOR_MAX_LENGTH = 200                                                 # The ma
 # VISUALIZATION
 pygame.init()
 FONT = pygame.font.SysFont(None, 28)                                    # Font used for data visualization on top
-FONT_SENSORS = pygame.font.SysFont(None, 28)                            # Font to display distance of sensor from wall
+FONT_SENSORS = pygame.font.SysFont(None, 28)                            # Font to display distance of sensor from
+LANDMARK_FONT = pygame.font.SysFont(None, 18)                                    # Font used for data visualization on top# wall
 
 # Kalman stuff
 
@@ -51,3 +52,7 @@ class COLORS:
 
 GAUSSIAN_MEAN = 1
 
+sensor_noise = 0.01
+bearing_noise = 0.01
+motion_noise_l = 0.01
+motion_noise_r = 0.01

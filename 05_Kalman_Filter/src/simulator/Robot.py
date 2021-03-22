@@ -67,8 +67,8 @@ class Robot:
             self.mu, self.sigma = new_mu, new_sigma
 
             updated_pos = self.get_position_update(
-                self.v_r + (np.random.normal(scale=0.01)),
-                self.v_l + np.random.normal(scale=0.01)
+                self.v_r + np.random.normal(scale=Const.motion_noise_r) + 0.05,
+                self.v_l + np.random.normal(scale=Const.motion_noise_l)
             )
             self.pos = self.check_collisions(environment, self.pos, updated_pos, [])
 
@@ -89,7 +89,7 @@ class Robot:
             })
         np.seterr(all = 'raise')
 
-        self.detected_theta = np.deg2rad(sum([self.compute_orientation(position.x[0], position.x[1], l['pos'][0, 0], l['pos'][1, 0], l['bearing']) for l in landmarks])/len(landmarks))
+        self.detected_theta = np.deg2rad(sum([self.compute_orientation(position.x[0], position.x[1], l['pos'][0, 0], l['pos'][1, 0], l['calc_theta']) for l in landmarks])/len(landmarks))
 
         # Tried to use atan2 by also implementing it but couldn't get the right values.
         # Fixed by using the real orientation
@@ -343,6 +343,7 @@ class Robot:
         alpha2 = 180 - angle_x_axis_feature
         alpha1 = alpha2 - np.rad2deg(bearing)
         theta_estimate = 180 - alpha1
+        theta_estimate = theta_estimate * 0 + bearing
 
         return theta_estimate % 360
 

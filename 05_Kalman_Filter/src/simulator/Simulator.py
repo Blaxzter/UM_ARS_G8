@@ -68,7 +68,19 @@ class Simulator:
             dict(key_code=[pygame.K_d], callback=self.robot.rotate_right, hold=True, pressed=False),
             dict(key_code=[pygame.K_KP_MULTIPLY], callback=self.robot.toggle_sensor, hold=False, pressed=False),
             dict(key_code=[pygame.K_SPACE], callback=self.toggle_test_mode, hold=False, pressed=False),
-            dict(key_code=[pygame.K_n], callback=self.do_robot_update, hold=False, pressed=False)
+            dict(key_code=[pygame.K_n], callback=self.do_robot_update, hold=False, pressed=False),
+
+            dict(key_code=[pygame.K_KP_PLUS], callback=self.add_sensor_noise, hold=True, pressed=False),
+            dict(key_code=[pygame.K_KP_MINUS], callback=self.remove_sensor_noise, hold=True, pressed=False),
+
+            dict(key_code=[pygame.K_UP], callback=self.add_bearing_noise, hold=True, pressed=False),
+            dict(key_code=[pygame.K_DOWN], callback=self.remove_bearing_noise, hold=True, pressed=False),
+
+            dict(key_code=[pygame.K_LEFT], callback=self.add_motion_noise_l, hold=True, pressed=False),
+            dict(key_code=[pygame.K_RIGHT], callback=self.remove_motion_noise_l, hold=True, pressed=False),
+
+            dict(key_code=[pygame.K_DELETE], callback=self.add_motion_noise_r, hold=True, pressed=False),
+            dict(key_code=[pygame.K_END], callback=self.remove_motion_noise_r, hold=True, pressed=False),
         ]
 
         self.updated = False
@@ -104,23 +116,30 @@ class Simulator:
             pos_ = relevant_landmark['pos']
             viz = VisualLine(self.robot.pos, pos_, dotted=False, color=Const.COLORS.green)
             viz.draw(self.screen)
-            self.screen.blit(Const.FONT.render(f'{np.round(np.rad2deg(relevant_landmark["bearing"]), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_ + 20))
-            self.screen.blit(Const.FONT.render(f'{np.round(np.rad2deg(relevant_landmark["orientation"]), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_+ 40))
 
-            calc_theta = 360 - (180 - (180 - np.rad2deg(relevant_landmark["orientation"])) - np.rad2deg(relevant_landmark["bearing"]))
-            self.screen.blit(Const.FONT.render(f'{np.round(calc_theta, decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_ + 60))
+            pos_1 = pos_ + 20
+
+            pos_2 = np.array(pos_1)
+            pos_2[1] += 20
+
+            pos_3 = np.array(pos_2)
+            pos_3[1] += 20
+
+            self.screen.blit(Const.LANDMARK_FONT.render(f'relativ bearing: {np.round(np.rad2deg(relevant_landmark["bearing"]), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_1))
+            self.screen.blit(Const.LANDMARK_FONT.render(f'abs bearing    : {np.round(np.rad2deg(relevant_landmark["orientation"]), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_2))
+
+            self.screen.blit(Const.LANDMARK_FONT.render(f'Calc Theta: {np.round(relevant_landmark["calc_theta"], decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_3))
 
         for landmark in self.land_marks:
             pygame.draw.circle(self.screen, Const.COLORS.black, get_pygame_point(landmark), 5)
 
-        center_pos = pygame.Vector2(self.robot.mu[0, 0], self.robot.mu[1, 0])
         height = np.abs(self.robot.sigma[1, 1])
         width = np.abs(self.robot.sigma[0, 0])
+        center_pos = pygame.Vector2(self.robot.mu[0, 0] - width / 2, self.robot.mu[1, 0] - height / 2)
         pygame.draw.ellipse(self.screen, Const.COLORS.blue, pygame.Rect(center_pos, (width, height)), 1)
         ratio = height/width
 
         if time.time() - self.time > 5:
-            print("New Pos")
             self.time = time.time()
             self.estimation_positions.append({
                 'pos': center_pos,
@@ -221,14 +240,15 @@ class Simulator:
         screen.blit(Const.FONT.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, font_color),
                     (180, 40))
 
-        screen.blit(Const.FONT.render(f'mu[3]: {np.round(np.rad2deg(self.robot.mu[2].item()), decimals=3)}', True, font_color),
-                    (180, 60))
-        screen.blit(Const.FONT.render(f'theta: {np.round(np.rad2deg(self.robot.theta%(2*np.pi)), decimals=3)}', True, font_color),
-                    (340, 60))
-        screen.blit(Const.FONT.render(f'triag : {np.round(np.rad2deg(self.robot.detected_theta), decimals=3)}', True, font_color),
-                    (540, 60))
-        screen.blit(Const.FONT.render(f'diff : {np.round(np.abs(np.rad2deg(self.robot.detected_theta) - np.rad2deg(self.robot.theta%(2*np.pi))), decimals=3)}', True, font_color),
-                    (540, 40))
+        screen.blit(Const.FONT.render(f'mu[3]: {np.round(np.rad2deg(self.robot.mu[2].item()), decimals=3)}', True, font_color), (180, 60))
+        screen.blit(Const.FONT.render(f'theta: {np.round(np.rad2deg(self.robot.theta%(2*np.pi)), decimals=3)}', True, font_color), (340, 60))
+        screen.blit(Const.FONT.render(f'triag : {np.round(np.rad2deg(self.robot.detected_theta), decimals=3)}', True, font_color), (540, 60))
+        screen.blit(Const.FONT.render(f'diff : {np.round(np.abs(np.rad2deg(self.robot.detected_theta) - np.rad2deg(self.robot.theta%(2*np.pi))), decimals=3)}', True, font_color), (540, 40))
+
+        screen.blit(Const.FONT.render(f'Sensor Noise : {np.round(Const.sensor_noise, decimals=3)}', True, font_color), (740, 20))
+        screen.blit(Const.FONT.render(f'Bearing Noise : {np.round(Const.bearing_noise, decimals=3)}', True, font_color), (740, 40))
+        screen.blit(Const.FONT.render(f'Motion Noise L: {np.round(Const.motion_noise_l, decimals=3)}', True, font_color), (740, 60))
+        screen.blit(Const.FONT.render(f'Motion Noise R: {np.round(Const.motion_noise_r, decimals=3)}', True, font_color), (940, 60))
 
     def compute_relevant_landmarks(self):
         self.relevant_landmarks.clear()
@@ -236,14 +256,43 @@ class Simulator:
             landmark_deg = land_mark - self.robot.pos
             distance = np.linalg.norm(landmark_deg)
             if distance < Const.LANDMARK_DIST:
-                default_vec = np.array([1, 0]).reshape((2, 1))
-                robot_orient = rotate(default_vec, self.robot.theta)
-
                 relative_position = landmark_deg / distance
+
+                abs_bearing = (2 * np.pi - math.atan2(relative_position[1], -relative_position[0])) % (2 * np.pi)
+                relative_bearing = (math.atan2(relative_position[1], relative_position[0]) - (2 * np.pi - self.robot.theta)) % (2 * np.pi)
 
                 self.relevant_landmarks.append(dict(
                     pos=land_mark,
-                    dist=distance,
-                    bearing = math.atan2(-relative_position[1], relative_position[0]),  # np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))).item() * (1 if np.dot(robot_orient.T, landmark_deg) > 0 else -1) # #
-                    orientation = np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))).item()
+                    dist=distance + np.random.normal() * Const.sensor_noise,
+                    bearing = relative_bearing,
+                    orientation = abs_bearing,
+                    calc_theta = np.rad2deg(self.robot.theta + np.random.normal() * Const.bearing_noise) % 360
                 ))
+
+    def add_sensor_noise(self):
+        Const.sensor_noise += 0.01
+
+    def remove_sensor_noise(self):
+        if Const.sensor_noise - 0.01 >= 0:
+            Const.sensor_noise -= 0.01
+
+    def add_bearing_noise(self):
+        Const.bearing_noise += 0.01
+
+    def remove_bearing_noise(self):
+        if Const.bearing_noise - 0.01 >= 0:
+            Const.bearing_noise -= 0.01
+
+    def add_motion_noise_l(self):
+        Const.motion_noise_l += 0.01
+
+    def remove_motion_noise_l(self):
+        if Const.motion_noise_l - 0.01 >= 0:
+            Const.motion_noise_l -= 0.01
+
+    def add_motion_noise_r(self):
+        Const.motion_noise_r += 0.01
+
+    def remove_motion_noise_r(self):
+        if Const.motion_noise_r - 0.01 >= 0:
+            Const.motion_noise_r -= 0.01
