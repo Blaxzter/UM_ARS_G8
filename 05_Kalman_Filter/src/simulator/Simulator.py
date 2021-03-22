@@ -104,7 +104,11 @@ class Simulator:
             pos_ = relevant_landmark['pos']
             viz = VisualLine(self.robot.pos, pos_, dotted=False, color=Const.COLORS.green)
             viz.draw(self.screen)
-            self.screen.blit(Const.FONT.render(f'{np.round(np.rad2deg(relevant_landmark["bearing"].item()), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_ + 20))
+            self.screen.blit(Const.FONT.render(f'{np.round(np.rad2deg(relevant_landmark["bearing"]), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_ + 20))
+            self.screen.blit(Const.FONT.render(f'{np.round(np.rad2deg(relevant_landmark["orientation"]), decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_+ 40))
+
+            calc_theta = 360 - (180 - (180 - np.rad2deg(relevant_landmark["orientation"])) - np.rad2deg(relevant_landmark["bearing"]))
+            self.screen.blit(Const.FONT.render(f'{np.round(calc_theta, decimals = 3)}', True, Const.COLORS.black), get_pygame_point(pos_ + 60))
 
         for landmark in self.land_marks:
             pygame.draw.circle(self.screen, Const.COLORS.black, get_pygame_point(landmark), 5)
@@ -217,12 +221,14 @@ class Simulator:
         screen.blit(Const.FONT.render(f'pos_y: {np.round(self.robot.pos[1].item(), decimals=3)}', True, font_color),
                     (180, 40))
 
-        screen.blit(Const.FONT.render(f'mu[3]: {np.round(self.robot.mu[2].item(), decimals=3)}', True, font_color),
+        screen.blit(Const.FONT.render(f'mu[3]: {np.round(np.rad2deg(self.robot.mu[2].item()), decimals=3)}', True, font_color),
                     (180, 60))
-        screen.blit(Const.FONT.render(f'theta: {np.round(self.robot.theta%(2*np.pi), decimals=3)}', True, font_color),
+        screen.blit(Const.FONT.render(f'theta: {np.round(np.rad2deg(self.robot.theta%(2*np.pi)), decimals=3)}', True, font_color),
                     (340, 60))
-        screen.blit(Const.FONT.render(f'triag : {np.round(self.robot.detected_theta, decimals=3)}', True, font_color),
+        screen.blit(Const.FONT.render(f'triag : {np.round(np.rad2deg(self.robot.detected_theta), decimals=3)}', True, font_color),
                     (540, 60))
+        screen.blit(Const.FONT.render(f'diff : {np.round(np.abs(np.rad2deg(self.robot.detected_theta) - np.rad2deg(self.robot.theta%(2*np.pi))), decimals=3)}', True, font_color),
+                    (540, 40))
 
     def compute_relevant_landmarks(self):
         self.relevant_landmarks.clear()
@@ -233,8 +239,11 @@ class Simulator:
                 default_vec = np.array([1, 0]).reshape((2, 1))
                 robot_orient = rotate(default_vec, self.robot.theta)
 
+                relative_position = landmark_deg / distance
+
                 self.relevant_landmarks.append(dict(
                     pos=land_mark,
                     dist=distance,
-                    bearing = math.atan2((land_mark[1, 0] - self.robot.pos[1, 0]), (land_mark[0, 0] - self.robot.pos[0, 0])) - self.robot.theta# np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))) * (1 if np.dot(robot_orient.T, landmark_deg) > 0 else -1)
+                    bearing = math.atan2(-relative_position[1], relative_position[0]),  # np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))).item() * (1 if np.dot(robot_orient.T, landmark_deg) > 0 else -1) # #
+                    orientation = np.arccos(np.dot(robot_orient.T, landmark_deg) / (np.linalg.norm(landmark_deg))).item()
                 ))
