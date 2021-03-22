@@ -178,20 +178,20 @@ class Simulator:
             if event.type == pygame.QUIT:
                 self.done = True
                 return
-            # if event.type == pygame.MOUSEBUTTONDOWN:
-            #     if event.button == 1:
-            #         self.robot.dragging = True
-            #         mouse_x, mouse_y = event.pos
-            #         self.robot.drag(mouse_x, mouse_y)
-            #
-            # elif event.type == pygame.MOUSEBUTTONUP:
-            #     if event.button == 1:
-            #         self.robot.dragging = False
-            #
-            # elif event.type == pygame.MOUSEMOTION:
-            #     if self.robot.dragging:
-            #         mouse_x, mouse_y = event.pos
-            #         self.robot.drag(mouse_x, mouse_y)
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                if event.button == 1:
+                    self.robot.dragging = True
+                    mouse_x, mouse_y = event.pos
+                    self.robot.drag(mouse_x, mouse_y)
+
+            elif event.type == pygame.MOUSEBUTTONUP:
+                if event.button == 1:
+                    self.robot.dragging = False
+
+            elif event.type == pygame.MOUSEMOTION:
+                if self.robot.dragging:
+                    mouse_x, mouse_y = event.pos
+                    self.robot.drag(mouse_x, mouse_y)
 
     def toggle_test_mode(self):
         self.test_mode = not self.test_mode
